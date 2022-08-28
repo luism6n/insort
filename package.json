@@ -4,7 +4,9 @@
   "description": "",
   "main": "webpack.config.js",
   "scripts": {
-    "start": "webpack"
+    "build": "webpack",
+    "watch-client": "webpack --watch",
+    "start-server": "nodemon server/main.js"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +19,10 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "socket.io": "^4.5.1"
   }
 }
