@@ -10,16 +10,16 @@ const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || 3000;
 const deck = [
   {
-    text: "a",
-    value: "1",
+    text: "Thriller - Michael Jackson",
+    value: "50.2M",
   },
   {
-    text: "b",
-    value: "2",
+    text: "Back in Black - AC/DC",
+    value: "30.1M",
   },
   {
-    text: "c",
-    value: "3",
+    text: "The Bodyguard - Whitney Houston / various artists",
+    value: "28.7M",
   },
 ];
 
@@ -44,6 +44,7 @@ function randomChoice(arr) {
 
 io.on("connection", (socket) => {
   socket.on("join", (data) => {
+    console.log(`got join, socketId=${socket.id}`);
     socketToRoom.set(socket.id, data.roomId);
 
     let currentState = rooms.get(data.roomId);
@@ -52,23 +53,40 @@ io.on("connection", (socket) => {
       let remainingCards = [...Array(deck.length).keys()].filter(
         (i) => i !== firstCard
       );
-      let currentCard = randomChoice(remainingCards);
+      let nextCard = randomChoice(remainingCards);
 
       currentState = {
         numPlayers: 1,
         deck,
         placedCards: [firstCard],
         remainingCards,
-        currentCard,
+        nextCard,
+        placeNextAfter: 0,
       };
     } else {
       currentState.numPlayers++;
     }
 
     rooms.set(data.roomId, currentState);
+    socket.join(data.roomId);
 
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
-    io.emit(`gameState-${data.roomId}`, currentState);
+    io.to(data.roomId).emit(`gameState`, currentState);
+  });
+
+  socket.on(`changeNextPlacement`, ({ increment }) => {
+    console.log(`got changeNextPlacement, socketId=${socket.id}`);
+
+    let roomId = socketToRoom.get(socket.id);
+    let state = rooms.get(roomId);
+    console.log({ state, roomId });
+    state.placeNextAfter = Math.min(
+      state.placedCards.length - 1,
+      Math.max(-1, state.placeNextAfter + increment)
+    );
+    rooms.set(roomId, state);
+
+    io.to(roomId).emit(`gameState`, state);
   });
 
   socket.on("disconnect", () => {
@@ -86,12 +104,12 @@ io.on("connection", (socket) => {
       rooms.delete(roomId);
     } else {
       rooms.set(roomId, state);
+      io.to(roomId).emit(`gameState`, state);
     }
 
     console.log(
       `user left, socketId=${socket.id}, roomId=${roomId}, numPlayers=${state.numPlayers}`
     );
-    io.emit(`gameState-${roomId}`, state);
   });
 });
 
