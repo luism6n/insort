@@ -52,6 +52,8 @@ io.on("connection", (socket) => {
 
     rooms.set(roomId, state);
     console.log(`user left, socketId=${socket.id}, roomId=${roomId}`);
+
+    io.emit("gameState", currentState);
   });
 });
 
