@@ -8,15 +8,39 @@ const socketToRoom = new Map();
 
 const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || 3000;
+const deck = [
+  {
+    text: "a",
+    value: "1",
+  },
+  {
+    text: "b",
+    value: "2",
+  },
+  {
+    text: "c",
+    value: "3",
+  },
+];
 
 let app = express();
 
 app.get("/r/:roomId", (req, res) => {
+  // This is here only for the player join event. After
+  // that, communication is socket only.
   res.sendFile(path.join(publicPath, "/index.html"));
 });
 
 let server = http.createServer(app);
 let io = socketIO(server);
+
+function randomChoice(arr) {
+  if (arr.length === 0) {
+    return null;
+  }
+
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
 io.on("connection", (socket) => {
   socket.on("join", (data) => {
@@ -24,7 +48,19 @@ io.on("connection", (socket) => {
 
     let currentState = rooms.get(data.roomId);
     if (!currentState) {
-      currentState = { numPlayers: 1 };
+      let firstCard = Math.floor(deck.length / 2);
+      let remainingCards = [...Array(deck.length).keys()].filter(
+        (i) => i !== firstCard
+      );
+      let currentCard = randomChoice(remainingCards);
+
+      currentState = {
+        numPlayers: 1,
+        deck,
+        placedCards: [firstCard],
+        remainingCards,
+        currentCard,
+      };
     } else {
       currentState.numPlayers++;
     }

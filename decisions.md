@@ -1,0 +1,3 @@
+- decks must have len > 2
+- a player can create a room just by joining a link
+  - sec hazard?

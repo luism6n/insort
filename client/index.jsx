@@ -21,21 +21,63 @@ function Home() {
 
 function Room() {
   let { roomId } = useParams();
-  const [numPlayers, setNumPlayers] = useState(0);
+  const [gameState, setGameState] = useState(null);
   let socket = io();
 
   useEffect(() => {
     socket.emit("join", { roomId });
 
     socket.on(`gameState-${roomId}`, (data) => {
-      setNumPlayers(data.numPlayers);
+      setGameState(data);
     });
   }, []);
 
+  if (!gameState) {
+    return <p>Loading...</p>;
+  }
+
   return (
-    <p>
-      You're in room {`${roomId}`} with {`${numPlayers}`} players
-    </p>
+    <Fragment>
+      <p>
+        You're in room {roomId} (players: {gameState.numPlayers})
+      </p>
+      <h3>Sorted cards:</h3>
+      <ul>
+        {gameState.placedCards.map((i) => {
+          let card = gameState.deck[i];
+          return (
+            <li>
+              {card.text}: {card.value}
+            </li>
+          );
+        })}
+      </ul>
+      <h3>Cards to sort:</h3>
+      <ul>
+        {gameState.remainingCards.map((i) => {
+          let card = gameState.deck[i];
+          return (
+            <>
+              <li
+                style={{
+                  textDecoration:
+                    i === gameState.currentCard ? "underline" : "none",
+                }}
+              >
+                {card.text}
+              </li>
+            </>
+          );
+        })}
+      </ul>
+      <p>
+        Where does{" "}
+        <span style={{ textDecoration: "underline" }}>
+          {gameState.deck[gameState.currentCard].text}
+        </span>{" "}
+        go?
+      </p>
+    </Fragment>
   );
 }
 
