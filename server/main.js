@@ -42,20 +42,26 @@ function randomChoice(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function updateState(roomId, state) {
+  console.log("state update", state);
+  rooms.set(roomId, state);
+  io.to(roomId).emit("gameState", state);
+}
+
 io.on("connection", (socket) => {
   socket.on("join", (data) => {
     console.log(`got join, socketId=${socket.id}`);
     socketToRoom.set(socket.id, data.roomId);
 
-    let currentState = rooms.get(data.roomId);
-    if (!currentState) {
+    let state = rooms.get(data.roomId);
+    if (!state) {
       let firstCard = Math.floor(deck.length / 2);
       let remainingCards = [...Array(deck.length).keys()].filter(
         (i) => i !== firstCard
       );
       let nextCard = randomChoice(remainingCards);
 
-      currentState = {
+      state = {
         numPlayers: 1,
         deck,
         placedCards: [firstCard],
@@ -64,14 +70,12 @@ io.on("connection", (socket) => {
         placeNextAfter: 0,
       };
     } else {
-      currentState.numPlayers++;
+      state.numPlayers++;
     }
 
-    rooms.set(data.roomId, currentState);
     socket.join(data.roomId);
-
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
-    io.to(data.roomId).emit(`gameState`, currentState);
+    updateState(data.roomId, state);
   });
 
   socket.on(`changeNextPlacement`, ({ increment }) => {
@@ -84,9 +88,29 @@ io.on("connection", (socket) => {
       state.placedCards.length - 1,
       Math.max(-1, state.placeNextAfter + increment)
     );
-    rooms.set(roomId, state);
 
-    io.to(roomId).emit(`gameState`, state);
+    updateState(roomId, state);
+  });
+
+  socket.on("placeCard", () => {
+    let roomId = socketToRoom.get(socket.id);
+    let state = rooms.get(roomId);
+
+    state.placedCards.splice(state.placeNextAfter, 0, state.nextCard);
+
+    console.log(state);
+
+    state.remainingCards = state.remainingCards.filter(
+      (c) => c !== state.nextCard
+    );
+
+    if (state.remainingCards.length === 0) {
+      state.nextCard = -1;
+    } else {
+      state.nextCard = randomChoice(state.remainingCards);
+    }
+
+    updateState(roomId, state);
   });
 
   socket.on("disconnect", () => {

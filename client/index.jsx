@@ -45,8 +45,31 @@ function Room() {
     });
   }
 
+  function placeCard(inc) {
+    console.log(`emmitting placeCard`, { inc });
+    socket.emit(`placeCard`);
+  }
+
   if (!gameState) {
     return <p>Loading...</p>;
+  }
+
+  if (gameState.nextCard === -1) {
+    return (
+      <Fragment>
+        <h3>Game ended</h3>
+        <ul>
+          {gameState.placedCards.map((i) => {
+            let card = gameState.deck[i];
+            return (
+              <li>
+                {card.value}: {card.text}
+              </li>
+            );
+          })}
+        </ul>
+      </Fragment>
+    );
   }
 
   return (
@@ -62,7 +85,7 @@ function Room() {
           return (
             <Fragment>
               <li key={indexInDeck}>
-                {card.text}: {card.value}
+                {card.value}: {card.text}
               </li>
               {i === gameState.placeNextAfter ? (
                 <li key={nanoid()}>here</li> // This always rerenders
@@ -80,6 +103,7 @@ function Room() {
       </p>
       <button onClick={() => changeNextPlacement(-1)}>Before</button>
       <button onClick={() => changeNextPlacement(+1)}>After</button>
+      <button onClick={() => placeCard()}>Place</button>
       <h3>Cards to sort:</h3>
       <ul>
         {gameState.remainingCards.map((i) => {
