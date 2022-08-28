@@ -27,15 +27,14 @@ function Room() {
   useEffect(() => {
     socket.emit("join", { roomId });
 
-    socket.on("gameState", (data) => {
+    socket.on(`gameState-${roomId}`, (data) => {
       setNumPlayers(data.numPlayers);
     });
   }, []);
 
   return (
     <p>
-      You're in room {`${roomId}`}{" "}
-      {numPlayers > 1 ? "with " + numPlayers + " others" : "alone"}
+      You're in room {`${roomId}`} with {`${numPlayers}`} players
     </p>
   );
 }

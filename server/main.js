@@ -32,7 +32,7 @@ io.on("connection", (socket) => {
     rooms.set(data.roomId, currentState);
 
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
-    io.emit("gameState", currentState);
+    io.emit(`gameState-${data.roomId}`, currentState);
   });
 
   socket.on("disconnect", () => {
@@ -48,12 +48,14 @@ io.on("connection", (socket) => {
 
     if (state.numPlayers === 0) {
       rooms.delete(roomId);
+    } else {
+      rooms.set(roomId, state);
     }
 
-    rooms.set(roomId, state);
-    console.log(`user left, socketId=${socket.id}, roomId=${roomId}`);
-
-    io.emit("gameState", currentState);
+    console.log(
+      `user left, socketId=${socket.id}, roomId=${roomId}, numPlayers=${state.numPlayers}`
+    );
+    io.emit(`gameState-${roomId}`, state);
   });
 });
 
