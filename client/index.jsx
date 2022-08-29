@@ -47,7 +47,12 @@ function Room() {
 
   function placeCard(inc) {
     console.log(`emmitting placeCard`, { inc });
-    socket.emit(`placeCard`);
+    socket.emit("placeCard");
+  }
+
+  function newGame() {
+    console.log("emitting newGame");
+    socket.emit("newGame");
   }
 
   if (!gameState) {
@@ -68,6 +73,7 @@ function Room() {
             );
           })}
         </ul>
+        <button onClick={newGame}>Restart</button>
       </Fragment>
     );
   }
@@ -95,7 +101,7 @@ function Room() {
         })}
       </ul>
       <p>
-        Where does{" "}
+        {gameState.scored ? "Scored! " : ""}Where does{" "}
         <span style={{ textDecoration: "underline" }}>
           {gameState.deck[gameState.nextCard].text}
         </span>{" "}

@@ -10,16 +10,20 @@ const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || 3000;
 const deck = [
   {
-    text: "Thriller - Michael Jackson",
-    value: "50.2M",
-  },
-  {
     text: "Back in Black - AC/DC",
     value: "30.1M",
   },
   {
+    text: "Thriller - Michael Jackson",
+    value: "50.2M",
+  },
+  {
     text: "The Bodyguard - Whitney Houston / various artists",
     value: "28.7M",
+  },
+  {
+    text: "The Dark Side of the Moon - Pink Floyd",
+    value: "24.8M",
   },
 ];
 
@@ -42,10 +46,55 @@ function randomChoice(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function newState(numPlayers) {
+  let firstCard = Math.floor(deck.length / 2);
+  let allCards = [...Array(deck.length).keys()];
+  let remainingCards = allCards.filter((i) => i !== firstCard);
+  let nextCard = randomChoice(remainingCards);
+
+  let sorted = allCards.sort((i, j) =>
+    deck[j].value.localeCompare(deck[i].value)
+  );
+  let pos = 0;
+  correctFinalPositions = new Map();
+  for (let i of sorted) {
+    correctFinalPositions.set(i, pos++);
+  }
+
+  const state = {
+    numPlayers: numPlayers,
+    deck: deck,
+    placedCards: [firstCard],
+    correctFinalPositions,
+    remainingCards,
+    nextCard,
+    placeNextAfter: 0,
+    scored: false,
+  };
+
+  console.log(state);
+
+  return state;
+}
+
 function updateState(roomId, state) {
   console.log("state update", state);
   rooms.set(roomId, state);
   io.to(roomId).emit("gameState", state);
+}
+
+function correctPlace(state) {
+  let pos = 0;
+  for (let i of state.placedCards) {
+    if (
+      state.correctFinalPositions.get(i) >
+      state.correctFinalPositions.get(state.nextCard)
+    ) {
+      break;
+    }
+    pos++;
+  }
+  return pos - 1;
 }
 
 io.on("connection", (socket) => {
@@ -55,23 +104,10 @@ io.on("connection", (socket) => {
 
     let state = rooms.get(data.roomId);
     if (!state) {
-      let firstCard = Math.floor(deck.length / 2);
-      let remainingCards = [...Array(deck.length).keys()].filter(
-        (i) => i !== firstCard
-      );
-      let nextCard = randomChoice(remainingCards);
-
-      state = {
-        numPlayers: 1,
-        deck,
-        placedCards: [firstCard],
-        remainingCards,
-        nextCard,
-        placeNextAfter: 0,
-      };
-    } else {
-      state.numPlayers++;
+      state = newState(0);
     }
+
+    state.numPlayers++;
 
     socket.join(data.roomId);
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
@@ -96,9 +132,14 @@ io.on("connection", (socket) => {
     let roomId = socketToRoom.get(socket.id);
     let state = rooms.get(roomId);
 
-    state.placedCards.splice(state.placeNextAfter, 0, state.nextCard);
+    let corrected = correctPlace(state);
+    if (corrected === state.placeNextAfter) {
+      state.scored = true;
+    } else {
+      state.scored = false;
+    }
 
-    console.log(state);
+    state.placedCards.splice(corrected + 1, 0, state.nextCard);
 
     state.remainingCards = state.remainingCards.filter(
       (c) => c !== state.nextCard
@@ -109,6 +150,20 @@ io.on("connection", (socket) => {
     } else {
       state.nextCard = randomChoice(state.remainingCards);
     }
+
+    updateState(roomId, state);
+  });
+
+  socket.on("newGame", () => {
+    let roomId = socketToRoom.get(socket.id);
+
+    if (!roomId) {
+      console.warn(`newGame on invalid room, socketId=${socket.id}`);
+      return;
+    }
+
+    let state = rooms.get(roomId);
+    state = newState(state.numPlayers);
 
     updateState(roomId, state);
   });
