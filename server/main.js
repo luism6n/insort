@@ -11,36 +11,38 @@ const port = process.env.PORT || 3000;
 const decks = [
   {
     name: "albums",
+    unit: "M of copies",
     cards: [
       {
         text: "Back in Black - AC/DC",
-        value: "30.1M",
+        value: 30.1,
       },
       {
         text: "Thriller - Michael Jackson",
-        value: "50.2M",
+        value: 50.2,
       },
       {
         text: "The Bodyguard - Whitney Houston / various artists",
-        value: "28.7M",
+        value: 28.7,
       },
       {
         text: "The Dark Side of the Moon - Pink Floyd",
-        value: "24.8M",
+        value: 24.8,
       },
     ],
   },
   {
     name: "planets",
+    unit: "UA",
     cards: [
-      { text: "Mercury", value: "0.39 AU" },
-      { text: "Venus", value: "0.72 AU" },
-      { text: "Earth", value: "1 AU" },
-      { text: "Mars", value: "1.52 AU" },
-      { text: "Jupiter", value: "5.2 AU" },
-      { text: "Saturn", value: "9.54 AU" },
-      { text: "Uranus", value: "19.2 AU" },
-      { text: "Neptune", value: "30.06 AU" },
+      { text: "Mercury", value: 0.39 },
+      { text: "Venus", value: 0.72 },
+      { text: "Earth", value: 1 },
+      { text: "Mars", value: 1.52 },
+      { text: "Jupiter", value: 5.2 },
+      { text: "Saturn", value: 9.54 },
+      { text: "Uranus", value: 19.2 },
+      { text: "Neptune", value: 30.06 },
     ],
   },
 ];
@@ -72,9 +74,7 @@ function newState(numPlayers, selectedDeck) {
   let remainingCards = allCards.filter((i) => i !== firstCard);
   let nextCard = randomChoice(remainingCards);
 
-  let sorted = allCards.sort((i, j) =>
-    deck[j].value.localeCompare(deck[i].value)
-  );
+  let sorted = allCards.sort((i, j) => deck[j].value - deck[i]);
   let pos = 0;
   correctFinalPositions = new Map();
   for (let i of sorted) {
