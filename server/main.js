@@ -8,22 +8,40 @@ const socketToRoom = new Map();
 
 const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || 3000;
-const deck = [
+const decks = [
   {
-    text: "Back in Black - AC/DC",
-    value: "30.1M",
+    name: "albums",
+    cards: [
+      {
+        text: "Back in Black - AC/DC",
+        value: "30.1M",
+      },
+      {
+        text: "Thriller - Michael Jackson",
+        value: "50.2M",
+      },
+      {
+        text: "The Bodyguard - Whitney Houston / various artists",
+        value: "28.7M",
+      },
+      {
+        text: "The Dark Side of the Moon - Pink Floyd",
+        value: "24.8M",
+      },
+    ],
   },
   {
-    text: "Thriller - Michael Jackson",
-    value: "50.2M",
-  },
-  {
-    text: "The Bodyguard - Whitney Houston / various artists",
-    value: "28.7M",
-  },
-  {
-    text: "The Dark Side of the Moon - Pink Floyd",
-    value: "24.8M",
+    name: "planets",
+    cards: [
+      { text: "Mercury", value: "0.39 AU" },
+      { text: "Venus", value: "0.72 AU" },
+      { text: "Earth", value: "1 AU" },
+      { text: "Mars", value: "1.52 AU" },
+      { text: "Jupiter", value: "5.2 AU" },
+      { text: "Saturn", value: "9.54 AU" },
+      { text: "Uranus", value: "19.2 AU" },
+      { text: "Neptune", value: "30.06 AU" },
+    ],
   },
 ];
 
@@ -46,7 +64,9 @@ function randomChoice(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function newState(numPlayers) {
+function newState(numPlayers, selectedDeck) {
+  const deck = decks[selectedDeck].cards;
+
   let firstCard = Math.floor(deck.length / 2);
   let allCards = [...Array(deck.length).keys()];
   let remainingCards = allCards.filter((i) => i !== firstCard);
@@ -63,7 +83,8 @@ function newState(numPlayers) {
 
   const state = {
     numPlayers: numPlayers,
-    deck: deck,
+    deckOptions: decks.map((d) => d.name),
+    deck,
     placedCards: [firstCard],
     correctFinalPositions,
     remainingCards,
@@ -104,7 +125,7 @@ io.on("connection", (socket) => {
 
     let state = rooms.get(data.roomId);
     if (!state) {
-      state = newState(0);
+      state = newState(0, 0);
     }
 
     state.numPlayers++;
@@ -154,7 +175,7 @@ io.on("connection", (socket) => {
     updateState(roomId, state);
   });
 
-  socket.on("newGame", () => {
+  socket.on("newGame", (data) => {
     let roomId = socketToRoom.get(socket.id);
 
     if (!roomId) {
@@ -163,7 +184,7 @@ io.on("connection", (socket) => {
     }
 
     let state = rooms.get(roomId);
-    state = newState(state.numPlayers);
+    state = newState(state.numPlayers, data.selectedDeck);
 
     updateState(roomId, state);
   });

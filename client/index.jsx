@@ -23,6 +23,7 @@ function Room() {
   let { roomId } = useParams();
   const [gameState, setGameState] = useState(null);
   let [socket, setSocket] = useState(null);
+  const [selectedDeck, setSelectedDeck] = useState(0);
 
   useEffect(() => {
     if (!socket) {
@@ -51,8 +52,8 @@ function Room() {
   }
 
   function newGame() {
-    console.log("emitting newGame");
-    socket.emit("newGame");
+    console.log("emitting newGame", { selectedDeck });
+    socket.emit("newGame", { selectedDeck });
   }
 
   if (!gameState) {
@@ -73,7 +74,19 @@ function Room() {
             );
           })}
         </ul>
-        <button onClick={newGame}>Restart</button>
+        <button onClick={newGame}>New Game</button>
+        <select
+          value={selectedDeck}
+          onChange={(e) => setSelectedDeck(Number.parseInt(e.target.value))}
+        >
+          {gameState.deckOptions.map((deck, i) => {
+            return (
+              <option value={i} key={deck}>
+                {deck}
+              </option>
+            );
+          })}
+        </select>
       </Fragment>
     );
   }
