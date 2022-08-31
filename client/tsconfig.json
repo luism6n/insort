@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "lib": ["dom"],
+        "target": "es5",
+        "sourceMap": true,
+        "strictNullChecks": false,
+        "jsx": "react",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "./"
+    ]
+}

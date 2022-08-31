@@ -8,6 +8,8 @@ import {
   useParams,
 } from "react-router-dom";
 import { nanoid } from "nanoid";
+import { io, Socket } from "socket.io-client";
+import {Deck, GameState} from "../types/types"
 
 function Home() {
   return (
@@ -21,8 +23,8 @@ function Home() {
 
 function Room() {
   let { roomId } = useParams();
-  const [gameState, setGameState] = useState(null);
-  let [socket, setSocket] = useState(null);
+  const [gameState, setGameState] = useState<GameState|null>(null);
+  let [socket, setSocket] = useState<Socket|null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
 
   useEffect(() => {
@@ -39,21 +41,21 @@ function Room() {
     }
   }, [socket]);
 
-  function changeNextPlacement(inc) {
+  function changeNextPlacement(inc: number) {
     console.log(`emmitting changeNextPlacement`, { inc });
-    socket.emit(`changeNextPlacement`, {
+    socket!.emit(`changeNextPlacement`, {
       increment: inc,
     });
   }
 
-  function placeCard(inc) {
-    console.log(`emmitting placeCard`, { inc });
-    socket.emit("placeCard");
+  function placeCard() {
+    console.log(`emmitting placeCard`);
+    socket!.emit("placeCard");
   }
 
   function newGame() {
     console.log("emitting newGame", { selectedDeck });
-    socket.emit("newGame", { selectedDeck });
+    socket!.emit("newGame", { selectedDeck });
   }
 
   if (!gameState) {
@@ -156,5 +158,5 @@ function App() {
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById("App"));
+const root = ReactDOM.createRoot(document.getElementById("App") as Element);
 root.render(<App />);

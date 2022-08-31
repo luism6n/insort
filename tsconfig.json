@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "lib": ["ES2021"],
+        "target": "es2021",
+        "sourceMap": true,
+        "strictNullChecks": false,
+        "module": "commonJS",
+        "jsx": "react",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "./server/"
+    ]
+}

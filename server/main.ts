@@ -1,14 +1,15 @@
-const path = require("path");
-const http = require("http");
-const express = require("express");
-const socketIO = require("socket.io");
+const path = require("path")
+const http = require("http")
+import express, {Request as ExpressReq} from "express"
+import {Server as SocketServer} from "socket.io"
+import {Deck, GameState} from "../types/types"
 
-const rooms = new Map();
-const socketToRoom = new Map();
+const rooms = new Map<string, GameState>();
+const socketToRoom = new Map<string, string>();
 
 const publicPath = path.join(__dirname, "/../public");
-const port = process.env.PORT || 3000;
-const decks = [
+const port = process.env.PORT || '3000';
+const decks: Deck[] = [
   {
     name: "albums",
     unit: "M of copies",
@@ -49,16 +50,16 @@ const decks = [
 
 let app = express();
 
-app.get("/r/:roomId", (req, res) => {
+app.get("/r/:roomId", (req: ExpressReq, res) => {
   // This is here only for the player join event. After
   // that, communication is socket only.
   res.sendFile(path.join(publicPath, "/index.html"));
 });
 
 let server = http.createServer(app);
-let io = socketIO(server);
+let io = new SocketServer(server);
 
-function randomChoice(arr) {
+function randomChoice<T>(arr: T[]): T | null {
   if (arr.length === 0) {
     return null;
   }
@@ -66,17 +67,20 @@ function randomChoice(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function newState(numPlayers, selectedDeck) {
+function newState(numPlayers: number, selectedDeck: number): GameState {
   const deck = decks[selectedDeck].cards;
 
   let firstCard = Math.floor(deck.length / 2);
   let allCards = [...Array(deck.length).keys()];
   let remainingCards = allCards.filter((i) => i !== firstCard);
   let nextCard = randomChoice(remainingCards);
+  if (!nextCard) {
+    nextCard = -1;
+  }
 
-  let sorted = allCards.sort((i, j) => deck[j].value - deck[i]);
+  let sorted = allCards.sort((i, j) => deck[j].value - deck[i].value);
   let pos = 0;
-  correctFinalPositions = new Map();
+  let correctFinalPositions = new Map();
   for (let i of sorted) {
     correctFinalPositions.set(i, pos++);
   }
@@ -98,14 +102,15 @@ function newState(numPlayers, selectedDeck) {
   return state;
 }
 
-function updateState(roomId, state) {
+function updateState(roomId: string, state: GameState) {
   console.log("state update", state);
   rooms.set(roomId, state);
   io.to(roomId).emit("gameState", state);
 }
 
-function correctPlace(state) {
+function correctPlace(state: GameState) {
   let pos = 0;
+
   for (let i of state.placedCards) {
     if (
       state.correctFinalPositions.get(i) >
@@ -118,8 +123,13 @@ function correctPlace(state) {
   return pos - 1;
 }
 
-io.on("connection", (socket) => {
-  socket.on("join", (data) => {
+io.on("connection", (socket: {
+  emit: (event: string, data: any) => void,
+  on: (event: string, callback: (data: any) => void) => void,
+  join: (channel: string) => void,
+  id: string
+}) => {
+  socket.on("join", (data: {roomId: string}) => {
     console.log(`got join, socketId=${socket.id}`);
     socketToRoom.set(socket.id, data.roomId);
 
@@ -135,7 +145,7 @@ io.on("connection", (socket) => {
     updateState(data.roomId, state);
   });
 
-  socket.on(`changeNextPlacement`, ({ increment }) => {
+  socket.on(`changeNextPlacement`, ({ increment }: {increment: number}) => {
     console.log(`got changeNextPlacement, socketId=${socket.id}`);
 
     let roomId = socketToRoom.get(socket.id);
