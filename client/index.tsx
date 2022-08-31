@@ -62,6 +62,18 @@ function Room() {
     return <p>Loading...</p>;
   }
 
+  let scores = <Fragment>
+    {Object.keys(gameState.scores).map(playerId => {
+      const score = gameState.scores[playerId];
+      return (<Fragment key={playerId}>
+        <p>
+          {playerId}: {score}
+        </p>
+        <br/>
+      </Fragment>);
+    })}
+  </Fragment>
+
   if (gameState.nextCard === -1) {
     return (
       <Fragment>
@@ -70,12 +82,13 @@ function Room() {
           {gameState.placedCards.map((i) => {
             let card = gameState.deck[i];
             return (
-              <li>
+              <li key={card.text}>
                 {card.value}: {card.text}
               </li>
             );
           })}
         </ul>
+        {scores}
         <button onClick={newGame}>New Game</button>
         <select
           value={selectedDeck}
@@ -104,19 +117,20 @@ function Room() {
         {gameState.placedCards.map((indexInDeck, i) => {
           let card = gameState.deck[indexInDeck];
           return (
-            <Fragment>
-              <li key={indexInDeck}>
+            <Fragment key={indexInDeck}>
+              <li>
                 {card.value}: {card.text}
               </li>
               {i === gameState.placeNextAfter ? (
-                <li key={nanoid()}>here</li> // This always rerenders
+                <li>here</li> // This always rerenders
               ) : null}
             </Fragment>
           );
         })}
       </ul>
+      {scores}
       <p>
-        {gameState.scored ? "Scored! " : ""}Where does{" "}
+        Where does{" "}
         <span style={{ textDecoration: "underline" }}>
           {gameState.deck[gameState.nextCard].text}
         </span>{" "}

@@ -67,8 +67,8 @@ function randomChoice<T>(arr: T[]): T | null {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function newState(numPlayers: number, selectedDeck: number): GameState {
-  const deck = decks[selectedDeck].cards;
+function newState(oldState: GameState | null): GameState {
+  const deck = oldState ? oldState.deck : decks[0].cards;
 
   let firstCard = Math.floor(deck.length / 2);
   let allCards = [...Array(deck.length).keys()];
@@ -85,8 +85,15 @@ function newState(numPlayers: number, selectedDeck: number): GameState {
     correctFinalPositions.set(i, pos++);
   }
 
+  let scores = {};
+  if (oldState?.scores) {
+    for (let playerId of Object.keys(oldState.scores)) {
+      oldState.scores[playerId] = 0;
+    }
+  }
+
   const state = {
-    numPlayers: numPlayers,
+    numPlayers: oldState ? oldState.numPlayers : 0,
     deckOptions: decks.map((d) => d.name),
     deck,
     placedCards: [firstCard],
@@ -94,7 +101,7 @@ function newState(numPlayers: number, selectedDeck: number): GameState {
     remainingCards,
     nextCard,
     placeNextAfter: 0,
-    scored: false,
+    scores,
   };
 
   console.log(state);
@@ -135,10 +142,11 @@ io.on("connection", (socket: {
 
     let state = rooms.get(data.roomId);
     if (!state) {
-      state = newState(0, 0);
+      state = newState(null);
     }
 
     state.numPlayers++;
+    state.scores[socket.id] = 0;
 
     socket.join(data.roomId);
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
@@ -165,9 +173,7 @@ io.on("connection", (socket: {
 
     let corrected = correctPlace(state);
     if (corrected === state.placeNextAfter) {
-      state.scored = true;
-    } else {
-      state.scored = false;
+      state.scores[socket.id] = state.scores[socket.id] + 1;
     }
 
     state.placedCards.splice(corrected + 1, 0, state.nextCard);
@@ -194,7 +200,7 @@ io.on("connection", (socket: {
     }
 
     let state = rooms.get(roomId);
-    state = newState(state.numPlayers, data.selectedDeck);
+    state = newState(state);
 
     updateState(roomId, state);
   });
