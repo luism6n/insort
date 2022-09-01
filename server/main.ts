@@ -67,14 +67,14 @@ function randomChoice<T>(arr: T[]): T | null {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function newState(numPlayers: number, selectedDeck: number): GameState {
+function newState(oldState: GameState | null, selectedDeck: number): GameState {
   const deck = decks[selectedDeck].cards;
 
   let firstCard = Math.floor(deck.length / 2);
   let allCards = [...Array(deck.length).keys()];
   let remainingCards = allCards.filter((i) => i !== firstCard);
   let nextCard = randomChoice(remainingCards);
-  if (!nextCard) {
+  if (nextCard === null) {
     nextCard = -1;
   }
 
@@ -86,7 +86,7 @@ function newState(numPlayers: number, selectedDeck: number): GameState {
   }
 
   const state = {
-    numPlayers: numPlayers,
+    numPlayers: oldState ? oldState.numPlayers : 0,
     deckOptions: decks.map((d) => d.name),
     deck,
     placedCards: [firstCard],
@@ -135,7 +135,7 @@ io.on("connection", (socket: {
 
     let state = rooms.get(data.roomId);
     if (!state) {
-      state = newState(0, 0);
+      state = newState(null, 0);
     }
 
     state.numPlayers++;
@@ -145,7 +145,7 @@ io.on("connection", (socket: {
     updateState(data.roomId, state);
   });
 
-  socket.on(`changeNextPlacement`, ({ increment }: {increment: number}) => {
+  socket.on(`changeNextPlacement`, (data: {increment: number}) => {
     console.log(`got changeNextPlacement, socketId=${socket.id}`);
 
     let roomId = socketToRoom.get(socket.id);
@@ -153,7 +153,7 @@ io.on("connection", (socket: {
     console.log({ state, roomId });
     state.placeNextAfter = Math.min(
       state.placedCards.length - 1,
-      Math.max(-1, state.placeNextAfter + increment)
+      Math.max(-1, state.placeNextAfter + data.increment)
     );
 
     updateState(roomId, state);
@@ -185,7 +185,8 @@ io.on("connection", (socket: {
     updateState(roomId, state);
   });
 
-  socket.on("newGame", (data) => {
+  socket.on("newGame", (data: {selectedDeck: number}) => {
+    console.log(`got newGame, data=${JSON.stringify(data)}`);
     let roomId = socketToRoom.get(socket.id);
 
     if (!roomId) {
@@ -194,7 +195,7 @@ io.on("connection", (socket: {
     }
 
     let state = rooms.get(roomId);
-    state = newState(state.numPlayers, data.selectedDeck);
+    state = newState(state, data.selectedDeck);
 
     updateState(roomId, state);
   });
