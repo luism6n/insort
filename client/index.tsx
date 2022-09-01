@@ -58,9 +58,18 @@ function Room() {
     socket!.emit("newGame", { selectedDeck });
   }
 
-  if (!gameState) {
+  if (!socket || !gameState) {
     return <p>Loading...</p>;
   }
+
+  const scores = <ul>{gameState.playerIds.map((id) => {
+    return (
+      <li style={{textDecoration: id === socket.id ? "underline" : ""}} key={id}>
+        {id}: {gameState.scores[id]}
+      </li>
+    );
+  })}</ul>;
+
 
   if (gameState.nextCard === -1) {
     return (
@@ -76,6 +85,7 @@ function Room() {
             );
           })}
         </ul>
+        {scores}
         <button onClick={newGame}>New Game</button>
         <select
           value={selectedDeck}
@@ -115,8 +125,9 @@ function Room() {
           );
         })}
       </ul>
+      {scores}
       <p>
-        {gameState.scored ? "Scored! " : ""}Where does{" "}
+        Where does{" "}
         <span style={{ textDecoration: "underline" }}>
           {gameState.deck[gameState.nextCard].text}
         </span>{" "}

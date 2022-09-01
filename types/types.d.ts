@@ -18,5 +18,6 @@ export interface GameState {
   remainingCards: number[];
   nextCard: number;
   placeNextAfter: number;
-  scored: boolean;
+  playerIds: string[];
+  scores: { [playerId: string]: number };
 }

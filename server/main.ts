@@ -94,7 +94,8 @@ function newState(oldState: GameState | null, selectedDeck: number): GameState {
     remainingCards,
     nextCard,
     placeNextAfter: 0,
-    scored: false,
+    playerIds: oldState ? oldState.playerIds : [],
+    scores: oldState ? oldState.scores : {},
   };
 
   console.log(state);
@@ -139,6 +140,8 @@ io.on("connection", (socket: {
     }
 
     state.numPlayers++;
+    state.scores[socket.id] = 0;
+    state.playerIds.push(socket.id);
 
     socket.join(data.roomId);
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
@@ -165,9 +168,7 @@ io.on("connection", (socket: {
 
     let corrected = correctPlace(state);
     if (corrected === state.placeNextAfter) {
-      state.scored = true;
-    } else {
-      state.scored = false;
+      state.scores[socket.id] += 1;
     }
 
     state.placedCards.splice(corrected + 1, 0, state.nextCard);
@@ -210,6 +211,10 @@ io.on("connection", (socket: {
 
     let state = rooms.get(roomId);
     state.numPlayers--;
+    state.playerIds = state.playerIds.filter((id) => id !== socket.id);
+    state.scores = Object.fromEntries(
+      Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
+    );
 
     if (state.numPlayers === 0) {
       rooms.delete(roomId);
