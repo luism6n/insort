@@ -162,8 +162,9 @@ function Room() {
         </p>
         <h3>Sorted cards:</h3>
         <ul>
-          {gameState.match.placeNextAfter === -1 ? (
-            <li key={nanoid()}>here</li>
+          {!gameState.match.concluded &&
+          gameState.match.placeNextAfter == -1 ? (
+            <li key={nanoid()}>here</li> // This always rerenders
           ) : null}
           {gameState.match.placedCards.map((indexInDeck, i) => {
             let card = gameState.match.deck[indexInDeck];
