@@ -17,8 +17,13 @@ function Home() {
     <div className="h-full flex flex-col justify-center">
       <p>
         {/* This has to be and anchor tag, not a Link,
+        so that we actually hit the server */}
+        <a href={`/r/${nanoid()}`}>Get a room</a>
+      </p>
+      <p>
+        {/* This has to be and anchor tag, not a Link,
           so that we actually hit the server */}
-        Get a <a href={`/r/${nanoid()}`}>room</a>
+        <Link to="/cards-demo">Watch cards demo</Link>
       </p>
     </div>
   );
@@ -226,6 +231,10 @@ function Room() {
   return content;
 }
 
+function CardsDemo() {
+  return <div>Cards demo</div>;
+}
+
 function App() {
   return (
     <div className="flex flex-col justify-between items-center h-screen">
@@ -237,6 +246,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/r/:roomId" element={<Room />} />
+            <Route path="/cards-demo" element={<CardsDemo />} />
           </Routes>
         </BrowserRouter>
       </section>
