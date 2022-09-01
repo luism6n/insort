@@ -10,14 +10,16 @@ export interface Card {
 }
 
 export interface GameState {
-  numPlayers: number;
+  match: null | {
+    deck: Card[];
+    placedCards: number[];
+    correctFinalPositions: Map<number, number>;
+    remainingCards: number[];
+    nextCard: number;
+    placeNextAfter: number;
+    concluded: boolean;
+  };
   deckOptions: string[];
-  deck: Card[];
-  placedCards: number[];
-  correctFinalPositions: Map<number, number>;
-  remainingCards: number[];
-  nextCard: number;
-  placeNextAfter: number;
   playerIds: string[];
   scores: { [playerId: string]: number };
 }

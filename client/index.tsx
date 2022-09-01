@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import { nanoid } from "nanoid";
 import { io, Socket } from "socket.io-client";
-import {Deck, GameState} from "../types/types"
+import { GameState } from "../types/types";
 
 function Home() {
   return (
@@ -23,8 +23,8 @@ function Home() {
 
 function Room() {
   let { roomId } = useParams();
-  const [gameState, setGameState] = useState<GameState|null>(null);
-  let [socket, setSocket] = useState<Socket|null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  let [socket, setSocket] = useState<Socket | null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
 
   useEffect(() => {
@@ -58,35 +58,34 @@ function Room() {
     socket!.emit("newGame", { selectedDeck });
   }
 
+  function chooseNewDeck() {
+    console.log("emitting chooseNewDeck");
+    socket!.emit("chooseNewDeck");
+  }
+
   if (!socket || !gameState) {
     return <p>Loading...</p>;
   }
 
-  const scores = <ul>{gameState.playerIds.map((id) => {
-    return (
-      <li style={{textDecoration: id === socket.id ? "underline" : ""}} key={id}>
-        {id}: {gameState.scores[id]}
-      </li>
-    );
-  })}</ul>;
+  const scores = (
+    <ul>
+      {gameState.playerIds.map((id) => {
+        return (
+          <li
+            style={{ textDecoration: id === socket.id ? "underline" : "" }}
+            key={id}
+          >
+            {id}: {gameState.scores[id]}
+          </li>
+        );
+      })}
+    </ul>
+  );
 
-
-  if (gameState.nextCard === -1) {
+  if (gameState.match === null) {
     return (
       <Fragment>
-        <h3>Game ended</h3>
-        <ul>
-          {gameState.placedCards.map((i) => {
-            let card = gameState.deck[i];
-            return (
-              <li>
-                {card.value}: {card.text}
-              </li>
-            );
-          })}
-        </ul>
-        {scores}
-        <button onClick={newGame}>New Game</button>
+        <h3>Choose Deck</h3>
         <select
           value={selectedDeck}
           onChange={(e) => setSelectedDeck(Number.parseInt(e.target.value))}
@@ -99,6 +98,7 @@ function Room() {
             );
           })}
         </select>
+        <button onClick={() => newGame()}>Play</button>
       </Fragment>
     );
   }
@@ -106,19 +106,22 @@ function Room() {
   return (
     <Fragment>
       <p>
-        You're in room {roomId} (players: {gameState.numPlayers})
+        You're in room {roomId} (players: {gameState.playerIds.length})
       </p>
       <h3>Sorted cards:</h3>
       <ul>
-        {gameState.placeNextAfter === -1 ? <li key={nanoid()}>here</li> : null}
-        {gameState.placedCards.map((indexInDeck, i) => {
-          let card = gameState.deck[indexInDeck];
+        {gameState.match.placeNextAfter === -1 ? (
+          <li key={nanoid()}>here</li>
+        ) : null}
+        {gameState.match.placedCards.map((indexInDeck, i) => {
+          let card = gameState.match.deck[indexInDeck];
           return (
             <Fragment>
               <li key={indexInDeck}>
                 {card.value}: {card.text}
               </li>
-              {i === gameState.placeNextAfter ? (
+              {!gameState.match.concluded &&
+              i === gameState.match.placeNextAfter ? (
                 <li key={nanoid()}>here</li> // This always rerenders
               ) : null}
             </Fragment>
@@ -126,32 +129,43 @@ function Room() {
         })}
       </ul>
       {scores}
-      <p>
-        Where does{" "}
-        <span style={{ textDecoration: "underline" }}>
-          {gameState.deck[gameState.nextCard].text}
-        </span>{" "}
-        go?
-      </p>
-      <button onClick={() => changeNextPlacement(-1)}>Before</button>
-      <button onClick={() => changeNextPlacement(+1)}>After</button>
-      <button onClick={() => placeCard()}>Place</button>
-      <h3>Cards to sort:</h3>
-      <ul>
-        {gameState.remainingCards.map((i) => {
-          let card = gameState.deck[i];
-          return (
-            <li
-              key={i}
-              style={{
-                textDecoration: i === gameState.nextCard ? "underline" : "none",
-              }}
-            >
-              {card.text}
-            </li>
-          );
-        })}
-      </ul>
+      {gameState.match.concluded ? (
+        <Fragment>
+          <button onClick={() => newGame()}>Again</button>
+          <button onClick={() => chooseNewDeck()}>New Deck</button>
+        </Fragment>
+      ) : (
+        <Fragment>
+          {" "}
+          <p>
+            Where does{" "}
+            <span style={{ textDecoration: "underline" }}>
+              {gameState.match.deck[gameState.match.nextCard].text}
+            </span>{" "}
+            go?
+          </p>
+          <button onClick={() => changeNextPlacement(-1)}>Before</button>
+          <button onClick={() => changeNextPlacement(+1)}>After</button>
+          <button onClick={() => placeCard()}>Place</button>
+          <h3>Cards to sort:</h3>
+          <ul>
+            {gameState.match.remainingCards.map((i) => {
+              let card = gameState.match.deck[i];
+              return (
+                <li
+                  key={i}
+                  style={{
+                    textDecoration:
+                      i === gameState.match.nextCard ? "underline" : "none",
+                  }}
+                >
+                  {card.text}
+                </li>
+              );
+            })}
+          </ul>
+        </Fragment>
+      )}
     </Fragment>
   );
 }

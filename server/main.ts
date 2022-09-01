@@ -2,7 +2,7 @@ const path = require("path")
 const http = require("http")
 import express, {Request as ExpressReq} from "express"
 import {Server as SocketServer} from "socket.io"
-import {Deck, GameState} from "../types/types"
+import {Deck, Card, GameState} from "../types/types"
 
 const rooms = new Map<string, GameState>();
 const socketToRoom = new Map<string, string>();
@@ -67,35 +67,48 @@ function randomChoice<T>(arr: T[]): T | null {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function newState(oldState: GameState | null, selectedDeck: number): GameState {
-  const deck = decks[selectedDeck].cards;
+function newGameState() {
+  const state: GameState = {
+    match: null,
+    playerIds: [],
+    deckOptions: decks.map((d) => d.name),
+    scores: {},
+  };
 
-  let firstCard = Math.floor(deck.length / 2);
-  let allCards = [...Array(deck.length).keys()];
-  let remainingCards = allCards.filter((i) => i !== firstCard);
-  let nextCard = randomChoice(remainingCards);
-  if (nextCard === null) {
-    nextCard = -1;
-  }
+  return state
+}
 
-  let sorted = allCards.sort((i, j) => deck[j].value - deck[i].value);
-  let pos = 0;
-  let correctFinalPositions = new Map();
-  for (let i of sorted) {
-    correctFinalPositions.set(i, pos++);
-  }
+function newMatch(oldState: GameState | null, selectedDeck: number): GameState {
+    const deck = decks[selectedDeck].cards
+
+    let firstCard = Math.floor(deck.length / 2);
+    let allCards = [...Array(deck.length).keys()];
+    let remainingCards = allCards.filter((i) => i !== firstCard);
+    let nextCard = randomChoice(remainingCards);
+    if (nextCard === null) {
+      nextCard = -1;
+    }
+  
+    let sorted = allCards.sort((i, j) => deck[j].value - deck[i].value);
+    let pos = 0;
+    let correctFinalPositions = new Map();
+    for (let i of sorted) {
+      correctFinalPositions.set(i, pos++);
+    }
 
   const state = {
-    numPlayers: oldState ? oldState.numPlayers : 0,
     deckOptions: decks.map((d) => d.name),
-    deck,
-    placedCards: [firstCard],
-    correctFinalPositions,
-    remainingCards,
-    nextCard,
-    placeNextAfter: 0,
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},
+    match: {
+      deck,
+      placedCards: [firstCard],
+      correctFinalPositions,
+      remainingCards,
+      nextCard,
+      placeNextAfter: 0,
+      concluded: false,
+    },
   };
 
   console.log(state);
@@ -112,10 +125,10 @@ function updateState(roomId: string, state: GameState) {
 function correctPlace(state: GameState) {
   let pos = 0;
 
-  for (let i of state.placedCards) {
+  for (let i of state.match.placedCards) {
     if (
-      state.correctFinalPositions.get(i) >
-      state.correctFinalPositions.get(state.nextCard)
+      state.match.correctFinalPositions.get(i) >
+      state.match.correctFinalPositions.get(state.match.nextCard)
     ) {
       break;
     }
@@ -136,15 +149,15 @@ io.on("connection", (socket: {
 
     let state = rooms.get(data.roomId);
     if (!state) {
-      state = newState(null, 0);
+      state = newGameState();
     }
 
-    state.numPlayers++;
     state.scores[socket.id] = 0;
     state.playerIds.push(socket.id);
 
     socket.join(data.roomId);
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
+
     updateState(data.roomId, state);
   });
 
@@ -154,9 +167,9 @@ io.on("connection", (socket: {
     let roomId = socketToRoom.get(socket.id);
     let state = rooms.get(roomId);
     console.log({ state, roomId });
-    state.placeNextAfter = Math.min(
-      state.placedCards.length - 1,
-      Math.max(-1, state.placeNextAfter + data.increment)
+    state.match.placeNextAfter = Math.min(
+      state.match.placedCards.length - 1,
+      Math.max(-1, state.match.placeNextAfter + data.increment)
     );
 
     updateState(roomId, state);
@@ -167,23 +180,31 @@ io.on("connection", (socket: {
     let state = rooms.get(roomId);
 
     let corrected = correctPlace(state);
-    if (corrected === state.placeNextAfter) {
+    if (corrected === state.match.placeNextAfter) {
       state.scores[socket.id] += 1;
     }
 
-    state.placedCards.splice(corrected + 1, 0, state.nextCard);
+    state.match.placedCards.splice(corrected + 1, 0, state.match.nextCard);
 
-    state.remainingCards = state.remainingCards.filter(
-      (c) => c !== state.nextCard
+    state.match.remainingCards = state.match.remainingCards.filter(
+      (c) => c !== state.match.nextCard
     );
 
-    if (state.remainingCards.length === 0) {
-      state.nextCard = -1;
+    if (state.match.remainingCards.length === 0) {
+      state.match.concluded = true;
     } else {
-      state.nextCard = randomChoice(state.remainingCards);
+      state.match.nextCard = randomChoice(state.match.remainingCards);
     }
 
     updateState(roomId, state);
+  });
+
+  socket.on("chooseNewDeck", () => {
+    let roomId = socketToRoom.get(socket.id);
+    let state = rooms.get(roomId);
+    state.match = null
+
+    return updateState(roomId, state)
   });
 
   socket.on("newGame", (data: {selectedDeck: number}) => {
@@ -196,7 +217,7 @@ io.on("connection", (socket: {
     }
 
     let state = rooms.get(roomId);
-    state = newState(state, data.selectedDeck);
+    state = newMatch(state, data.selectedDeck);
 
     updateState(roomId, state);
   });
@@ -210,13 +231,12 @@ io.on("connection", (socket: {
     }
 
     let state = rooms.get(roomId);
-    state.numPlayers--;
     state.playerIds = state.playerIds.filter((id) => id !== socket.id);
     state.scores = Object.fromEntries(
       Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
     );
 
-    if (state.numPlayers === 0) {
+    if (state.playerIds.length === 0) {
       rooms.delete(roomId);
     } else {
       rooms.set(roomId, state);
@@ -224,7 +244,7 @@ io.on("connection", (socket: {
     }
 
     console.log(
-      `user left, socketId=${socket.id}, roomId=${roomId}, numPlayers=${state.numPlayers}`
+      `user left, socketId=${socket.id}, roomId=${roomId}, numPlayers=${state.playerIds.length}`
     );
   });
 });
