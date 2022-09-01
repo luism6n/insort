@@ -50,11 +50,16 @@ const decks: Deck[] = [
 
 let app = express();
 
-app.get("/r/:roomId", (req: ExpressReq, res) => {
-  // This is here only for the player join event. After
-  // that, communication is socket only.
-  res.sendFile(path.join(publicPath, "/index.html"));
-});
+const clientSideRoutes = [
+  "/r/:roomId",
+  "/cards-demo",
+]
+
+for (let route of clientSideRoutes) {
+  app.get(route, (req: ExpressReq, res: any) => {
+    res.sendFile(path.join(publicPath, "/index.html"));
+  });
+}
 
 let server = http.createServer(app);
 let io = new SocketServer(server);

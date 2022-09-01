@@ -231,17 +231,103 @@ function Room() {
   return content;
 }
 
+function Card({
+  content,
+  x = 0,
+  y = 0,
+}: {
+  content: number;
+  x?: number;
+  y?: number;
+}) {
+  let style: any = { position: "relative" };
+
+  if (x || y) {
+    style = {
+      position: "absolute",
+      left: x,
+      top: y,
+    };
+  }
+
+  return (
+    <div
+      style={style}
+      className="m-2 flex-shrink-0 w-20 h-24 bg-gray-300 text-center text-align-center"
+    >
+      {content}
+    </div>
+  );
+}
+
 function CardsDemo() {
-  return <div>Cards demo</div>;
+  const [cards, setCards] = useState<number[]>([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+  const [placeNextAfter, setPlaceNextAfter] = useState(4);
+
+  function moveLeft() {
+    setPlaceNextAfter((p) => (p - 1 < 0 ? 0 : p - 1));
+  }
+
+  function moveRight() {
+    setPlaceNextAfter((p) => (p + 1 > cards.length ? cards.length : p + 1));
+  }
+
+  function addCard() {
+    setCards((c) => {
+      c.splice(placeNextAfter, 0, c.length);
+      console.log(c);
+      return Array.from(c); // This is necessary to trigger a rerender
+    });
+  }
+
+  console.log("render");
+
+  let w = window.innerWidth;
+  let cardWidth = 96;
+  let cardHeight = 112;
+
+  return (
+    <Fragment>
+      <div className="flex justify-center align-center">
+        <div
+          style={{ position: "relative", height: cardHeight + 20, width: 0 }}
+        >
+          {cards.map((num, i) => {
+            let x = (i - placeNextAfter) * cardWidth;
+            let y = 0;
+            console.log({ num, x, y });
+            return <Card x={x} y={y} key={num} content={num} />;
+          })}
+          <p
+            style={{
+              position: "absolute",
+              left: -5,
+              top: cardHeight + 2,
+            }}
+          >
+            ^
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-col items-center justify-center">
+        <Card content={cards.length} />
+        <div className="flex justify-between">
+          <Button onClick={moveLeft}>{"<"}</Button>
+          <Button onClick={addCard}>Add card</Button>
+          <Button onClick={moveRight}>{">"}</Button>
+        </div>
+      </div>
+    </Fragment>
+  );
 }
 
 function App() {
   return (
-    <div className="flex flex-col justify-between items-center h-screen">
+    <div className="flex flex-col justify-between items-center h-screen w-screen overflow-hidden">
       <header className="h-12">
         <h1 className="text-4xl text-blue-400">Insort</h1>
       </header>
-      <section className="max-w-5xl flex-1">
+      <section className="max-w-5xl flex-1 flex flex-col justify-center align-center">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
