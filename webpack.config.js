@@ -17,6 +17,10 @@ module.exports = [
             configFile: "client/tsconfig.json",
           },
         },
+        {
+          test: /\.css$/i,
+          use: ["style-loader", "css-loader", "postcss-loader"],
+        },
       ],
     },
     mode: "development",
