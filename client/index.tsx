@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   useRef,
   Ref,
+  RefObject,
 } from "react";
 import {
   BrowserRouter,
@@ -97,18 +98,61 @@ function ChooseDeckScreen(props: ChooseDeckScreenProps) {
   );
 }
 
+function Card({
+  content,
+  value,
+  x,
+  y,
+  comesFrom = { x: 0, y: 0 },
+  innerRef = null,
+  zIndex = 0,
+}: {
+  content: number | string;
+  value: number;
+  x?: number;
+  y?: number;
+  comesFrom?: { x: number; y: number };
+  innerRef?: Ref<HTMLDivElement> | null;
+  zIndex?: number;
+}) {
+  let style: any = { position: "relative" };
+
+  if (x !== undefined || y !== undefined) {
+    style = {
+      position: "absolute",
+    };
+  }
+
+  return (
+    <motion.div
+      style={{ ...style, zIndex }}
+      animate={{ left: x, top: y }}
+      transition={{ duration: 0.5 }}
+      initial={{ left: comesFrom.x, top: comesFrom.y }}
+      ref={innerRef}
+      className="border border-black flex-shrink-0 w-20 h-24 bg-gray-300 text-center text-align-center flex flex-col justify-center"
+    >
+      <p>{content}</p>
+      <p className="font-bold">{value}</p>
+    </motion.div>
+  );
+}
+
 function Room() {
   let { roomId } = useParams();
   const [gameState, setGameState] = useState<GameState | null>(null);
   let [socket, setSocket] = useState<Socket | null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
+  const [placedCardsArea, setPlacedCardsArea] = useState<HTMLElement | null>(
+    null
+  );
+  const [firstCard, setFirstCard] = useState<HTMLElement | null>(null);
+  const [nextCard, setNextCard] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!socket) {
       setSocket(io());
-    }
-
-    if (socket) {
+    } else {
       socket.emit("join", { roomId });
 
       socket.on(`gameState`, (data) => {
@@ -118,14 +162,14 @@ function Room() {
   }, [socket]);
 
   function changeNextPlacement(inc: number) {
-    console.log(`emmitting changeNextPlacement`, { inc });
+    console.log(`emitting changeNextPlacement`, { inc });
     socket!.emit(`changeNextPlacement`, {
       increment: inc,
     });
   }
 
   function placeCard() {
-    console.log(`emmitting placeCard`);
+    console.log(`emitting placeCard`);
     socket!.emit("placeCard");
   }
 
@@ -168,32 +212,83 @@ function Room() {
       </ul>
     );
 
+    let padding = 10;
+    let cardDimensions: [number, number];
+    let initialY: number;
+
+    console.log({ placedCardsArea, firstCard, nextCard });
+    if (placedCardsArea && firstCard) {
+      cardDimensions = getDivDimensions(firstCard);
+      if (nextCard) {
+        initialY = getRefYDistance(nextCard, placedCardsArea);
+      } else {
+        initialY = 0;
+      }
+    } else {
+      cardDimensions = [0, 0];
+      initialY = 0;
+    }
+
     content = (
       <div className="h-full flex flex-col justify-center">
         <p>
           You're in room {roomId} (players: {gameState.playerIds.length})
         </p>
         <h3>Sorted cards:</h3>
-        <ul>
-          {!gameState.match.concluded &&
-          gameState.match.placeNextAfter == -1 ? (
-            <li key={nanoid()}>here</li> // This always rerenders
-          ) : null}
-          {gameState.match.placedCards.map((indexInDeck, i) => {
-            let card = gameState.match.deck[indexInDeck];
-            return (
-              <Fragment>
-                <li key={indexInDeck}>
-                  {card.value}: {card.text}
-                </li>
-                {!gameState.match.concluded &&
-                i === gameState.match.placeNextAfter ? (
-                  <li key={nanoid()}>here</li> // This always rerenders
-                ) : null}
-              </Fragment>
-            );
-          })}
-        </ul>
+        <section
+          ref={(r) => setPlacedCardsArea(r)}
+          className="flex justify-center align-center"
+          style={{ height: cardDimensions[1] + padding }}
+        >
+          <div
+            style={{
+              position: "relative",
+              height: cardDimensions[1] + padding,
+              width: 0,
+            }}
+          >
+            {gameState.match.placedCards.map((indexInDeck, i) => {
+              let card = gameState.match.deck[indexInDeck];
+              let x =
+                (i - gameState.match.placeNextAfter - 1) *
+                  (cardDimensions[1] + padding / 2) +
+                padding;
+              let y = 0 + padding / 4;
+              return (
+                <Card
+                  innerRef={
+                    i === 0
+                      ? (r) => {
+                          setFirstCard(r);
+                        }
+                      : null
+                  }
+                  key={card.text}
+                  x={x}
+                  y={y}
+                  value={card.value}
+                  content={card.text}
+                  comesFrom={{
+                    x: -cardDimensions[0] / 2,
+                    y: initialY,
+                  }}
+                />
+              );
+            })}
+          </div>
+        </section>
+        {!gameState.match.concluded && (
+          <div className="flex flex-col items-center w-full">
+            <p>^</p>
+            <div ref={(r) => setNextCard(r)}>
+              <Card
+                content={gameState.match.deck[gameState.match.nextCard].text}
+                value={10}
+                zIndex={-1}
+              />
+            </div>
+          </div>
+        )}
         {gameState.match.concluded ? (
           <Fragment>
             {scores}
@@ -210,9 +305,13 @@ function Room() {
               </span>{" "}
               go?
             </p>
-            <Button onClick={() => changeNextPlacement(-1)}>Before</Button>
-            <Button onClick={() => changeNextPlacement(+1)}>After</Button>
-            <Button onClick={() => placeCard()}>Place</Button>
+            <div className="flex justify-center">
+              <div className="flex flex-row">
+                <Button onClick={() => changeNextPlacement(-1)}>{"<"}</Button>
+                <Button onClick={() => placeCard()}>Place</Button>
+                <Button onClick={() => changeNextPlacement(+1)}>{">"}</Button>
+              </div>
+            </div>
             <h3>Cards to sort:</h3>
             <ul>
               {gameState.match.remainingCards.map((i) => {
@@ -239,41 +338,13 @@ function Room() {
   return content;
 }
 
-function Card({
-  content,
-  x = 0,
-  y = 0,
-  comesFrom = { x: 0, y: 0 },
-  innerRef = null,
-  zIndex = 0,
-}: {
-  content: number;
-  x?: number;
-  y?: number;
-  comesFrom?: { x: number; y: number };
-  innerRef?: Ref<HTMLDivElement> | null;
-  zIndex?: number;
-}) {
-  let style: any = { position: "relative" };
+function getRefYDistance(d1: HTMLElement, d2: HTMLElement): number {
+  return d1.getBoundingClientRect().top - d2.getBoundingClientRect().top;
+}
 
-  if (x || y) {
-    style = {
-      position: "absolute",
-    };
-  }
-
-  return (
-    <motion.div
-      style={{ ...style, zIndex }}
-      animate={{ left: x, top: y }}
-      transition={{ duration: 0.5 }}
-      initial={{ left: comesFrom.x, top: comesFrom.y }}
-      ref={innerRef}
-      className="m-2 flex-shrink-0 w-20 h-24 bg-gray-300 text-center text-align-center"
-    >
-      {content}
-    </motion.div>
-  );
+function getDivDimensions(d: HTMLElement): [number, number] {
+  let rect = d.getBoundingClientRect();
+  return [rect.width, rect.height];
 }
 
 function CardsDemo() {
@@ -281,7 +352,11 @@ function CardsDemo() {
   const [placeNextAfter, setPlaceNextAfter] = useState(4);
   const [initialY, setInitialY] = useState(0);
   const placedCardsArea = useRef<HTMLDivElement | null>(null);
+  const firstCard = useRef<HTMLDivElement | null>(null);
   const nextCard = useRef<HTMLDivElement | null>(null);
+  const [cardDimensions, setCardDimensions] = useState<[number, number]>([
+    0, 0,
+  ]);
 
   function moveLeft() {
     setPlaceNextAfter((p) => (p - 1 < 0 ? 0 : p - 1));
@@ -294,65 +369,61 @@ function CardsDemo() {
   function addCard() {
     setCards((c) => {
       c.splice(placeNextAfter, 0, c.length);
-      console.log(c);
       return Array.from(c); // This is necessary to trigger a rerender
     });
   }
-
-  console.log("render");
 
   useEffect(() => {
     if (!nextCard.current || !placedCardsArea.current) {
       return;
     }
+    setInitialY(getRefYDistance(nextCard.current, placedCardsArea.current));
 
-    let rect = placedCardsArea.current.getBoundingClientRect();
-    let placedCardsAreaTop = rect.top;
-
-    rect = nextCard.current.getBoundingClientRect();
-    let nextCardTop = rect.top;
-    setInitialY(nextCardTop - placedCardsAreaTop);
-  }, []);
+    let [cardWidth, cardHeight] = getDivDimensions(firstCard.current);
+    setCardDimensions([cardWidth, cardHeight]);
+  }, [firstCard.current, nextCard.current, placedCardsArea.current]);
 
   let w = window.innerWidth;
-  let cardWidth = 96;
-  let cardHeight = 112;
-  console.log(initialY);
+  let padding = 20;
 
   return (
     <Fragment>
       <div ref={placedCardsArea} className="flex justify-center align-center">
         <div
-          style={{ position: "relative", height: cardHeight + 20, width: 0 }}
+          style={{
+            position: "relative",
+            height: cardDimensions[1] + padding,
+            width: 0,
+          }}
         >
           {cards.map((num, i) => {
-            let x = (i - placeNextAfter) * cardWidth;
-            let y = 0;
-            console.log({ num, x, y });
+            let x =
+              (i - placeNextAfter) * (cardDimensions[0] + padding / 2) +
+              padding / 4;
+            let y = 0 + padding / 2;
             return (
               <Card
+                innerRef={i === 0 ? firstCard : null}
                 x={x}
                 y={y}
                 key={num}
                 content={num}
-                comesFrom={{ x: -cardWidth / 2, y: initialY }}
+                value={num}
+                comesFrom={{
+                  x: -cardDimensions[0] / 2,
+                  y: initialY,
+                }}
                 zIndex={1}
               />
             );
           })}
-          <p
-            style={{
-              position: "absolute",
-              left: -5,
-              top: cardHeight + 2,
-            }}
-          >
-            ^
-          </p>
         </div>
       </div>
       <div className="flex flex-col items-center justify-center">
-        <Card innerRef={nextCard} content={cards.length} />
+        <p>^</p>
+        <div ref={nextCard}>
+          <Card content={cards.length} value={10} zIndex={-1} />
+        </div>
         <div className="flex justify-between">
           <Button onClick={moveLeft}>{"<"}</Button>
           <Button onClick={addCard}>Add card</Button>

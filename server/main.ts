@@ -197,8 +197,10 @@ io.on("connection", (socket: {
 
     if (state.match.remainingCards.length === 0) {
       state.match.concluded = true;
+      state.match.placeNextAfter = state.match.deck.length/2 - 1;
     } else {
       state.match.nextCard = randomChoice(state.match.remainingCards);
+      state.match.placeNextAfter = corrected;
     }
 
     updateState(roomId, state);
