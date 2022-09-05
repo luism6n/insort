@@ -115,7 +115,7 @@ function Card({
   zIndex = 0,
 }: {
   content: number | string;
-  value: number;
+  value: number | string;
   unit: string;
   x?: number;
   y?: number;
@@ -135,13 +135,13 @@ function Card({
     <motion.div
       style={{ ...style, zIndex }}
       animate={{ left: x, top: y }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.25 }}
       initial={{ left: comesFrom.x, top: comesFrom.y }}
       ref={innerRef}
-      className="border border-black flex-shrink-0 w-36 h-36 bg-gray-300 text-center text-align-center flex flex-col justify-center"
+      className="border border-black flex-shrink-0 w-36 h-36 bg-gray-300 text-center text-align-center flex flex-col justify-between p-2"
     >
       <p>{content}</p>
-      <p className="font-bold">
+      <p className="font-bold  mt-auto">
         {value} {unit}
       </p>
     </motion.div>
@@ -159,18 +159,6 @@ function Room() {
   const [virtualReferenceCard, setVirtualReferenceCard] =
     useState<HTMLElement | null>(null);
   const [nextCard, setNextCard] = useState<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!socket) {
-      setSocket(io());
-    } else {
-      socket.emit("join", { roomId });
-
-      socket.on(`gameState`, (data) => {
-        setGameState(data);
-      });
-    }
-  }, [socket]);
 
   function changeNextPlacement(inc: number) {
     console.log(`emitting changeNextPlacement`, { inc });
@@ -193,6 +181,42 @@ function Room() {
     console.log("emitting chooseNewDeck");
     socket!.emit("chooseNewDeck");
   }
+
+  function handleKeyNavigation(e: KeyboardEvent) {
+    if (e.key === "ArrowRight") {
+      changeNextPlacement(1);
+    } else if (e.key === "ArrowLeft") {
+      changeNextPlacement(-1);
+    } else if (e.key === "Enter" || e.key === "ArrowUp") {
+      console.log(e.key);
+      console.log(gameState);
+      if (gameState && gameState.match && !gameState.match.concluded) {
+        placeCard();
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!socket) {
+      setSocket(io());
+    } else {
+      socket.emit("join", { roomId });
+
+      socket.on(`gameState`, (data) => {
+        setGameState(data);
+      });
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    // handleKeyNavigation closures on gameState, so we need to
+    // add and remove the event listener when gameState changes
+    document.addEventListener("keydown", handleKeyNavigation);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyNavigation);
+    };
+  }, [gameState]);
 
   let content = null;
 
@@ -301,15 +325,15 @@ function Room() {
                   gameState.match.deck.cards[gameState.match.nextCard].text
                 }
                 unit={gameState.match.deck.unit}
-                value={10}
+                value={"??"}
                 zIndex={-1}
               />
             </div>
           </div>
         )}
+        {scores}
         {gameState.match.concluded ? (
           <Fragment>
-            {scores}
             <Button onClick={() => newGame()}>Again</Button>
             <Button onClick={() => chooseNewDeck()}>New Deck</Button>
           </Fragment>
