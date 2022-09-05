@@ -45,12 +45,18 @@ function Title({ children }: { children: ReactNode }) {
 function Button({
   onClick,
   children,
+  disabled,
 }: {
   onClick: () => void;
   children: ReactNode;
+  disabled?: boolean;
 }) {
   return (
-    <button className="p-1 m-1 h-7 bg-gray-200" onClick={onClick}>
+    <button
+      disabled={disabled}
+      className={"p-1 m-1 h-7 bg-gray-200" + (disabled ? " opacity-50" : "")}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
@@ -275,9 +281,20 @@ function Room() {
             })}
           </div>
         </section>
+        <div className="flex justify-center">
+          <div className="flex flex-row">
+            <Button onClick={() => changeNextPlacement(-1)}>{"<"}</Button>
+            <Button
+              disabled={gameState.match.concluded}
+              onClick={() => placeCard()}
+            >
+              Place
+            </Button>
+            <Button onClick={() => changeNextPlacement(+1)}>{">"}</Button>
+          </div>
+        </div>
         {!gameState.match.concluded && (
           <div className="flex flex-col items-center w-full">
-            <p>^</p>
             <div ref={(r) => setNextCard(r)}>
               <Card
                 content={
@@ -298,21 +315,6 @@ function Room() {
           </Fragment>
         ) : (
           <Fragment>
-            {" "}
-            <p>
-              Where does{" "}
-              <span style={{ textDecoration: "underline" }}>
-                {gameState.match.deck.cards[gameState.match.nextCard].text}
-              </span>{" "}
-              go?
-            </p>
-            <div className="flex justify-center">
-              <div className="flex flex-row">
-                <Button onClick={() => changeNextPlacement(-1)}>{"<"}</Button>
-                <Button onClick={() => placeCard()}>Place</Button>
-                <Button onClick={() => changeNextPlacement(+1)}>{">"}</Button>
-              </div>
-            </div>
             <h3>Cards to sort:</h3>
             <ul>
               {gameState.match.remainingCards.map((i) => {
