@@ -251,8 +251,8 @@ function Room() {
               let card = gameState.match.deck[indexInDeck];
               let x =
                 (i - gameState.match.placeNextAfter - 1) *
-                  (cardDimensions[1] + padding / 2) +
-                padding;
+                  (cardDimensions[0] + padding) +
+                padding / 2;
               let y = 0 + padding / 4;
               return (
                 <Card
