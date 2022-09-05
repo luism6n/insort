@@ -11,7 +11,7 @@ export interface Card {
 
 export interface GameState {
   match: null | {
-    deck: Card[];
+    deck: Deck;
     placedCards: number[];
     correctFinalPositions: Map<number, number>;
     remainingCards: number[];

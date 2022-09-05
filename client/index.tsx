@@ -101,6 +101,7 @@ function ChooseDeckScreen(props: ChooseDeckScreenProps) {
 function Card({
   content,
   value,
+  unit,
   x,
   y,
   comesFrom = { x: 0, y: 0 },
@@ -109,6 +110,7 @@ function Card({
 }: {
   content: number | string;
   value: number;
+  unit: string;
   x?: number;
   y?: number;
   comesFrom?: { x: number; y: number };
@@ -130,10 +132,12 @@ function Card({
       transition={{ duration: 0.5 }}
       initial={{ left: comesFrom.x, top: comesFrom.y }}
       ref={innerRef}
-      className="border border-black flex-shrink-0 w-20 h-24 bg-gray-300 text-center text-align-center flex flex-col justify-center"
+      className="border border-black flex-shrink-0 w-36 h-36 bg-gray-300 text-center text-align-center flex flex-col justify-center"
     >
       <p>{content}</p>
-      <p className="font-bold">{value}</p>
+      <p className="font-bold">
+        {value} {unit}
+      </p>
     </motion.div>
   );
 }
@@ -146,7 +150,8 @@ function Room() {
   const [placedCardsArea, setPlacedCardsArea] = useState<HTMLElement | null>(
     null
   );
-  const [firstCard, setFirstCard] = useState<HTMLElement | null>(null);
+  const [virtualReferenceCard, setVirtualReferenceCard] =
+    useState<HTMLElement | null>(null);
   const [nextCard, setNextCard] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -216,9 +221,9 @@ function Room() {
     let cardDimensions: [number, number];
     let initialY: number;
 
-    console.log({ placedCardsArea, firstCard, nextCard });
-    if (placedCardsArea && firstCard) {
-      cardDimensions = getDivDimensions(firstCard);
+    console.log({ placedCardsArea, virtualReferenceCard, nextCard });
+    if (placedCardsArea && virtualReferenceCard) {
+      cardDimensions = getDivDimensions(virtualReferenceCard);
       if (nextCard) {
         initialY = getRefYDistance(nextCard, placedCardsArea);
       } else {
@@ -230,14 +235,13 @@ function Room() {
     }
 
     content = (
-      <div className="h-full flex flex-col justify-center">
+      <div className="h-full flex flex-col justify-start">
         <p>
           You're in room {roomId} (players: {gameState.playerIds.length})
         </p>
-        <h3>Sorted cards:</h3>
         <section
           ref={(r) => setPlacedCardsArea(r)}
-          className="flex justify-center align-center"
+          className="flex justify-center align-center mt-5"
           style={{ height: cardDimensions[1] + padding }}
         >
           <div
@@ -248,7 +252,7 @@ function Room() {
             }}
           >
             {gameState.match.placedCards.map((indexInDeck, i) => {
-              let card = gameState.match.deck[indexInDeck];
+              let card = gameState.match.deck.cards[indexInDeck];
               let x =
                 (i - gameState.match.placeNextAfter - 1) *
                   (cardDimensions[0] + padding) +
@@ -256,14 +260,8 @@ function Room() {
               let y = 0 + padding / 4;
               return (
                 <Card
-                  innerRef={
-                    i === 0
-                      ? (r) => {
-                          setFirstCard(r);
-                        }
-                      : null
-                  }
                   key={card.text}
+                  unit={gameState.match.deck.unit}
                   x={x}
                   y={y}
                   value={card.value}
@@ -282,7 +280,10 @@ function Room() {
             <p>^</p>
             <div ref={(r) => setNextCard(r)}>
               <Card
-                content={gameState.match.deck[gameState.match.nextCard].text}
+                content={
+                  gameState.match.deck.cards[gameState.match.nextCard].text
+                }
+                unit={gameState.match.deck.unit}
                 value={10}
                 zIndex={-1}
               />
@@ -301,7 +302,7 @@ function Room() {
             <p>
               Where does{" "}
               <span style={{ textDecoration: "underline" }}>
-                {gameState.match.deck[gameState.match.nextCard].text}
+                {gameState.match.deck.cards[gameState.match.nextCard].text}
               </span>{" "}
               go?
             </p>
@@ -315,7 +316,7 @@ function Room() {
             <h3>Cards to sort:</h3>
             <ul>
               {gameState.match.remainingCards.map((i) => {
-                let card = gameState.match.deck[i];
+                let card = gameState.match.deck.cards[i];
                 return (
                   <li
                     key={i}
@@ -335,7 +336,22 @@ function Room() {
     );
   }
 
-  return content;
+  return (
+    <Fragment>
+      {/* This card is here so I can have a stable element to measure card size */}
+      <Card
+        innerRef={(r) => {
+          console.log("setting ref", r);
+          setVirtualReferenceCard(r);
+        }}
+        x={-100000}
+        content={"Virtual card"}
+        value={0}
+        unit=""
+      />
+      {content}
+    </Fragment>
+  );
 }
 
 function getRefYDistance(d1: HTMLElement, d2: HTMLElement): number {
@@ -414,6 +430,7 @@ function CardsDemo() {
                   y: initialY,
                 }}
                 zIndex={1}
+                unit="units"
               />
             );
           })}
@@ -422,7 +439,7 @@ function CardsDemo() {
       <div className="flex flex-col items-center justify-center">
         <p>^</p>
         <div ref={nextCard}>
-          <Card content={cards.length} value={10} zIndex={-1} />
+          <Card unit="unit" content={cards.length} value={10} zIndex={-1} />
         </div>
         <div className="flex justify-between">
           <Button onClick={moveLeft}>{"<"}</Button>
@@ -440,7 +457,7 @@ function App() {
       <header className="h-12">
         <h1 className="text-4xl text-blue-400">Insort</h1>
       </header>
-      <section className="max-w-5xl flex-1 flex flex-col justify-center align-center">
+      <section className="max-w-5xl w-3/5 flex-1 flex flex-col justify-center align-center">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />

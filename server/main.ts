@@ -84,17 +84,17 @@ function newGameState() {
 }
 
 function newMatch(oldState: GameState | null, selectedDeck: number): GameState {
-    const deck = decks[selectedDeck].cards
+    const deck = decks[selectedDeck]
 
-    let firstCard = Math.floor(deck.length / 2);
-    let allCards = [...Array(deck.length).keys()];
+    let firstCard = Math.floor(deck.cards.length / 2);
+    let allCards = [...Array(deck.cards.length).keys()];
     let remainingCards = allCards.filter((i) => i !== firstCard);
     let nextCard = randomChoice(remainingCards);
     if (nextCard === null) {
       nextCard = -1;
     }
   
-    let sorted = allCards.sort((i, j) => deck[j].value - deck[i].value);
+    let sorted = allCards.sort((i, j) => deck.cards[j].value - deck.cards[i].value);
     let pos = 0;
     let correctFinalPositions = new Map();
     for (let i of sorted) {
@@ -197,7 +197,7 @@ io.on("connection", (socket: {
 
     if (state.match.remainingCards.length === 0) {
       state.match.concluded = true;
-      state.match.placeNextAfter = state.match.deck.length/2 - 1;
+      state.match.placeNextAfter = state.match.deck.cards.length/2 - 1;
     } else {
       state.match.nextCard = randomChoice(state.match.remainingCards);
       state.match.placeNextAfter = corrected;
