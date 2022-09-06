@@ -22,4 +22,5 @@ export interface RoomState {
   deckOptions: string[];
   playerIds: string[];
   scores: { [playerId: string]: number };
+  playerNames: { [playerId: string]: string };
 }

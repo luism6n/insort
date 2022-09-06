@@ -165,7 +165,7 @@ function Warning({ message }: { message: string }) {
 
 function Room() {
   let { roomId } = useParams();
-  const [gameState, setRoomState] = useState<RoomState | null>(null);
+  const [roomState, setRoomState] = useState<RoomState | null>(null);
   let [socket, setSocket] = useState<Socket | null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
   const [placedCardsArea, setPlacedCardsArea] = useState<HTMLElement | null>(
@@ -178,6 +178,7 @@ function Room() {
     message: string;
     timeoutId: ReturnType<typeof setTimeout>;
   }>({ message: "", timeoutId: null });
+  const [nameInput, setNameInput] = useState("");
 
   function changeNextPlacement(inc: number) {
     console.log(`emitting changeNextPlacement`, { inc });
@@ -207,7 +208,7 @@ function Room() {
     } else if (e.key === "ArrowLeft") {
       changeNextPlacement(-1);
     } else if (e.key === "Enter" || e.key === "ArrowUp") {
-      if (gameState && gameState.match && !gameState.match.concluded) {
+      if (roomState && roomState.match && !roomState.match.concluded) {
         placeCard();
       }
     }
@@ -217,9 +218,7 @@ function Room() {
     if (!socket) {
       setSocket(io());
     } else {
-      socket.emit("join", { roomId });
-
-      socket.on(`gameState`, (data) => {
+      socket.on(`roomState`, (data) => {
         setRoomState(data);
       });
 
@@ -228,6 +227,10 @@ function Room() {
       });
     }
   }, [socket]);
+
+  function join() {
+    socket!.emit("join", { roomId, playerName: nameInput });
+  }
 
   useEffect(() => {
     if (warning.message.length === 0) {
@@ -251,23 +254,36 @@ function Room() {
   }, [warning]);
 
   useEffect(() => {
-    // handleKeyNavigation closures on gameState, so we need to
-    // add and remove the event listener when gameState changes
+    // handleKeyNavigation closures on roomState, so we need to
+    // add and remove the event listener when roomState changes
     document.addEventListener("keydown", handleKeyNavigation);
 
     return () => {
       document.removeEventListener("keydown", handleKeyNavigation);
     };
-  }, [gameState]);
+  }, [roomState]);
 
   let content = null;
 
-  if (!socket || !gameState) {
+  if (!socket) {
     content = <p>Loading...</p>;
-  } else if (gameState.match === null) {
+  } else if (!roomState) {
+    content = (
+      <div className="flex flex-col justify-center h-full">
+        <Title>Join Room</Title>
+        <input
+          className="border border-black"
+          type="text"
+          value={nameInput}
+          onChange={(e) => setNameInput(e.target.value)}
+        ></input>
+        <Button onClick={join}>Join</Button>
+      </div>
+    );
+  } else if (roomState.match === null) {
     content = (
       <ChooseDeckScreen
-        deckOptions={gameState.deckOptions}
+        deckOptions={roomState.deckOptions}
         selectedDeck={selectedDeck}
         setSelectedDeck={setSelectedDeck}
         newGame={newGame}
@@ -276,14 +292,14 @@ function Room() {
   } else {
     const scores = (
       <ul>
-        {gameState.playerIds.map((id) => {
+        {roomState.playerIds.map((id) => {
           return (
             <li
               style={{ textDecoration: id === socket.id ? "underline" : "" }}
               key={id}
             >
-              {id}: {gameState.scores[id]}{" "}
-              {id === admin(gameState) ? "(admin)" : ""}
+              {roomState.playerNames[id]}: {roomState.scores[id]}{" "}
+              {id === admin(roomState) ? "(admin)" : ""}
             </li>
           );
         })}
@@ -309,7 +325,7 @@ function Room() {
     content = (
       <div className="h-full flex flex-col justify-start">
         <p>
-          You're in room {roomId} (players: {gameState.playerIds.length})
+          You're in room {roomId} (players: {roomState.playerIds.length})
         </p>
         <section
           ref={(r) => setPlacedCardsArea(r)}
@@ -323,17 +339,17 @@ function Room() {
               width: 0,
             }}
           >
-            {gameState.match.placedCards.map((indexInDeck, i) => {
-              let card = gameState.match.deck.cards[indexInDeck];
+            {roomState.match.placedCards.map((indexInDeck, i) => {
+              let card = roomState.match.deck.cards[indexInDeck];
               let x =
-                (i - gameState.match.placeNextAfter - 1) *
+                (i - roomState.match.placeNextAfter - 1) *
                   (cardDimensions[0] + padding) +
                 padding / 2;
               let y = 0 + padding / 4;
               return (
                 <Card
                   key={card.text}
-                  unit={gameState.match.deck.unit}
+                  unit={roomState.match.deck.unit}
                   x={x}
                   y={y}
                   value={card.value}
@@ -351,7 +367,7 @@ function Room() {
           <div className="flex flex-row">
             <Button onClick={() => changeNextPlacement(-1)}>{"<"}</Button>
             <Button
-              disabled={gameState.match.concluded}
+              disabled={roomState.match.concluded}
               onClick={() => placeCard()}
             >
               Place
@@ -359,14 +375,14 @@ function Room() {
             <Button onClick={() => changeNextPlacement(+1)}>{">"}</Button>
           </div>
         </div>
-        {!gameState.match.concluded && (
+        {!roomState.match.concluded && (
           <div className="flex flex-col items-center w-full">
             <div ref={(r) => setNextCard(r)}>
               <Card
                 content={
-                  gameState.match.deck.cards[gameState.match.nextCard].text
+                  roomState.match.deck.cards[roomState.match.nextCard].text
                 }
-                unit={gameState.match.deck.unit}
+                unit={roomState.match.deck.unit}
                 value={"??"}
                 zIndex={-1}
               />
@@ -374,7 +390,7 @@ function Room() {
           </div>
         )}
         {scores}
-        {gameState.match.concluded ? (
+        {roomState.match.concluded ? (
           <Fragment>
             <Button onClick={() => newGame()}>Again</Button>
             <Button onClick={() => chooseNewDeck()}>New Deck</Button>
@@ -383,14 +399,14 @@ function Room() {
           <Fragment>
             <h3>Cards to sort:</h3>
             <ul>
-              {gameState.match.remainingCards.map((i) => {
-                let card = gameState.match.deck.cards[i];
+              {roomState.match.remainingCards.map((i) => {
+                let card = roomState.match.deck.cards[i];
                 return (
                   <li
                     key={i}
                     style={{
                       textDecoration:
-                        i === gameState.match.nextCard ? "underline" : "none",
+                        i === roomState.match.nextCard ? "underline" : "none",
                     }}
                   >
                     {card.text}

@@ -83,6 +83,7 @@ function newRoomState() {
     playerIds: [],
     deckOptions: decks.map((d) => d.name),
     scores: {},
+    playerNames: {},
   };
 
   return state
@@ -110,6 +111,7 @@ function newMatch(oldState: RoomState | null, selectedDeck: number): RoomState {
     deckOptions: decks.map((d) => d.name),
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},
+    playerNames: oldState ? oldState.playerNames : {},
     match: {
       deck,
       placedCards: [firstCard],
@@ -129,7 +131,7 @@ function newMatch(oldState: RoomState | null, selectedDeck: number): RoomState {
 function updateState(roomId: string, state: RoomState) {
   console.log("state update", state);
   rooms.set(roomId, state);
-  io.to(roomId).emit("gameState", state);
+  io.to(roomId).emit("roomState", state);
 }
 
 function correctPlace(state: RoomState) {
@@ -153,7 +155,7 @@ io.on("connection", (socket: {
   join: (channel: string) => void,
   id: string
 }) => {
-  socket.on("join", (data: {roomId: string}) => {
+  socket.on("join", (data: {roomId: string, playerName: string}) => {
     console.log(`got join, socketId=${socket.id}`);
     socketToRoom.set(socket.id, data.roomId);
 
@@ -164,6 +166,7 @@ io.on("connection", (socket: {
 
     state.scores[socket.id] = 0;
     state.playerIds.push(socket.id);
+    state.playerNames = {...state.playerNames, [socket.id]: data.playerName};
 
     socket.join(data.roomId);
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
@@ -264,7 +267,7 @@ io.on("connection", (socket: {
       rooms.delete(roomId);
     } else {
       rooms.set(roomId, state);
-      io.to(roomId).emit(`gameState`, state);
+      io.to(roomId).emit(`roomState`, state);
     }
 
     console.log(
