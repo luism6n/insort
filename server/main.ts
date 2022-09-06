@@ -2,9 +2,14 @@ const path = require("path")
 const http = require("http")
 import express, {Request as ExpressReq} from "express"
 import {Server as SocketServer} from "socket.io"
-import {Deck, Card, GameState} from "../types/types"
+import {Deck, RoomState} from "../types/types"
 
-const rooms = new Map<string, GameState>();
+
+function admin(state: RoomState) {
+  return state.playerIds[0];
+}
+
+const rooms = new Map<string, RoomState>();
 const socketToRoom = new Map<string, string>();
 
 const publicPath = path.join(__dirname, "/../public");
@@ -72,8 +77,8 @@ function randomChoice<T>(arr: T[]): T | null {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function newGameState() {
-  const state: GameState = {
+function newRoomState() {
+  const state: RoomState = {
     match: null,
     playerIds: [],
     deckOptions: decks.map((d) => d.name),
@@ -83,7 +88,7 @@ function newGameState() {
   return state
 }
 
-function newMatch(oldState: GameState | null, selectedDeck: number): GameState {
+function newMatch(oldState: RoomState | null, selectedDeck: number): RoomState {
     const deck = decks[selectedDeck]
 
     let firstCard = Math.floor(deck.cards.length / 2);
@@ -121,13 +126,13 @@ function newMatch(oldState: GameState | null, selectedDeck: number): GameState {
   return state;
 }
 
-function updateState(roomId: string, state: GameState) {
+function updateState(roomId: string, state: RoomState) {
   console.log("state update", state);
   rooms.set(roomId, state);
   io.to(roomId).emit("gameState", state);
 }
 
-function correctPlace(state: GameState) {
+function correctPlace(state: RoomState) {
   let pos = 0;
 
   for (let i of state.match.placedCards) {
@@ -154,7 +159,7 @@ io.on("connection", (socket: {
 
     let state = rooms.get(data.roomId);
     if (!state) {
-      state = newGameState();
+      state = newRoomState();
     }
 
     state.scores[socket.id] = 0;
@@ -209,6 +214,12 @@ io.on("connection", (socket: {
   socket.on("chooseNewDeck", () => {
     let roomId = socketToRoom.get(socket.id);
     let state = rooms.get(roomId);
+
+    if (socket.id !== admin(state)) {
+      socket.emit("warning", "Only the admin can choose a new deck");
+      return;
+    }
+
     state.match = null
 
     return updateState(roomId, state)
@@ -224,6 +235,12 @@ io.on("connection", (socket: {
     }
 
     let state = rooms.get(roomId);
+
+    if (socket.id !== admin(state)) {
+      socket.emit("warning", "Only the admin can start a new game");
+      return;
+    }
+
     state = newMatch(state, data.selectedDeck);
 
     updateState(roomId, state);

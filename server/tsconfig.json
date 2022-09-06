@@ -13,6 +13,9 @@
         "esModuleInterop": true
     },
     "include": [
-        "./server/"
+        "./"
+    ],
+    "references": [
+        { "path": "../types", "prepend": true }
     ]
 }

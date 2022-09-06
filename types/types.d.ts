@@ -9,7 +9,7 @@ export interface Card {
   value: number;
 }
 
-export interface GameState {
+export interface RoomState {
   match: null | {
     deck: Deck;
     placedCards: number[];

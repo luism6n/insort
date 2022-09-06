@@ -6,7 +6,6 @@ import React, {
   ReactNode,
   useRef,
   Ref,
-  RefObject,
 } from "react";
 import {
   BrowserRouter,
@@ -17,15 +16,19 @@ import {
 } from "react-router-dom";
 import { nanoid } from "nanoid";
 import { io, Socket } from "socket.io-client";
-import { GameState } from "../types/types";
-import { ForwardRefComponent, HTMLMotionProps, motion } from "framer-motion";
+import { RoomState } from "../types/types";
+import { motion } from "framer-motion";
 import "./styles.css";
+
+function admin(state: RoomState) {
+  return state.playerIds[0];
+}
 
 function Home() {
   return (
     <div className="h-full flex flex-col justify-center">
       <p>
-        {/* This has to be and anchor tag, not a Link,
+        {/* This has to be an anchor tag, not a Link,
         so that we actually hit the server */}
         <a href={`/r/${nanoid()}`}>Get a room</a>
       </p>
@@ -148,9 +151,21 @@ function Card({
   );
 }
 
+function Warning({ message }: { message: string }) {
+  return (
+    <div
+      className="bg-red-100 text-red-700 p-2 text-center absolute"
+      role="alert"
+      style={{ bottom: 25, left: "50%", transform: "translate(-50%, -50%)" }}
+    >
+      <span className="block sm:inline">{message}</span>
+    </div>
+  );
+}
+
 function Room() {
   let { roomId } = useParams();
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameState, setRoomState] = useState<RoomState | null>(null);
   let [socket, setSocket] = useState<Socket | null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
   const [placedCardsArea, setPlacedCardsArea] = useState<HTMLElement | null>(
@@ -159,6 +174,10 @@ function Room() {
   const [virtualReferenceCard, setVirtualReferenceCard] =
     useState<HTMLElement | null>(null);
   const [nextCard, setNextCard] = useState<HTMLDivElement | null>(null);
+  const [warning, setWarning] = useState<{
+    message: string;
+    timeoutId: ReturnType<typeof setTimeout>;
+  }>({ message: "", timeoutId: null });
 
   function changeNextPlacement(inc: number) {
     console.log(`emitting changeNextPlacement`, { inc });
@@ -188,8 +207,6 @@ function Room() {
     } else if (e.key === "ArrowLeft") {
       changeNextPlacement(-1);
     } else if (e.key === "Enter" || e.key === "ArrowUp") {
-      console.log(e.key);
-      console.log(gameState);
       if (gameState && gameState.match && !gameState.match.concluded) {
         placeCard();
       }
@@ -203,10 +220,35 @@ function Room() {
       socket.emit("join", { roomId });
 
       socket.on(`gameState`, (data) => {
-        setGameState(data);
+        setRoomState(data);
+      });
+
+      socket.on("warning", (message) => {
+        setWarning({ message: message, timeoutId: null });
       });
     }
   }, [socket]);
+
+  useEffect(() => {
+    if (warning.message.length === 0) {
+      return;
+    }
+
+    if (warning.timeoutId !== null) {
+      console.log("clearing timeout id", warning.timeoutId);
+      clearTimeout(warning.timeoutId);
+    }
+
+    const timeoutId = setTimeout(() => {
+      setWarning({ message: "", timeoutId: null });
+    }, 3000);
+    console.log({ timeoutId });
+
+    return () => {
+      console.log("clearing timeout id", timeoutId);
+      clearTimeout(timeoutId);
+    };
+  }, [warning]);
 
   useEffect(() => {
     // handleKeyNavigation closures on gameState, so we need to
@@ -240,7 +282,8 @@ function Room() {
               style={{ textDecoration: id === socket.id ? "underline" : "" }}
               key={id}
             >
-              {id}: {gameState.scores[id]}
+              {id}: {gameState.scores[id]}{" "}
+              {id === admin(gameState) ? "(admin)" : ""}
             </li>
           );
         })}
@@ -251,7 +294,6 @@ function Room() {
     let cardDimensions: [number, number];
     let initialY: number;
 
-    console.log({ placedCardsArea, virtualReferenceCard, nextCard });
     if (placedCardsArea && virtualReferenceCard) {
       cardDimensions = getDivDimensions(virtualReferenceCard);
       if (nextCard) {
@@ -367,7 +409,6 @@ function Room() {
       {/* This card is here so I can have a stable element to measure card size */}
       <Card
         innerRef={(r) => {
-          console.log("setting ref", r);
           setVirtualReferenceCard(r);
         }}
         x={-100000}
@@ -376,6 +417,7 @@ function Room() {
         unit=""
       />
       {content}
+      {warning.message !== "" && <Warning message={warning.message} />}
     </Fragment>
   );
 }
