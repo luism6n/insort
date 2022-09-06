@@ -84,9 +84,16 @@ function newRoomState() {
     deckOptions: decks.map((d) => d.name),
     scores: {},
     playerNames: {},
+    currentPlayerId: null,
   };
 
   return state
+}
+
+function nextPlayer(roomState: RoomState) {
+  let currentPlayerIndex = roomState.playerIds.indexOf(roomState.currentPlayerId);
+  let nextPlayerIndex = (currentPlayerIndex + 1) % roomState.playerIds.length;
+  return roomState.playerIds[nextPlayerIndex];
 }
 
 function newMatch(oldState: RoomState | null, selectedDeck: number): RoomState {
@@ -112,6 +119,7 @@ function newMatch(oldState: RoomState | null, selectedDeck: number): RoomState {
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},
     playerNames: oldState ? oldState.playerNames : {},
+    currentPlayerId: oldState ? oldState.currentPlayerId : null,
     match: {
       deck,
       placedCards: [firstCard],
@@ -162,6 +170,7 @@ io.on("connection", (socket: {
     let state = rooms.get(data.roomId);
     if (!state) {
       state = newRoomState();
+      state.currentPlayerId = socket.id;
     }
 
     state.scores[socket.id] = 0;
@@ -179,6 +188,12 @@ io.on("connection", (socket: {
 
     let roomId = socketToRoom.get(socket.id);
     let state = rooms.get(roomId);
+
+    if (state.currentPlayerId !== socket.id) {
+      socket.emit('warning', 'Oops, not your turn yet.');
+      return;
+    }
+
     console.log({ state, roomId });
     state.match.placeNextAfter = Math.min(
       state.match.placedCards.length - 1,
@@ -191,6 +206,11 @@ io.on("connection", (socket: {
   socket.on("placeCard", () => {
     let roomId = socketToRoom.get(socket.id);
     let state = rooms.get(roomId);
+
+    if (state.currentPlayerId !== socket.id) {
+      socket.emit('warning', 'Oops, not your turn yet.');
+      return;
+    }
 
     let corrected = correctPlace(state);
     if (corrected === state.match.placeNextAfter) {
@@ -210,6 +230,8 @@ io.on("connection", (socket: {
       state.match.nextCard = randomChoice(state.match.remainingCards);
       state.match.placeNextAfter = corrected;
     }
+
+    state.currentPlayerId = nextPlayer(state)
 
     updateState(roomId, state);
   });
@@ -259,15 +281,15 @@ io.on("connection", (socket: {
 
     let state = rooms.get(roomId);
     state.playerIds = state.playerIds.filter((id) => id !== socket.id);
-    state.scores = Object.fromEntries(
-      Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
-    );
 
     if (state.playerIds.length === 0) {
       rooms.delete(roomId);
     } else {
-      rooms.set(roomId, state);
-      io.to(roomId).emit(`roomState`, state);
+      state.currentPlayerId = nextPlayer(state);
+      state.scores = Object.fromEntries(
+        Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
+      );
+      updateState(roomId, state);
     }
 
     console.log(

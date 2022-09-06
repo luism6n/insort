@@ -23,4 +23,5 @@ export interface RoomState {
   playerIds: string[];
   scores: { [playerId: string]: number };
   playerNames: { [playerId: string]: string };
+  currentPlayerId: string | null;
 }

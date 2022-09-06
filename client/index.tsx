@@ -163,6 +163,28 @@ function Warning({ message }: { message: string }) {
   );
 }
 
+function Scores(props: { roomState: RoomState; playerId: string }) {
+  return (
+    <ul>
+      {props.roomState.playerIds.map((id) => {
+        return (
+          <li
+            style={{
+              textDecoration:
+                id === props.roomState.currentPlayerId ? "underline" : "",
+            }}
+            key={id}
+          >
+            {props.roomState.playerNames[id]}: {props.roomState.scores[id]}
+            {id === admin(props.roomState) ? " (admin)" : ""}
+            {id === props.playerId ? " (you)" : ""}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 function Room() {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
@@ -282,30 +304,17 @@ function Room() {
     );
   } else if (roomState.match === null) {
     content = (
-      <ChooseDeckScreen
-        deckOptions={roomState.deckOptions}
-        selectedDeck={selectedDeck}
-        setSelectedDeck={setSelectedDeck}
-        newGame={newGame}
-      />
+      <Fragment>
+        <ChooseDeckScreen
+          deckOptions={roomState.deckOptions}
+          selectedDeck={selectedDeck}
+          setSelectedDeck={setSelectedDeck}
+          newGame={newGame}
+        />
+        <Scores playerId={socket.id} roomState={roomState} />
+      </Fragment>
     );
   } else {
-    const scores = (
-      <ul>
-        {roomState.playerIds.map((id) => {
-          return (
-            <li
-              style={{ textDecoration: id === socket.id ? "underline" : "" }}
-              key={id}
-            >
-              {roomState.playerNames[id]}: {roomState.scores[id]}{" "}
-              {id === admin(roomState) ? "(admin)" : ""}
-            </li>
-          );
-        })}
-      </ul>
-    );
-
     let padding = 10;
     let cardDimensions: [number, number];
     let initialY: number;
@@ -389,7 +398,6 @@ function Room() {
             </div>
           </div>
         )}
-        {scores}
         {roomState.match.concluded ? (
           <Fragment>
             <Button onClick={() => newGame()}>Again</Button>
@@ -416,6 +424,7 @@ function Room() {
             </ul>
           </Fragment>
         )}
+        <Scores playerId={socket.id} roomState={roomState} />
       </div>
     );
   }
