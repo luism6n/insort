@@ -3,7 +3,6 @@ import { Title, Select, Button } from "./designSystem";
 
 interface RoomSettingsProps {
   deckOptions: string[];
-  newGame: () => void;
   selectedDeck: number;
   setSelectedDeck: React.Dispatch<React.SetStateAction<number>>;
   gameModeOptions: string[];
@@ -26,7 +25,6 @@ export function RoomSettings(props: RoomSettingsProps) {
         setSelected={props.setSelectedGameMode}
         options={props.gameModeOptions}
       ></Select>
-      <Button onClick={props.newGame}>Play</Button>
     </div>
   );
 }

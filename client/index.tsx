@@ -9,7 +9,7 @@ import { CardsDemo } from "./CardsDemo";
 function App() {
   return (
     <div className="flex flex-col justify-between items-center h-screen w-screen overflow-hidden">
-      <header className="h-12">
+      <header className="flex justify-center items-center h-20 w-full">
         <h1 className="text-4xl text-blue-400">Insort</h1>
       </header>
       <section className="max-w-5xl w-3/5 flex-1 flex flex-col justify-center align-center">

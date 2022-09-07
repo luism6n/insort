@@ -9,8 +9,6 @@ export function Match(props: {
   changeNextCardPosition: (increment: number) => void;
   placeCard: () => void;
   newGame: () => void;
-  changeRoomSettings: () => void;
-  changeTeams: () => void;
   playerId: string;
   roomState: RoomState;
 }) {
@@ -196,12 +194,6 @@ export function Match(props: {
             })}
           </ul>
         </Fragment>
-      )}
-      <Button onClick={() => props.changeRoomSettings()}>
-        Change Room Settings
-      </Button>
-      {props.roomState.match.gameMode === "teams" && (
-        <Button onClick={() => props.changeTeams()}>Change Teams</Button>
       )}
     </div>
   );

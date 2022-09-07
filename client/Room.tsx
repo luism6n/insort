@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { RoomSettings } from "./RoomSettings";
 import { Scores } from "./Scores";
 import { useSocket } from "./useSocket";
-import { Toast } from "./designSystem";
+import { Button, Toast } from "./designSystem";
 
 export function admin(state: RoomState) {
   return state.playerIds[0];
@@ -120,14 +120,13 @@ export function Room() {
           gameModeOptions={roomState.gameModeOptions}
           selectedGameMode={selectedGameMode}
           setSelectedGameMode={setSelectedGameMode}
-          newGame={() => newGame(selectedDeck, selectedGameMode)}
         />
+        <div className="flex">
+          <Button onClick={() => newGame(selectedDeck, selectedGameMode)}>
+            Play
+          </Button>
+        </div>
         <Scores playerId={playerId} roomState={roomState} />
-        <Chat
-          playerNames={roomState.playerNames}
-          chatMessages={chatMessages}
-          sendChatMessage={sendChatMessage}
-        />
       </Fragment>
     );
   } else {
@@ -138,11 +137,15 @@ export function Room() {
           changeNextCardPosition={changeNextCardPosition}
           placeCard={placeCard}
           newGame={() => newGame(selectedDeck, selectedGameMode)}
-          changeRoomSettings={changeRoomSettings}
           playerId={playerId}
           roomState={roomState}
-          changeTeams={changeTeams}
         />
+        <div className="flex">
+          <Button onClick={changeRoomSettings}>Change Room Settings</Button>
+          {roomState.match.gameMode === "teams" && (
+            <Button onClick={changeTeams}>Change Teams</Button>
+          )}
+        </div>
         <Scores playerId={playerId} roomState={roomState} />
       </Fragment>
     );
@@ -150,7 +153,20 @@ export function Room() {
 
   return (
     <Fragment>
-      {content}
+      <div className="flex flex-col justify-between flex-1">
+        <div className="flex flex-col justify-center items-center flex-2">
+          {content}
+        </div>
+        <div className="flex flex-1">
+          {roomState && (
+            <Chat
+              playerNames={roomState.playerNames}
+              chatMessages={chatMessages}
+              sendChatMessage={sendChatMessage}
+            />
+          )}
+        </div>
+      </div>
       {toast.message !== "" && (
         <Toast message={toast.message} type={toast.type} />
       )}
