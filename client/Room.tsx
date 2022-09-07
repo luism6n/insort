@@ -1,3 +1,4 @@
+import { Chat } from "./Chat";
 import { Match } from "./Match";
 import { JoinRoom } from "./JoinRoom";
 import React, { Fragment, useEffect, useState, Ref } from "react";
@@ -66,6 +67,9 @@ export function Room() {
     timeoutId: ReturnType<typeof setTimeout>;
     type: string;
   }>({ message: "", timeoutId: null, type: "" });
+  const [chatMessages, setChatMessages] = useState<
+    { text: string; senderId: string }[]
+  >([]);
 
   const {
     socketLoading,
@@ -75,8 +79,9 @@ export function Room() {
     changeRoomSettings,
     changeTeams,
     join,
+    sendChatMessage,
     playerId,
-  } = useSocket(roomId, setRoomState, setToast);
+  } = useSocket(roomId, setRoomState, setToast, setChatMessages);
 
   useEffect(() => {
     if (toast.message.length === 0) {
@@ -118,6 +123,11 @@ export function Room() {
           newGame={() => newGame(selectedDeck, selectedGameMode)}
         />
         <Scores playerId={playerId} roomState={roomState} />
+        <Chat
+          playerNames={roomState.playerNames}
+          chatMessages={chatMessages}
+          sendChatMessage={sendChatMessage}
+        />
       </Fragment>
     );
   } else {

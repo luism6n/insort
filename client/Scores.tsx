@@ -5,8 +5,6 @@ import { admin } from "./Room";
 export function Scores(props: { roomState: RoomState; playerId: string }) {
   function getScoreString(id: string) {
     let totalScore = props.roomState.scores[id];
-    console.log({ totalScore });
-    console.log(props.roomState.match?.scores);
     if (props.roomState.match) {
       return props.roomState.match.scores[id] + " (" + totalScore + ")";
     } else {

@@ -7,13 +7,16 @@ export function Button({
   onClick,
   children,
   disabled,
+  type = "button",
 }: {
-  onClick: () => void;
+  onClick?: () => void;
   children: ReactNode;
   disabled?: boolean;
+  type?: "button" | "submit";
 }) {
   return (
     <button
+      type={type}
       disabled={disabled}
       className={"p-1 m-1 h-7 bg-gray-200" + (disabled ? " opacity-50" : "")}
       onClick={onClick}
@@ -62,5 +65,19 @@ export function Toast(props: { message: string; type: string }) {
     >
       <span className="block sm:inline">{props.message}</span>
     </div>
+  );
+}
+
+export function TextInput(props: {
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  return (
+    <input
+      className="border border-black"
+      type="text"
+      value={props.input}
+      onChange={(e) => props.setInput(e.target.value)}
+    ></input>
   );
 }

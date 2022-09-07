@@ -252,6 +252,22 @@ io.on(
       updateState(data.roomId, state);
     });
 
+    socket.on("chatMessage", (data: { text: string }) => {
+      const roomId = socketToRoom.get(socket.id);
+      if (!roomId) {
+        socket.emit(
+          "notification",
+          "You are not in a room, how did you get here?"
+        );
+        return;
+      }
+
+      io.to(roomId).emit("chatMessage", {
+        text: data.text,
+        senderId: socket.id,
+      });
+    });
+
     socket.on("changeTeams", () => {
       console.log(`got changeTeams, socketId=${socket.id}`);
 
