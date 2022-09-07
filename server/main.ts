@@ -1,9 +1,8 @@
-const path = require("path")
-const http = require("http")
-import express, {Request as ExpressReq} from "express"
-import {Server as SocketServer} from "socket.io"
-import {Deck, RoomState} from "../types/types"
-
+const path = require("path");
+const http = require("http");
+import express, { Request as ExpressReq } from "express";
+import { Server as SocketServer } from "socket.io";
+import { Deck, RoomState } from "../types/types";
 
 function admin(state: RoomState) {
   return state.playerIds[0];
@@ -13,7 +12,7 @@ const rooms = new Map<string, RoomState>();
 const socketToRoom = new Map<string, string>();
 
 const publicPath = path.join(__dirname, "/../public");
-const port = process.env.PORT || '3000';
+const port = process.env.PORT || "3000";
 const decks: Deck[] = [
   {
     name: "albums",
@@ -53,14 +52,11 @@ const decks: Deck[] = [
   },
 ];
 
-const gameModes = ["free for all", "teams"]
+const gameModes = ["free for all", "teams"];
 
 let app = express();
 
-const clientSideRoutes = [
-  "/r/:roomId",
-  "/cards-demo",
-]
+const clientSideRoutes = ["/r/:roomId", "/cards-demo"];
 
 for (let route of clientSideRoutes) {
   app.get(route, (req: ExpressReq, res: any) => {
@@ -90,32 +86,56 @@ function newRoomState() {
     currentPlayerId: null,
   };
 
-  return state
+  return state;
 }
 
 function nextPlayer(roomState: RoomState) {
-  let currentPlayerIndex = roomState.playerIds.indexOf(roomState.currentPlayerId);
+  let currentPlayerIndex = roomState.playerIds.indexOf(
+    roomState.currentPlayerId
+  );
   let nextPlayerIndex = (currentPlayerIndex + 1) % roomState.playerIds.length;
   return roomState.playerIds[nextPlayerIndex];
 }
 
-function newMatch(oldState: RoomState | null, selectedDeck: number, selectedGameMode: number): RoomState {
-    const deck = decks[selectedDeck]
+function newMatch(
+  oldState: RoomState | null,
+  selectedDeck: number,
+  selectedGameMode: number
+): RoomState {
+  const deck = decks[selectedDeck];
 
-    let firstCard = Math.floor(deck.cards.length / 2);
-    let allCards = [...Array(deck.cards.length).keys()];
-    let remainingCards = allCards.filter((i) => i !== firstCard);
-    let nextCard = randomChoice(remainingCards);
-    if (nextCard === null) {
-      nextCard = -1;
+  let firstCard = Math.floor(deck.cards.length / 2);
+  let allCards = [...Array(deck.cards.length).keys()];
+  let remainingCards = allCards.filter((i) => i !== firstCard);
+  let nextCard = randomChoice(remainingCards);
+  if (nextCard === null) {
+    nextCard = -1;
+  }
+
+  let sorted = allCards.sort(
+    (i, j) => deck.cards[j].value - deck.cards[i].value
+  );
+  let pos = 0;
+  let correctFinalPositions = new Map();
+  for (let i of sorted) {
+    correctFinalPositions.set(i, pos++);
+  }
+
+  const matchScores = oldState
+    ? Object.fromEntries(oldState.playerIds.map((id) => [id, 0]))
+    : {};
+
+  let teams: { [playerId: string]: string } = {};
+  if (oldState.match?.teams) {
+    teams = oldState.match.teams;
+  } else {
+    const options = ["red", "blue"];
+    let i = 0;
+    for (let playerId of oldState.playerIds) {
+      teams[playerId] = options[i % 2];
+      i++;
     }
-  
-    let sorted = allCards.sort((i, j) => deck.cards[j].value - deck.cards[i].value);
-    let pos = 0;
-    let correctFinalPositions = new Map();
-    for (let i of sorted) {
-      correctFinalPositions.set(i, pos++);
-    }
+  }
 
   const state = {
     deckOptions: decks.map((d) => d.name),
@@ -126,6 +146,8 @@ function newMatch(oldState: RoomState | null, selectedDeck: number, selectedGame
     currentPlayerId: oldState ? oldState.currentPlayerId : null,
     match: {
       gameMode: gameModes[selectedGameMode],
+      teams: teams,
+      scores: matchScores,
       deck,
       placedCards: [firstCard],
       correctFinalPositions,
@@ -162,148 +184,231 @@ function correctPlace(state: RoomState) {
   return pos - 1;
 }
 
-io.on("connection", (socket: {
-  emit: (event: string, data: any) => void,
-  on: (event: string, callback: (data: any) => void) => void,
-  join: (channel: string) => void,
-  id: string
-}) => {
-  socket.on("join", (data: {roomId: string, playerName: string}) => {
-    console.log(`got join, socketId=${socket.id}`);
-    socketToRoom.set(socket.id, data.roomId);
+function teamWithLeastPlayers(state: RoomState) {
+  function count(team: string) {
+    return state.playerIds.reduce((id) => {
+      return state.match.teams[id] === team ? 1 : 0;
+    }, 0);
+  }
 
-    let state = rooms.get(data.roomId);
-    if (!state) {
-      state = newRoomState();
-      state.currentPlayerId = socket.id;
-    }
+  let redCount = count("red");
+  let blueCount = count("blue");
 
-    state.scores[socket.id] = 0;
-    state.playerIds.push(socket.id);
-    state.playerNames = {...state.playerNames, [socket.id]: data.playerName};
+  if (redCount < blueCount) {
+    return "red";
+  } else if (blueCount < redCount) {
+    return "blue";
+  } else {
+    return randomChoice(["red", "blue"]);
+  }
+}
 
-    socket.join(data.roomId);
-    io.to(data.roomId).emit("notification", `${data.playerName} joined the room`);
-    console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
+io.on(
+  "connection",
+  (socket: {
+    emit: (event: string, data: any) => void;
+    on: (event: string, callback: (data: any) => void) => void;
+    join: (channel: string) => void;
+    id: string;
+  }) => {
+    socket.on("join", (data: { roomId: string; playerName: string }) => {
+      console.log(`got join, socketId=${socket.id}`);
+      socketToRoom.set(socket.id, data.roomId);
 
-    updateState(data.roomId, state);
-  });
+      let state = rooms.get(data.roomId);
+      if (!state) {
+        state = newRoomState();
+        state.currentPlayerId = socket.id;
+      }
 
-  socket.on(`changeNextCardPosition`, (data: {increment: number}) => {
-    console.log(`got changeNextCardPosition, socketId=${socket.id}`);
+      if (state.match?.gameMode === "teams") {
+        state.match.teams = {
+          ...state.match.teams,
+          [socket.id]: teamWithLeastPlayers(state),
+        };
+      }
 
-    let roomId = socketToRoom.get(socket.id);
-    let state = rooms.get(roomId);
+      if (state.match) {
+        state.match.scores = {
+          ...state.match.scores,
+          [socket.id]: 0,
+        };
+      }
 
-    if (state.currentPlayerId !== socket.id) {
-      socket.emit('warning', 'Oops, not your turn yet.');
-      return;
-    }
+      state.scores[socket.id] = 0;
+      state.playerIds.push(socket.id);
+      state.playerNames = {
+        ...state.playerNames,
+        [socket.id]: data.playerName,
+      };
 
-    console.log({ state, roomId });
-    state.match.placeNextAfter = Math.min(
-      state.match.placedCards.length - 1,
-      Math.max(-1, state.match.placeNextAfter + data.increment)
-    );
-
-    updateState(roomId, state);
-  });
-
-  socket.on("placeCard", () => {
-    let roomId = socketToRoom.get(socket.id);
-    let state = rooms.get(roomId);
-
-    if (state.currentPlayerId !== socket.id) {
-      socket.emit('warning', 'Oops, not your turn yet.');
-      return;
-    }
-
-    let corrected = correctPlace(state);
-    if (corrected === state.match.placeNextAfter) {
-      state.scores[socket.id] += 1;
-    }
-
-    state.match.placedCards.splice(corrected + 1, 0, state.match.nextCard);
-
-    state.match.remainingCards = state.match.remainingCards.filter(
-      (c) => c !== state.match.nextCard
-    );
-
-    if (state.match.remainingCards.length === 0) {
-      state.match.concluded = true;
-      state.match.placeNextAfter = state.match.deck.cards.length/2 - 1;
-    } else {
-      state.match.nextCard = randomChoice(state.match.remainingCards);
-      state.match.placeNextAfter = corrected;
-    }
-
-    state.currentPlayerId = nextPlayer(state)
-
-    updateState(roomId, state);
-  });
-
-  socket.on("changeRoomSettings", () => {
-    let roomId = socketToRoom.get(socket.id);
-    let state = rooms.get(roomId);
-
-    if (socket.id !== admin(state)) {
-      socket.emit("warning", "Only the admin can choose a new deck");
-      return;
-    }
-
-    state.match = null
-
-    return updateState(roomId, state)
-  });
-
-  socket.on("newGame", (data: {selectedDeck: number, selectedGameMode: number}) => {
-    console.log(`got newGame, data=${JSON.stringify(data)}`);
-    let roomId = socketToRoom.get(socket.id);
-
-    if (!roomId) {
-      console.warn(`newGame on invalid room, socketId=${socket.id}`);
-      return;
-    }
-
-    let state = rooms.get(roomId);
-
-    if (socket.id !== admin(state)) {
-      socket.emit("warning", "Only the admin can start a new game");
-      return;
-    }
-
-    state = newMatch(state, data.selectedDeck, data.selectedGameMode);
-
-    updateState(roomId, state);
-  });
-
-  socket.on("disconnect", () => {
-    let roomId = socketToRoom.get(socket.id);
-
-    if (!roomId) {
-      console.warn(`disconnect with no room, socketId=${socket.id}`);
-      return;
-    }
-
-    let state = rooms.get(roomId);
-    state.playerIds = state.playerIds.filter((id) => id !== socket.id);
-
-    if (state.playerIds.length === 0) {
-      rooms.delete(roomId);
-    } else {
-      state.currentPlayerId = nextPlayer(state);
-      state.scores = Object.fromEntries(
-        Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
+      socket.join(data.roomId);
+      io.to(data.roomId).emit(
+        "notification",
+        `${data.playerName} joined the room`
       );
-      io.to(roomId).emit("notification", `${state.playerNames[socket.id]} left the room`);
-      updateState(roomId, state);
-    }
+      console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
 
-    console.log(
-      `user left, socketId=${socket.id}, roomId=${roomId}, numPlayers=${state.playerIds.length}`
+      updateState(data.roomId, state);
+    });
+
+    socket.on("changeTeams", () => {
+      console.log(`got changeTeams, socketId=${socket.id}`);
+
+      let roomId = socketToRoom.get(socket.id);
+      let state = rooms.get(roomId);
+
+      if (!state || !state.match || state.match.gameMode !== "teams") {
+        socket.emit("warning", "How did you get here?");
+        return;
+      }
+
+      let team = state.match.teams[socket.id];
+      let newTeam: string = team === "red" ? "blue" : "red";
+      state.match.teams = { ...state.match.teams, [socket.id]: newTeam };
+      updateState(roomId, state);
+    });
+
+    socket.on("changeNextCardPosition", (data: { increment: number }) => {
+      console.log(`got changeNextCardPosition, socketId=${socket.id}`);
+
+      let roomId = socketToRoom.get(socket.id);
+      let state = rooms.get(roomId);
+
+      if (state.currentPlayerId !== socket.id) {
+        socket.emit("warning", "Oops, not your turn yet.");
+        return;
+      }
+
+      console.log({ state, roomId });
+      state.match.placeNextAfter = Math.min(
+        state.match.placedCards.length - 1,
+        Math.max(-1, state.match.placeNextAfter + data.increment)
+      );
+
+      updateState(roomId, state);
+    });
+
+    socket.on("placeCard", () => {
+      let roomId = socketToRoom.get(socket.id);
+      let state = rooms.get(roomId);
+
+      if (state.currentPlayerId !== socket.id) {
+        socket.emit("warning", "Oops, not your turn yet.");
+        return;
+      }
+
+      let corrected = correctPlace(state);
+      if (corrected === state.match.placeNextAfter) {
+        state.scores[socket.id] += 1;
+        state.match.scores[socket.id] += 1;
+      }
+
+      state.match.placedCards.splice(corrected + 1, 0, state.match.nextCard);
+
+      state.match.remainingCards = state.match.remainingCards.filter(
+        (c) => c !== state.match.nextCard
+      );
+
+      if (state.match.remainingCards.length === 0) {
+        state.match.concluded = true;
+        state.match.placeNextAfter = state.match.deck.cards.length / 2 - 1;
+      } else {
+        state.match.nextCard = randomChoice(state.match.remainingCards);
+        state.match.placeNextAfter = corrected;
+      }
+
+      state.currentPlayerId = nextPlayer(state);
+
+      updateState(roomId, state);
+    });
+
+    socket.on("changeRoomSettings", () => {
+      let roomId = socketToRoom.get(socket.id);
+      let state = rooms.get(roomId);
+
+      if (socket.id !== admin(state)) {
+        socket.emit("warning", "Only the admin can choose a new deck");
+        return;
+      }
+
+      state.match = null;
+
+      return updateState(roomId, state);
+    });
+
+    socket.on(
+      "newGame",
+      (data: { selectedDeck: number; selectedGameMode: number }) => {
+        console.log(`got newGame, data=${JSON.stringify(data)}`);
+        let roomId = socketToRoom.get(socket.id);
+
+        if (!roomId) {
+          console.warn(`newGame on invalid room, socketId=${socket.id}`);
+          return;
+        }
+
+        let state = rooms.get(roomId);
+
+        if (socket.id !== admin(state)) {
+          socket.emit("warning", "Only the admin can start a new game");
+          return;
+        }
+
+        state = newMatch(state, data.selectedDeck, data.selectedGameMode);
+
+        updateState(roomId, state);
+      }
     );
-  });
-});
+
+    socket.on("disconnect", () => {
+      let roomId = socketToRoom.get(socket.id);
+
+      if (!roomId) {
+        console.warn(`disconnect with no room, socketId=${socket.id}`);
+        return;
+      }
+
+      let state = rooms.get(roomId);
+      state.playerIds = state.playerIds.filter((id) => id !== socket.id);
+
+      if (state.playerIds.length === 0) {
+        rooms.delete(roomId);
+      } else {
+        state.currentPlayerId = nextPlayer(state);
+        state.scores = Object.fromEntries(
+          Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
+        );
+
+        if (state.match?.gameMode === "teams") {
+          state.match.teams = Object.fromEntries(
+            Object.entries(state.match.teams).filter(
+              ([id, _]) => id !== socket.id
+            )
+          );
+        }
+
+        if (state.match) {
+          state.match.scores = Object.fromEntries(
+            Object.entries(state.match.scores).filter(
+              ([id, _]) => id !== socket.id
+            )
+          );
+        }
+
+        io.to(roomId).emit(
+          "notification",
+          `${state.playerNames[socket.id]} left the room`
+        );
+        updateState(roomId, state);
+      }
+
+      console.log(
+        `user left, socketId=${socket.id}, roomId=${roomId}, numPlayers=${state.playerIds.length}`
+      );
+    });
+  }
+);
 
 app.use(express.static(publicPath));
 

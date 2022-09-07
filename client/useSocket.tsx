@@ -59,12 +59,18 @@ export function useSocket(
     });
   }
 
+  function changeTeams() {
+    console.log(`emitting changeTeams`);
+    socket!.emit(`changeTeams`);
+  }
+
   return {
     socketLoading: !socket,
     changeNextCardPosition,
     placeCard,
     newGame,
     changeRoomSettings,
+    changeTeams,
     join,
     playerId: socket?.id,
   };

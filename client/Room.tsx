@@ -73,6 +73,7 @@ export function Room() {
     changeNextCardPosition: changeNextCardPositionServerSide,
     newGame,
     changeRoomSettings,
+    changeTeams,
     join,
     playerId,
   } = useSocket(roomId, setRoomState, setToast);
@@ -177,6 +178,7 @@ export function Room() {
           changeRoomSettings={changeRoomSettings}
           playerId={playerId}
           roomState={roomState}
+          changeTeams={changeTeams}
         />
         <Scores playerId={playerId} roomState={roomState} />
       </Fragment>

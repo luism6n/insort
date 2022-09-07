@@ -11,7 +11,9 @@ export interface Card {
 
 export interface RoomState {
   match: null | {
+    scores: { [playerId: string]: number };
     gameMode: string;
+    teams: { [playerId: string]: string } | null;
     deck: Deck;
     placedCards: number[];
     correctFinalPositions: Map<number, number>;
