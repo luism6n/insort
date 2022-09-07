@@ -6,7 +6,7 @@ import { Card } from "./Room";
 
 export function Match(props: {
   roomId: string;
-  changeNextPlacement: React.Dispatch<React.SetStateAction<number>>;
+  changeNextCardPosition: (increment: number) => void;
   placeCard: () => void;
   newGame: (selectedDeck: number) => void;
   selectedDeck: number;
@@ -94,14 +94,18 @@ export function Match(props: {
       </section>
       <div className="flex justify-center">
         <div className="flex flex-row">
-          <Button onClick={() => props.changeNextPlacement(-1)}>{"<"}</Button>
+          <Button onClick={() => props.changeNextCardPosition(-1)}>
+            {"<"}
+          </Button>
           <Button
             disabled={props.roomState.match.concluded}
             onClick={() => props.placeCard()}
           >
             Place
           </Button>
-          <Button onClick={() => props.changeNextPlacement(+1)}>{">"}</Button>
+          <Button onClick={() => props.changeNextCardPosition(+1)}>
+            {">"}
+          </Button>
         </div>
       </div>
       {!props.roomState.match.concluded && (

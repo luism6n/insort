@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ChooseDeck } from "./ChooseDeck";
 import { Scores } from "./Scores";
 import { useSocket } from "./useSocket";
-import { Warning } from "./designSystem";
+import { Toast } from "./designSystem";
 
 export function admin(state: RoomState) {
   return state.playerIds[0];
@@ -60,26 +60,52 @@ export function Room() {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
-  const [warning, setWarning] = useState<{
+  const [toast, setToast] = useState<{
     message: string;
     timeoutId: ReturnType<typeof setTimeout>;
-  }>({ message: "", timeoutId: null });
+    type: string;
+  }>({ message: "", timeoutId: null, type: "" });
 
   const {
     socketLoading,
     placeCard,
-    changeNextPlacement,
+    changeNextCardPosition: changeNextCardPositionServerSide,
     newGame,
     chooseNewDeck,
     join,
     playerId,
-  } = useSocket(roomId, setRoomState, setWarning);
+  } = useSocket(roomId, setRoomState, setToast);
+
+  function changeNextCardPosition(increment: number) {
+    if (roomState.match.concluded) {
+      changeNextCardPositionClientSide(increment);
+    } else {
+      changeNextCardPositionServerSide(increment);
+    }
+  }
+
+  function changeNextCardPositionClientSide(increment: number) {
+    if (roomState) {
+      let newPlaceForNextCard = roomState.match.placeNextAfter + increment;
+
+      if (newPlaceForNextCard >= roomState.match.placedCards.length) {
+        newPlaceForNextCard = roomState.match.placedCards.length - 1;
+      } else if (newPlaceForNextCard < -1) {
+        newPlaceForNextCard = -1;
+      }
+
+      setRoomState({
+        ...roomState,
+        match: { ...roomState.match, placeNextAfter: newPlaceForNextCard },
+      });
+    }
+  }
 
   function handleKeyNavigation(e: KeyboardEvent) {
     if (e.key === "ArrowRight") {
-      changeNextPlacement(1);
+      changeNextCardPosition(1);
     } else if (e.key === "ArrowLeft") {
-      changeNextPlacement(-1);
+      changeNextCardPosition(-1);
     } else if (e.key === "Enter") {
       if (roomState && roomState.match && !roomState.match.concluded) {
         placeCard();
@@ -88,17 +114,17 @@ export function Room() {
   }
 
   useEffect(() => {
-    if (warning.message.length === 0) {
+    if (toast.message.length === 0) {
       return;
     }
 
-    if (warning.timeoutId !== null) {
-      console.log("clearing timeout id", warning.timeoutId);
-      clearTimeout(warning.timeoutId);
+    if (toast.timeoutId !== null) {
+      console.log("clearing timeout id", toast.timeoutId);
+      clearTimeout(toast.timeoutId);
     }
 
     const timeoutId = setTimeout(() => {
-      setWarning({ message: "", timeoutId: null });
+      setToast({ message: "", timeoutId: null, type: "" });
     }, 3000);
     console.log({ timeoutId });
 
@@ -106,7 +132,7 @@ export function Room() {
       console.log("clearing timeout id", timeoutId);
       clearTimeout(timeoutId);
     };
-  }, [warning]);
+  }, [toast]);
 
   useEffect(() => {
     // handleKeyNavigation closures on roomState, so we need to
@@ -141,7 +167,7 @@ export function Room() {
       <Fragment>
         <Match
           roomId={roomId}
-          changeNextPlacement={changeNextPlacement}
+          changeNextCardPosition={changeNextCardPosition}
           placeCard={placeCard}
           newGame={newGame}
           selectedDeck={selectedDeck}
@@ -157,7 +183,9 @@ export function Room() {
   return (
     <Fragment>
       {content}
-      {warning.message !== "" && <Warning message={warning.message} />}
+      {toast.message !== "" && (
+        <Toast message={toast.message} type={toast.type} />
+      )}
     </Fragment>
   );
 }

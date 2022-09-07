@@ -43,14 +43,24 @@ export function Select(props: {
     </select>
   );
 }
-export function Warning({ message }: { message: string }) {
+export function Toast(props: { message: string; type: string }) {
+  let colors;
+  switch (props.type) {
+    case "warning":
+      colors = "bg-red-100 text-red-700";
+      break;
+    case "notification":
+      colors = "bg-blue-100 text-blue-700";
+      break;
+  }
+
   return (
     <div
-      className="bg-red-100 text-red-700 p-2 text-center absolute"
+      className={`${colors} p-2 text-center absolute`}
       role="alert"
       style={{ bottom: 25, left: "50%", transform: "translate(-50%, -50%)" }}
     >
-      <span className="block sm:inline">{message}</span>
+      <span className="block sm:inline">{props.message}</span>
     </div>
   );
 }

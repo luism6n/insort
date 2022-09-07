@@ -5,10 +5,11 @@ import { RoomState } from "../types/types";
 export function useSocket(
   roomId: string,
   setRoomState: React.Dispatch<React.SetStateAction<RoomState | null>>,
-  setWarning: React.Dispatch<
+  setMessage: React.Dispatch<
     React.SetStateAction<{
       message: string;
       timeoutId: ReturnType<typeof setTimeout>;
+      type: string;
     }>
   >
 ) {
@@ -23,7 +24,11 @@ export function useSocket(
       });
 
       socket.on("warning", (message: string) => {
-        setWarning({ message: message, timeoutId: null });
+        setMessage({ message: message, timeoutId: null, type: "warning" });
+      });
+
+      socket.on("notification", (message: string) => {
+        setMessage({ message: message, timeoutId: null, type: "notification" });
       });
     }
   }, [socket]);
@@ -47,16 +52,16 @@ export function useSocket(
     socket!.emit("join", { roomId: roomId, playerName });
   }
 
-  function changeNextPlacement(inc: number) {
-    console.log(`emitting changeNextPlacement`, { inc });
-    socket!.emit(`changeNextPlacement`, {
+  function changeNextCardPosition(inc: number) {
+    console.log(`emitting changeNextCardPosition`, { inc });
+    socket!.emit(`changeNextCardPosition`, {
       increment: inc,
     });
   }
 
   return {
     socketLoading: !socket,
-    changeNextPlacement,
+    changeNextCardPosition,
     placeCard,
     newGame,
     chooseNewDeck,

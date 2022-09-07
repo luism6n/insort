@@ -178,13 +178,14 @@ io.on("connection", (socket: {
     state.playerNames = {...state.playerNames, [socket.id]: data.playerName};
 
     socket.join(data.roomId);
+    io.to(data.roomId).emit("notification", `${data.playerName} joined the room`);
     console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
 
     updateState(data.roomId, state);
   });
 
-  socket.on(`changeNextPlacement`, (data: {increment: number}) => {
-    console.log(`got changeNextPlacement, socketId=${socket.id}`);
+  socket.on(`changeNextCardPosition`, (data: {increment: number}) => {
+    console.log(`got changeNextCardPosition, socketId=${socket.id}`);
 
     let roomId = socketToRoom.get(socket.id);
     let state = rooms.get(roomId);
