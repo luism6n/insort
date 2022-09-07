@@ -70,50 +70,13 @@ export function Room() {
   const {
     socketLoading,
     placeCard,
-    changeNextCardPosition: changeNextCardPositionServerSide,
+    changeNextCardPosition,
     newGame,
     changeRoomSettings,
     changeTeams,
     join,
     playerId,
   } = useSocket(roomId, setRoomState, setToast);
-
-  function changeNextCardPosition(increment: number) {
-    if (roomState.match.concluded) {
-      changeNextCardPositionClientSide(increment);
-    } else {
-      changeNextCardPositionServerSide(increment);
-    }
-  }
-
-  function changeNextCardPositionClientSide(increment: number) {
-    if (roomState) {
-      let newPlaceForNextCard = roomState.match.placeNextAfter + increment;
-
-      if (newPlaceForNextCard >= roomState.match.placedCards.length) {
-        newPlaceForNextCard = roomState.match.placedCards.length - 1;
-      } else if (newPlaceForNextCard < -1) {
-        newPlaceForNextCard = -1;
-      }
-
-      setRoomState({
-        ...roomState,
-        match: { ...roomState.match, placeNextAfter: newPlaceForNextCard },
-      });
-    }
-  }
-
-  function handleKeyNavigation(e: KeyboardEvent) {
-    if (e.key === "ArrowRight") {
-      changeNextCardPosition(1);
-    } else if (e.key === "ArrowLeft") {
-      changeNextCardPosition(-1);
-    } else if (e.key === "Enter") {
-      if (roomState && roomState.match && !roomState.match.concluded) {
-        placeCard();
-      }
-    }
-  }
 
   useEffect(() => {
     if (toast.message.length === 0) {
@@ -135,16 +98,6 @@ export function Room() {
       clearTimeout(timeoutId);
     };
   }, [toast]);
-
-  useEffect(() => {
-    // handleKeyNavigation closures on roomState, so we need to
-    // add and remove the event listener when roomState changes
-    document.addEventListener("keydown", handleKeyNavigation);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyNavigation);
-    };
-  }, [roomState]);
 
   let content = null;
 

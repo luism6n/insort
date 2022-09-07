@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { RoomState } from "../types/types";
 import { Button } from "./designSystem";
 import { getDivDimensions, getRefYDistance } from "./htmlMeasuring";
@@ -20,6 +20,50 @@ export function Match(props: {
   const [virtualReferenceCard, setVirtualReferenceCard] =
     useState<HTMLElement | null>(null);
   const [nextCard, setNextCard] = useState<HTMLDivElement | null>(null);
+  const [clientSidePlaceNextAfter, setClientSidePlaceNextAfter] = useState(
+    props.roomState?.match?.placeNextAfter
+  );
+
+  useEffect(() => {
+    if (!props.roomState.match.concluded) {
+      setClientSidePlaceNextAfter(props.roomState?.match?.placeNextAfter);
+    }
+  }, [props.roomState.match.placeNextAfter]);
+
+  function handleKeyNavigation(e: KeyboardEvent) {
+    if (e.key === "ArrowRight") {
+      moveCard(1);
+    } else if (e.key === "ArrowLeft") {
+      moveCard(-1);
+    } else if (e.key === "Enter") {
+      if (!props.roomState.match.concluded) {
+        props.placeCard();
+      }
+    }
+  }
+
+  useEffect(() => {
+    // handleKeyNavigation closures on roomState, so we need to
+    // add and remove the event listener when roomState changes
+    document.addEventListener("keydown", handleKeyNavigation);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyNavigation);
+    };
+  }, [props.roomState]);
+
+  function moveCard(increment: number) {
+    if (!props.roomState?.match?.concluded) {
+      props.changeNextCardPosition(increment);
+    } else {
+      setClientSidePlaceNextAfter((c) =>
+        Math.max(
+          -1,
+          Math.min(c + increment, props.roomState.match.placedCards.length - 1)
+        )
+      );
+    }
+  }
 
   let padding = 10;
   let cardDimensions: [number, number];
@@ -72,7 +116,7 @@ export function Match(props: {
           {props.roomState.match.placedCards.map((indexInDeck: number, i) => {
             let card = props.roomState.match.deck.cards[indexInDeck];
             let x =
-              (i - props.roomState.match.placeNextAfter - 1) *
+              (i - clientSidePlaceNextAfter - 1) *
                 (cardDimensions[0] + padding) +
               padding / 2;
             let y = 0 + padding / 4;
@@ -95,18 +139,14 @@ export function Match(props: {
       </section>
       <div className="flex justify-center">
         <div className="flex flex-row">
-          <Button onClick={() => props.changeNextCardPosition(-1)}>
-            {"<"}
-          </Button>
+          <Button onClick={() => moveCard(-1)}>{"<"}</Button>
           <Button
             disabled={props.roomState.match.concluded}
             onClick={() => props.placeCard()}
           >
             Place
           </Button>
-          <Button onClick={() => props.changeNextCardPosition(+1)}>
-            {">"}
-          </Button>
+          <Button onClick={() => moveCard(+1)}>{">"}</Button>
         </div>
       </div>
       {!props.roomState.match.concluded && (
