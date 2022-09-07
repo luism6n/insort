@@ -38,14 +38,14 @@ export function useSocket(
     socket!.emit("placeCard");
   }
 
-  function newGame(selectedDeck: number) {
-    console.log("emitting newGame", { selectedDeck });
-    socket!.emit("newGame", { selectedDeck });
+  function newGame(selectedDeck: number, selectedGameMode: number) {
+    console.log("emitting newGame", { selectedDeck, selectedGameMode });
+    socket!.emit("newGame", { selectedDeck, selectedGameMode });
   }
 
-  function chooseNewDeck() {
-    console.log("emitting chooseNewDeck");
-    socket!.emit("chooseNewDeck");
+  function changeRoomSettings() {
+    console.log("emitting changeRoomSettings");
+    socket!.emit("changeRoomSettings");
   }
 
   function join(playerName: string) {
@@ -64,7 +64,7 @@ export function useSocket(
     changeNextCardPosition,
     placeCard,
     newGame,
-    chooseNewDeck,
+    changeRoomSettings,
     join,
     playerId: socket?.id,
   };

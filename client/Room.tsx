@@ -4,7 +4,7 @@ import React, { Fragment, useEffect, useState, Ref } from "react";
 import { useParams } from "react-router-dom";
 import { RoomState } from "../types/types";
 import { motion } from "framer-motion";
-import { ChooseDeck } from "./ChooseDeck";
+import { RoomSettings } from "./RoomSettings";
 import { Scores } from "./Scores";
 import { useSocket } from "./useSocket";
 import { Toast } from "./designSystem";
@@ -60,6 +60,7 @@ export function Room() {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
+  const [selectedGameMode, setSelectedGameMode] = useState(0);
   const [toast, setToast] = useState<{
     message: string;
     timeoutId: ReturnType<typeof setTimeout>;
@@ -71,7 +72,7 @@ export function Room() {
     placeCard,
     changeNextCardPosition: changeNextCardPositionServerSide,
     newGame,
-    chooseNewDeck,
+    changeRoomSettings,
     join,
     playerId,
   } = useSocket(roomId, setRoomState, setToast);
@@ -153,11 +154,14 @@ export function Room() {
   } else if (roomState.match === null) {
     content = (
       <Fragment>
-        <ChooseDeck
+        <RoomSettings
           deckOptions={roomState.deckOptions}
           selectedDeck={selectedDeck}
           setSelectedDeck={setSelectedDeck}
-          newGame={() => newGame(selectedDeck)}
+          gameModeOptions={roomState.gameModeOptions}
+          selectedGameMode={selectedGameMode}
+          setSelectedGameMode={setSelectedGameMode}
+          newGame={() => newGame(selectedDeck, selectedGameMode)}
         />
         <Scores playerId={playerId} roomState={roomState} />
       </Fragment>
@@ -169,9 +173,8 @@ export function Room() {
           roomId={roomId}
           changeNextCardPosition={changeNextCardPosition}
           placeCard={placeCard}
-          newGame={newGame}
-          selectedDeck={selectedDeck}
-          chooseNewDeck={chooseNewDeck}
+          newGame={() => newGame(selectedDeck, selectedGameMode)}
+          changeRoomSettings={changeRoomSettings}
           playerId={playerId}
           roomState={roomState}
         />

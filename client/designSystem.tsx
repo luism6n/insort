@@ -33,10 +33,10 @@ export function Select(props: {
       value={props.selected}
       onChange={(e) => props.setSelected(Number.parseInt(e.target.value))}
     >
-      {props.options.map((deck, i) => {
+      {props.options.map((opt, i) => {
         return (
-          <option value={i} key={deck}>
-            {deck}
+          <option value={i} key={opt}>
+            {opt}
           </option>
         );
       })}

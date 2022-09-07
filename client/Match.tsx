@@ -8,9 +8,8 @@ export function Match(props: {
   roomId: string;
   changeNextCardPosition: (increment: number) => void;
   placeCard: () => void;
-  newGame: (selectedDeck: number) => void;
-  selectedDeck: number;
-  chooseNewDeck: () => void;
+  newGame: () => void;
+  changeRoomSettings: () => void;
   playerId: string;
   roomState: RoomState;
 }) {
@@ -43,6 +42,7 @@ export function Match(props: {
         You're in room {props.roomId} (players:{" "}
         {props.roomState.playerIds.length})
       </p>
+      <p>Game mode: {props.roomState.match.gameMode}</p>
       <section
         ref={(r) => setPlacedCardsArea(r)}
         className="flex justify-center align-center mt-5"
@@ -125,10 +125,7 @@ export function Match(props: {
       )}
       {props.roomState.match.concluded ? (
         <Fragment>
-          <Button onClick={() => props.newGame(props.selectedDeck)}>
-            Again
-          </Button>
-          <Button onClick={() => props.chooseNewDeck()}>New Deck</Button>
+          <Button onClick={() => props.newGame()}>Again</Button>
         </Fragment>
       ) : (
         <Fragment>
@@ -153,6 +150,9 @@ export function Match(props: {
           </ul>
         </Fragment>
       )}
+      <Button onClick={() => props.changeRoomSettings()}>
+        Change Room Settings
+      </Button>
     </div>
   );
 }

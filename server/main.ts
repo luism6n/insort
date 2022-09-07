@@ -53,6 +53,8 @@ const decks: Deck[] = [
   },
 ];
 
+const gameModes = ["free for all", "teams"]
+
 let app = express();
 
 const clientSideRoutes = [
@@ -82,6 +84,7 @@ function newRoomState() {
     match: null,
     playerIds: [],
     deckOptions: decks.map((d) => d.name),
+    gameModeOptions: gameModes,
     scores: {},
     playerNames: {},
     currentPlayerId: null,
@@ -96,7 +99,7 @@ function nextPlayer(roomState: RoomState) {
   return roomState.playerIds[nextPlayerIndex];
 }
 
-function newMatch(oldState: RoomState | null, selectedDeck: number): RoomState {
+function newMatch(oldState: RoomState | null, selectedDeck: number, selectedGameMode: number): RoomState {
     const deck = decks[selectedDeck]
 
     let firstCard = Math.floor(deck.cards.length / 2);
@@ -116,11 +119,13 @@ function newMatch(oldState: RoomState | null, selectedDeck: number): RoomState {
 
   const state = {
     deckOptions: decks.map((d) => d.name),
+    gameModeOptions: gameModes,
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},
     playerNames: oldState ? oldState.playerNames : {},
     currentPlayerId: oldState ? oldState.currentPlayerId : null,
     match: {
+      gameMode: gameModes[selectedGameMode],
       deck,
       placedCards: [firstCard],
       correctFinalPositions,
@@ -237,7 +242,7 @@ io.on("connection", (socket: {
     updateState(roomId, state);
   });
 
-  socket.on("chooseNewDeck", () => {
+  socket.on("changeRoomSettings", () => {
     let roomId = socketToRoom.get(socket.id);
     let state = rooms.get(roomId);
 
@@ -251,7 +256,7 @@ io.on("connection", (socket: {
     return updateState(roomId, state)
   });
 
-  socket.on("newGame", (data: {selectedDeck: number}) => {
+  socket.on("newGame", (data: {selectedDeck: number, selectedGameMode: number}) => {
     console.log(`got newGame, data=${JSON.stringify(data)}`);
     let roomId = socketToRoom.get(socket.id);
 
@@ -267,7 +272,7 @@ io.on("connection", (socket: {
       return;
     }
 
-    state = newMatch(state, data.selectedDeck);
+    state = newMatch(state, data.selectedDeck, data.selectedGameMode);
 
     updateState(roomId, state);
   });
@@ -290,6 +295,7 @@ io.on("connection", (socket: {
       state.scores = Object.fromEntries(
         Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
       );
+      io.to(roomId).emit("notification", `${state.playerNames[socket.id]} left the room`);
       updateState(roomId, state);
     }
 
