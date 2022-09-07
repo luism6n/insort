@@ -63,6 +63,7 @@ export function Match(props: {
               setVirtualReferenceCard(r);
             }}
             x={-100000}
+            comesFrom={{ x: -100000, y: -100000 }}
             content={"Virtual card"}
             value={0}
             unit=""
