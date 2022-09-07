@@ -30,6 +30,12 @@ export function Match(props: {
     }
   }, [props.roomState.match.placeNextAfter]);
 
+  useEffect(() => {
+    setClientSidePlaceNextAfter(
+      Math.floor(props.roomState.match.placedCards.length / 2) - 1
+    );
+  }, [props.roomState.match.concluded]);
+
   function handleKeyNavigation(e: KeyboardEvent) {
     if (e.key === "ArrowRight") {
       moveCard(1);
