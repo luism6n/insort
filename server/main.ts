@@ -50,6 +50,131 @@ const decks: Deck[] = [
       { text: "Neptune", value: 30.06 },
     ],
   },
+  {
+    name: "top 20 countries by population ",
+    unit: "M of people",
+    cards: [
+      {
+        text: "China",
+        value: 1394,
+      },
+      {
+        text: "India",
+        value: 1326,
+      },
+      {
+        text: "United States",
+        value: 332,
+      },
+      {
+        text: "Indonesia",
+        value: 267,
+      },
+      {
+        text: "Pakistan",
+        value: 233,
+      },
+      {
+        text: "Nigeria",
+        value: 214,
+      },
+      {
+        text: "Brazil",
+        value: 211,
+      },
+      {
+        text: "Bangladesh",
+        value: 162,
+      },
+      {
+        text: "Russia",
+        value: 141,
+      },
+      {
+        text: "Mexico",
+        value: 128,
+      },
+      {
+        text: "Japan",
+        value: 125,
+      },
+      {
+        text: "Philippines",
+        value: 109,
+      },
+      {
+        text: "Ethiopia",
+        value: 108,
+      },
+      {
+        text: "Egypt",
+        value: 104,
+      },
+      {
+        text: "Democratic Republic of the Congo",
+        value: 101,
+      },
+      {
+        text: "Vietnam",
+        value: 98,
+      },
+      {
+        text: "Iran",
+        value: 84,
+      },
+      {
+        text: "Turkey",
+        value: 82,
+      },
+      {
+        text: "Germany",
+        value: 80,
+      },
+      {
+        text: "Thailand",
+        value: 68,
+      },
+    ],
+  },
+  {
+    name: "programming languages by year of development",
+    unit: "year",
+    // source: "https://en.wikipedia.org/wiki/History_of_programming_languages",
+    cards: [
+      {
+        text: "C",
+        value: 1972,
+      },
+      {
+        text: "SQL",
+        value: 1978,
+      },
+      {
+        text: "C++",
+        value: 1980,
+      },
+      {
+        text: "Python",
+        value: 1990,
+      },
+      {
+        text: "Java, JavaScript",
+        value: 1995,
+      },
+      {
+        text: "C#",
+        value: 2001,
+      },
+      {
+        text: "Go",
+        value: 2009,
+      },
+      {
+        text: "TypeScript",
+        value: 2012,
+      },
+    ],
+  },
 ];
 
 const gameModes = ["free for all", "teams"];

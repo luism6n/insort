@@ -69,7 +69,7 @@ export function CardsDemo() {
                   x: -cardDimensions[0] / 2,
                   y: initialY,
                 }}
-                zIndex={1}
+                zIndex={2}
                 unit="units"
               />
             );
@@ -79,7 +79,7 @@ export function CardsDemo() {
       <div className="flex flex-col items-center justify-center">
         <p>^</p>
         <div ref={nextCard}>
-          <Card unit="unit" content={cards.length} value={10} zIndex={-1} />
+          <Card unit="unit" content={cards.length} value={10} zIndex={1} />
         </div>
         <div className="flex justify-between">
           <Button onClick={moveLeft}>{"<"}</Button>

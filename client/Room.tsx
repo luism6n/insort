@@ -1,3 +1,4 @@
+import { RoomTray } from "./RoomTray";
 import { Chat } from "./Chat";
 import { Match } from "./Match";
 import { JoinRoom } from "./JoinRoom";
@@ -9,6 +10,7 @@ import { RoomSettings } from "./RoomSettings";
 import { Scores } from "./Scores";
 import { useSocket } from "./useSocket";
 import { Button, Toast } from "./designSystem";
+import { colors } from "./colors";
 
 export function admin(state: RoomState) {
   return state.playerIds[0];
@@ -48,7 +50,7 @@ export function Card({
       transition={{ duration: 0.25 }}
       initial={{ left: comesFrom.x, top: comesFrom.y }}
       ref={innerRef}
-      className="border border-black flex-shrink-0 w-36 h-36 bg-gray-300 text-center text-align-center flex flex-col justify-between p-2"
+      className="flex-shrink-0 w-36 h-36 bg-gray-300 text-center text-align-center flex flex-col justify-between p-2"
     >
       <p>{content}</p>
       <p className="font-bold  mt-auto">
@@ -113,20 +115,21 @@ export function Room() {
   } else if (roomState.match === null) {
     content = (
       <Fragment>
-        <RoomSettings
-          deckOptions={roomState.deckOptions}
-          selectedDeck={selectedDeck}
-          setSelectedDeck={setSelectedDeck}
-          gameModeOptions={roomState.gameModeOptions}
-          selectedGameMode={selectedGameMode}
-          setSelectedGameMode={setSelectedGameMode}
-        />
+        <div className="w-1/2">
+          <RoomSettings
+            deckOptions={roomState.deckOptions}
+            selectedDeck={selectedDeck}
+            setSelectedDeck={setSelectedDeck}
+            gameModeOptions={roomState.gameModeOptions}
+            selectedGameMode={selectedGameMode}
+            setSelectedGameMode={setSelectedGameMode}
+          />
+        </div>
         <div className="flex">
           <Button onClick={() => newGame(selectedDeck, selectedGameMode)}>
             Play
           </Button>
         </div>
-        <Scores playerId={playerId} roomState={roomState} />
       </Fragment>
     );
   } else {
@@ -142,34 +145,37 @@ export function Room() {
         />
         <div className="flex">
           <Button onClick={changeRoomSettings}>Change Room Settings</Button>
-          {roomState.match.gameMode === "teams" && (
-            <Button onClick={changeTeams}>Change Teams</Button>
-          )}
         </div>
-        <Scores playerId={playerId} roomState={roomState} />
       </Fragment>
     );
   }
 
+  let backgroundColor = "bg-gray-200";
+  if (roomState?.match?.gameMode === "teams") {
+    if (roomState.match.teams[playerId] === "red") {
+      backgroundColor = colors.red;
+    } else {
+      backgroundColor = colors.blue;
+    }
+  }
+
   return (
-    <Fragment>
-      <div className="flex flex-col justify-between flex-1">
-        <div className="flex flex-col justify-center items-center flex-2">
-          {content}
-        </div>
-        <div className="flex flex-1">
-          {roomState && (
-            <Chat
-              playerNames={roomState.playerNames}
-              chatMessages={chatMessages}
-              sendChatMessage={sendChatMessage}
-            />
-          )}
-        </div>
+    <div className="w-full h-full" style={{ backgroundColor: backgroundColor }}>
+      <div className="flex flex-1 flex-col justify-start items-center h-full w-full max-w-xl m-auto">
+        {content}
       </div>
+      {roomState && (
+        <RoomTray
+          roomState={roomState}
+          playerId={playerId}
+          chatMessages={chatMessages}
+          sendChatMessage={sendChatMessage}
+          changeTeams={changeTeams}
+        />
+      )}
       {toast.message !== "" && (
         <Toast message={toast.message} type={toast.type} />
       )}
-    </Fragment>
+    </div>
   );
 }

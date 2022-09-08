@@ -35,6 +35,10 @@ export function Match(props: {
   }, [props.roomState.match.concluded]);
 
   function handleKeyNavigation(e: KeyboardEvent) {
+    if ((e.target as HTMLInputElement).nodeName === "INPUT") {
+      return;
+    }
+
     if (e.key === "ArrowRight") {
       moveCard(1);
     } else if (e.key === "ArrowLeft") {
@@ -86,7 +90,7 @@ export function Match(props: {
   }
 
   return (
-    <div className="h-full flex flex-col justify-start">
+    <div className="flex flex-col justify-start">
       <p>
         You're in room {props.roomId} (players:{" "}
         {props.roomState.playerIds.length})
@@ -132,6 +136,7 @@ export function Match(props: {
                 y={y}
                 value={card.value}
                 content={card.text}
+                zIndex={2}
                 comesFrom={{
                   x: -cardDimensions[0] / 2,
                   y: initialY,
@@ -163,7 +168,7 @@ export function Match(props: {
               }
               unit={props.roomState.match.deck.unit}
               value={"??"}
-              zIndex={-1}
+              zIndex={1}
             />
           </div>
         </div>

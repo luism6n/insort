@@ -38,6 +38,9 @@ export function Scores(props: { roomState: RoomState; playerId: string }) {
 
   return (
     <Fragment>
+      <div className="flex justify-center">
+        <p>Scores</p>
+      </div>
       {teamScores}
       <ul>
         {props.roomState.playerIds.map((id) => {

@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'Uni';
+    src: url('../assets/uni_05_53.ttf');
+}
+
+body {
+    font-family: 'Uni';
+    font-size: 1rem;
+}

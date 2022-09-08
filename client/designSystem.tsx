@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 
 export function Title({ children }: { children: ReactNode }) {
-  return <h3 className="m-1 mb-2 text-lg text-blue-400">{children}</h3>;
+  return <h3 className="m-1 text-xl mb-2 text-blue-400">{children}</h3>;
 }
 export function Button({
   onClick,
@@ -71,10 +71,11 @@ export function Toast(props: { message: string; type: string }) {
 export function TextInput(props: {
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
+  classes?: string;
 }) {
   return (
     <input
-      className="border border-black"
+      className={"p-1 " + (props.classes ? props.classes : "")}
       type="text"
       value={props.input}
       onChange={(e) => props.setInput(e.target.value)}
