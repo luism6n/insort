@@ -19,7 +19,7 @@ function RoomTrayHeader(props: {
 }) {
   return (
     <div className="flex justify-between items-center" style={{ height: 50 }}>
-      {props.gameMode === "teams" ? (
+      {props.gameMode === "Teams" ? (
         <button className="underline" onClick={props.changeTeams}>
           Switch Team
         </button>

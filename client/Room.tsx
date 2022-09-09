@@ -106,7 +106,7 @@ export function Room() {
   }
 
   let backgroundColor = "bg-gray-200";
-  if (roomState?.match?.gameMode === "teams") {
+  if (roomState?.match?.gameMode === "Teams") {
     if (roomState.match.teams[playerId] === "red") {
       backgroundColor = colors.red;
     } else {

@@ -15,7 +15,7 @@ const socketToRoom = new Map<string, string>();
 const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || "3000";
 
-const gameModes = ["free for all", "teams"];
+const gameModes = ["Individual", "Teams", "Coop"];
 
 let app = express();
 
@@ -182,7 +182,7 @@ io.on(
         state.currentPlayerId = socket.id;
       }
 
-      if (state.match?.gameMode === "teams") {
+      if (state.match?.gameMode === "Teams") {
         state.match.teams = {
           ...state.match.teams,
           [socket.id]: teamWithLeastPlayers(state),
@@ -235,7 +235,7 @@ io.on(
       let roomId = socketToRoom.get(socket.id);
       let state = rooms.get(roomId);
 
-      if (!state || !state.match || state.match.gameMode !== "teams") {
+      if (!state || !state.match || state.match.gameMode !== "Teams") {
         socket.emit("warning", "How did you get here?");
         return;
       }
@@ -269,18 +269,23 @@ io.on(
       let roomId = socketToRoom.get(socket.id);
       let state = rooms.get(roomId);
 
-      if (state.currentPlayerId !== socket.id) {
+      if (
+        state.currentPlayerId !== socket.id &&
+        !(state.match.gameMode === "Coop")
+      ) {
         socket.emit("warning", "Oops, not your turn yet.");
         return;
       }
 
       let corrected = correctPlace(state);
       if (corrected === state.match.placeNextAfter) {
-        state.scores[socket.id] += 1;
-        state.match.scores[socket.id] += 1;
-        io.to(roomId).emit("notification", "Scored!");
+        if (!(state.match.gameMode === "Coop")) {
+          state.scores[socket.id] += 1;
+          state.match.scores[socket.id] += 1;
+        }
+        io.to(roomId).emit("notification", "Correct!");
       } else {
-        io.to(roomId).emit("warning", "Missed!");
+        io.to(roomId).emit("warning", "Wrong!");
       }
 
       state.match.placedCards.splice(corrected + 1, 0, state.match.nextCard);
@@ -359,7 +364,7 @@ io.on(
           Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
         );
 
-        if (state.match?.gameMode === "teams") {
+        if (state.match?.gameMode === "Teams") {
           state.match.teams = Object.fromEntries(
             Object.entries(state.match.teams).filter(
               ([id, _]) => id !== socket.id

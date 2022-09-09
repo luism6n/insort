@@ -85,7 +85,7 @@ export function Match(props: {
   let match = props.roomState.match;
 
   const teamIndicator =
-    props.roomState.match.gameMode !== "teams"
+    props.roomState.match.gameMode !== "Teams"
       ? null
       : props.roomState.match.teams[props.roomState.currentPlayerId] === "red"
       ? redCircle

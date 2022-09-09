@@ -23,7 +23,7 @@ export function Scores(props: {
   }
 
   let teamScores;
-  if (props.roomState.match?.gameMode === "teams") {
+  if (props.roomState.match?.gameMode === "Teams") {
     teamScores = (
       <Fragment>
         <ul className="flex justify-around">
