@@ -67,7 +67,7 @@ export function RoomTray(props: {
           zIndex: 5,
         }}
       >
-        <div className="flex flex-col max-w-xl w-full p-2 bg-grey-200">
+        <div className="flex flex-col max-w-xl w-full px-2 bg-grey-200">
           <RoomTrayHeader
             changeTeams={props.changeTeams}
             openTray={openTray}
@@ -84,7 +84,7 @@ export function RoomTray(props: {
                 style={{
                   flex: 2,
                 }}
-                className="h-full pb-2"
+                className="h-full"
               >
                 <Chat
                   playerNames={props.roomState.playerNames}
