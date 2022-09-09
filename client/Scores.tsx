@@ -7,16 +7,11 @@ import trophyIcon from "../assets/trophy_icon.png";
 // @ts-ignore
 import crownIcon from "../assets/crown_small.png";
 
-export function Scores(props: { roomState: RoomState; playerId: string }) {
-  function getScoreString(id: string) {
-    let totalScore = props.roomState.scores[id];
-    if (props.roomState.match) {
-      return props.roomState.match.scores[id] + " (" + totalScore + ")";
-    } else {
-      return totalScore;
-    }
-  }
-
+export function Scores(props: {
+  roomState: RoomState;
+  playerId: string;
+  numPlayersToShow?: number;
+}) {
   function totalTeamScore(team: string) {
     let total = 0;
     for (let id of props.roomState.playerIds) {
@@ -66,37 +61,52 @@ export function Scores(props: { roomState: RoomState; playerId: string }) {
   }
 
   return (
-    <div className="pb-2 h-full overflow-y-scroll" style={{ height: 200 }}>
+    <div className="pb-2 w-full overflow-y-scroll">
       {teamScores}
       <table className="w-full border-collapse">
         <thead>
           <tr>
             <th>Player</th>
-            <th>Overall Score</th>
             {props.roomState.match ? <th>Match Score</th> : null}
+            <th>Overall Score</th>
           </tr>
         </thead>
-        {props.roomState.playerIds.map((id) => {
-          return (
-            <tr key={id}>
-              <td className="text-center">{props.roomState.playerNames[id]}</td>
-              <td className="text-center relative">
-                {maxOverallScoreId === id && (
-                  <img
-                    className="absolute"
-                    style={{
-                      height: "1rem",
-                      left: "65%",
-                      top: 5,
-                    }}
-                    src={crownIcon}
-                  />
-                )}
-                {props.roomState.scores[id]}
-              </td>
-              {props.roomState.match ? (
+        {props.roomState.playerIds
+          .slice(0, props.numPlayersToShow || props.roomState.playerIds.length)
+          .sort((a, b) => {
+            if (props.roomState.match) {
+              return (
+                props.roomState.match.scores[b] -
+                props.roomState.match.scores[a]
+              );
+            } else {
+              return props.roomState.scores[b] - props.roomState.scores[a];
+            }
+          })
+          .map((id) => {
+            return (
+              <tr key={id}>
+                <td className="text-center">
+                  {props.roomState.playerNames[id]}
+                </td>
+                {props.roomState.match ? (
+                  <td className="text-center relative">
+                    {maxMatchScoreId === id && (
+                      <img
+                        className="absolute"
+                        style={{
+                          height: "1rem",
+                          left: "65%",
+                          top: 5,
+                        }}
+                        src={trophyIcon}
+                      />
+                    )}
+                    <p>{props.roomState.match.scores[id]}</p>
+                  </td>
+                ) : null}
                 <td className="text-center relative">
-                  {maxMatchScoreId === id && (
+                  {maxOverallScoreId === id && (
                     <img
                       className="absolute"
                       style={{
@@ -104,15 +114,14 @@ export function Scores(props: { roomState: RoomState; playerId: string }) {
                         left: "65%",
                         top: 5,
                       }}
-                      src={trophyIcon}
+                      src={crownIcon}
                     />
                   )}
-                  <p>{props.roomState.match.scores[id]}</p>
+                  {props.roomState.scores[id]}
                 </td>
-              ) : null}
-            </tr>
-          );
-        })}
+              </tr>
+            );
+          })}
       </table>
     </div>
   );

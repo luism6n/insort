@@ -7,6 +7,7 @@ import { colors } from "./colors";
 
 // @ts-ignore
 import arrowBig from "../assets/arrow_big.png";
+import { Scores } from "./Scores";
 
 export function Match(props: {
   roomId: string;
@@ -156,9 +157,9 @@ export function Match(props: {
 
         {!props.roomState.match.concluded && (
           <div className="flex flex-col items-center w-full">
-            <div style={{ height: 24 - 15 }} className="mb-2">
+            <div style={{ height: 30 - 15 }}>
               <img
-                style={{ top: -15 }}
+                style={{ top: 15 - 30 }}
                 className="relative"
                 src={arrowBig}
               ></img>
@@ -179,11 +180,19 @@ export function Match(props: {
         )}
       </div>
 
-      <div className="flex flex-col items-center mt-2">
+      <div className="flex flex-col w-full items-center mt-2">
         {props.roomState.match.concluded && (
-          <Fragment>
+          <div
+            className="flex flex-col items-center w-full"
+            style={{ height: 30 - 15 + cardDimensions[1] }}
+          >
+            <Scores
+              playerId={props.playerId}
+              roomState={props.roomState}
+              numPlayersToShow={3}
+            />
             <Button onClick={() => props.newGame()}>Again</Button>
-          </Fragment>
+          </div>
         )}
         <div className="flex flex-row">
           <Button unique="left" onClick={() => moveCard(-1)}>
