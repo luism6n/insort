@@ -30,7 +30,7 @@ function RoomTrayHeader(props: {
       <p>
         {props.title} (see{" "}
         <button className="underline" onClick={props.toggleContent}>
-          {props.title === "chat" ? "scoreboard" : "chat"}
+          {props.title === "chat" ? "scores" : "chat"}
         </button>
         )
       </p>
