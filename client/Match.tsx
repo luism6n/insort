@@ -65,15 +65,15 @@ export function Match(props: {
   }, [props.roomState]);
 
   function moveCard(increment: number) {
-    if (!props.roomState?.match?.concluded) {
-      props.changeNextCardPosition(increment);
-    } else {
+    if (props.roomState?.match?.concluded) {
       setClientSidePlaceNextAfter((c) =>
         Math.max(
           -1,
           Math.min(c + increment, props.roomState.match.placedCards.length - 1)
         )
       );
+    } else if (props.roomState?.match) {
+      props.changeNextCardPosition(increment);
     }
   }
 

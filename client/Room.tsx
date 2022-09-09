@@ -52,7 +52,6 @@ export function Room() {
     const timeoutId = setTimeout(() => {
       setToast({ message: "", timeoutId: null, type: "" });
     }, 3000);
-    console.log({ timeoutId });
 
     return () => {
       console.log("clearing timeout id", timeoutId);

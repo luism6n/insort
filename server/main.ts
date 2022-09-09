@@ -278,12 +278,10 @@ function newMatch(
       correctFinalPositions,
       remainingCards,
       nextCard,
-      placeNextAfter: 0,
+      placeNextAfter: -1,
       concluded: false,
     },
   };
-
-  console.log(state);
 
   return state;
 }
@@ -421,7 +419,6 @@ io.on(
         return;
       }
 
-      console.log({ state, roomId });
       state.match.placeNextAfter = Math.min(
         state.match.placedCards.length - 1,
         Math.max(-1, state.match.placeNextAfter + data.increment)
