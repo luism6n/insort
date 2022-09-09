@@ -11,3 +11,31 @@ body {
     font-family: 'Uni';
     font-size: 1rem;
 }
+
+.card {
+    background-image: url('../assets/card_green.png');
+}
+
+.btn {
+    background-image: url('../assets/text_bar_1.png');
+}
+
+.back-btn {
+    background-image: url('../assets/back.png');
+}
+
+.send-btn {
+    background-image: url('../assets/send.png');
+}
+
+.left-btn {
+    background-image: url('../assets/arrow_left.png');
+}
+
+.right-btn {
+    background-image: url('../assets/arrow_right.png');
+}
+
+.place-btn {
+    background-image: url('../assets/place_button_bg.png');
+}

@@ -1,24 +1,60 @@
 import React, { ReactNode } from "react";
+import { colors, colors as systemColors } from "./colors";
 
 export function Title({ children }: { children: ReactNode }) {
   return <h3 className="m-1 text-xl mb-2 text-blue-400">{children}</h3>;
 }
 export function Button({
+  unique,
   onClick,
   children,
   disabled,
   type = "button",
 }: {
+  unique?: string;
   onClick?: () => void;
   children: ReactNode;
   disabled?: boolean;
   type?: "button" | "submit";
 }) {
+  let extraClasses = "";
+  let extraStyle = {};
+  switch (unique) {
+    case "back":
+      extraStyle = { width: 20, height: 28 };
+      extraClasses += " back-btn";
+      break;
+    case "send":
+      extraStyle = { width: 20, height: 28 };
+      extraClasses += " send-btn";
+      break;
+    case "left":
+      extraStyle = { width: 60, height: 60 };
+      extraClasses += " left-btn";
+      break;
+    case "right":
+      extraStyle = { width: 60, height: 60 };
+      extraClasses += " right-btn";
+      break;
+    case "place":
+      extraStyle = { width: 132, height: 64 };
+      extraClasses += " place-btn";
+      break;
+  }
+
   return (
     <button
       type={type}
       disabled={disabled}
-      className={"p-1 m-1 h-7 bg-gray-200" + (disabled ? " opacity-50" : "")}
+      className={
+        "btn p-1 m-1 h-7" + (disabled ? " opacity-50" : "") + extraClasses
+      }
+      style={{
+        height: 40,
+        width: 184,
+        ...extraStyle,
+        color: colors.purple,
+      }}
       onClick={onClick}
     >
       {children}
@@ -59,9 +95,15 @@ export function Toast(props: { message: string; type: string }) {
 
   return (
     <div
-      className={`${colors} p-2 text-center absolute`}
+      className={`${colors} p-2 text-center absolute border-4`}
       role="alert"
-      style={{ bottom: 25, left: "50%", transform: "translate(-50%, -50%)" }}
+      style={{
+        bottom: "5vh",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 10,
+        borderColor: systemColors.purple,
+      }}
     >
       <span className="block sm:inline">{props.message}</span>
     </div>
@@ -75,7 +117,7 @@ export function TextInput(props: {
 }) {
   return (
     <input
-      className={"p-1 " + (props.classes ? props.classes : "")}
+      className={"p-1 w-full " + (props.classes ? props.classes : "")}
       type="text"
       value={props.input}
       onChange={(e) => props.setInput(e.target.value)}

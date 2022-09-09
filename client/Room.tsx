@@ -1,13 +1,10 @@
 import { RoomTray } from "./RoomTray";
-import { Chat } from "./Chat";
 import { Match } from "./Match";
 import { JoinRoom } from "./JoinRoom";
-import React, { Fragment, useEffect, useState, Ref } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RoomState } from "../types/types";
-import { motion } from "framer-motion";
 import { RoomSettings } from "./RoomSettings";
-import { Scores } from "./Scores";
 import { useSocket } from "./useSocket";
 import { Button, Toast } from "./designSystem";
 import { colors } from "./colors";
@@ -16,49 +13,6 @@ export function admin(state: RoomState) {
   return state.playerIds[0];
 }
 
-export function Card({
-  content,
-  value,
-  unit,
-  x,
-  y,
-  comesFrom = { x: 0, y: 0 },
-  innerRef = null,
-  zIndex = 0,
-}: {
-  content: number | string;
-  value: number | string;
-  unit: string;
-  x?: number;
-  y?: number;
-  comesFrom?: { x: number; y: number };
-  innerRef?: Ref<HTMLDivElement> | null;
-  zIndex?: number;
-}) {
-  let style: any = { position: "relative" };
-
-  if (x !== undefined || y !== undefined) {
-    style = {
-      position: "absolute",
-    };
-  }
-
-  return (
-    <motion.div
-      style={{ ...style, zIndex }}
-      animate={{ left: x, top: y }}
-      transition={{ duration: 0.25 }}
-      initial={{ left: comesFrom.x, top: comesFrom.y }}
-      ref={innerRef}
-      className="flex-shrink-0 w-36 h-36 bg-gray-300 text-center text-align-center flex flex-col justify-between p-2"
-    >
-      <p>{content}</p>
-      <p className="font-bold  mt-auto">
-        {value} {unit}
-      </p>
-    </motion.div>
-  );
-}
 export function Room() {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
@@ -135,6 +89,11 @@ export function Room() {
   } else {
     content = (
       <Fragment>
+        <div className="flex h-0 relative" style={{ top: -50, left: "-45%" }}>
+          <Button unique="back" onClick={changeRoomSettings}>
+            <span className="sr-only">Back to room settings</span>
+          </Button>
+        </div>
         <Match
           roomId={roomId}
           changeNextCardPosition={changeNextCardPosition}
@@ -143,9 +102,6 @@ export function Room() {
           playerId={playerId}
           roomState={roomState}
         />
-        <div className="flex">
-          <Button onClick={changeRoomSettings}>Change Room Settings</Button>
-        </div>
       </Fragment>
     );
   }

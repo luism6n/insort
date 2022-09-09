@@ -10,9 +10,9 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
   }
 
   return (
-    <div className="flex flex-col justify-center w-1/2">
+    <div className="flex flex-col w-1/2">
       <Title>Join Room</Title>
-      <form onSubmit={handleJoin} className="flex justify-center">
+      <form onSubmit={handleJoin} className="flex flex-col gap-2 items-center">
         <TextInput input={nameInput} setInput={setNameInput} />
         <Button type="submit">Join</Button>
       </form>

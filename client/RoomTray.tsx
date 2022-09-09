@@ -28,9 +28,10 @@ export function RoomTray(props: {
           borderColor: colors.purple,
           top: openTray ? -250 : -50,
           height: 250,
+          zIndex: 5,
         }}
       >
-        <div className="flex flex-col max-w-xl w-full">
+        <div className="flex flex-col max-w-xl w-full p-2">
           <div
             className="flex justify-between items-center underline"
             style={{ height: 50 }}

@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState, useRef } from "react";
 import { Button } from "./designSystem";
 import { getDivDimensions, getRefYDistance } from "./htmlMeasuring";
-import { Card } from "./Room";
+import { Card } from "./Card";
 
 export function CardsDemo() {
   const [cards, setCards] = useState<number[]>([0, 1, 2, 3, 4, 5, 6, 7, 8]);
@@ -39,8 +39,8 @@ export function CardsDemo() {
     setCardDimensions([cardWidth, cardHeight]);
   }, [firstCard.current, nextCard.current, placedCardsArea.current]);
 
-  let w = window.innerWidth;
-  let padding = 20;
+  let paddingX = 20;
+  let paddingY = 40;
 
   return (
     <Fragment>
@@ -48,15 +48,15 @@ export function CardsDemo() {
         <div
           style={{
             position: "relative",
-            height: cardDimensions[1] + padding,
+            height: cardDimensions[1] + paddingY,
             width: 0,
           }}
         >
           {cards.map((num, i) => {
             let x =
-              (i - placeNextAfter) * (cardDimensions[0] + padding / 2) +
-              padding / 4;
-            let y = 0 + padding / 2;
+              (i - placeNextAfter) * (cardDimensions[0] + paddingX / 2) +
+              paddingX / 4;
+            let y = 0 + paddingY / 2;
             return (
               <Card
                 innerRef={i === 0 ? firstCard : null}
