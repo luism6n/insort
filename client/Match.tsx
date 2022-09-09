@@ -129,7 +129,7 @@ export function Match(props: {
       style={{ height: "calc(100% - 250px)" }}
     >
       <div className="flex flex-col items-center">
-        <p className="text-sm mt-2">{"< bigger | smaller >"}</p>
+        <p className="text-sm mt-2">{`< ${match.deck.biggerIs} | ${match.deck.smallerIs} >`}</p>
         <section
           ref={(r) => setPlacedCardsArea(r)}
           className="flex justify-center align-center mt-1 border-y-4 relative bg-white"
@@ -221,6 +221,12 @@ export function Match(props: {
               numPlayersToShow={3}
             />
             <Button onClick={() => props.newGame()}>Again</Button>
+            <a
+              className="text-sm underline hover:text-red-800"
+              href={props.roomState.match.deck.source}
+            >
+              Deck source (external link)
+            </a>
           </div>
         )}
         <div className="flex flex-row">

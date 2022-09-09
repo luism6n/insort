@@ -15,8 +15,11 @@ const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || "3000";
 const decks: Deck[] = [
   {
-    name: "albums",
+    name: "Albums of all time by copies sold",
     unit: "M of copies",
+    source: "http://google.com",
+    smallerIs: "less",
+    biggerIs: "more",
     cards: [
       {
         text: "Back in Black - AC/DC",
@@ -37,8 +40,11 @@ const decks: Deck[] = [
     ],
   },
   {
-    name: "planets",
+    name: "Planets by distance from Sun",
     unit: "UA",
+    smallerIs: "closer",
+    biggerIs: "farther",
+    source: "http://google.com",
     cards: [
       { text: "Mercury", value: 0.39 },
       { text: "Venus", value: 0.72 },
@@ -51,8 +57,11 @@ const decks: Deck[] = [
     ],
   },
   {
-    name: "top 20 countries by population ",
+    name: "Countries by population",
+    biggerIs: "more",
+    smallerIs: "less",
     unit: "M of people",
+    source: "http://google.com",
     cards: [
       {
         text: "China",
@@ -137,9 +146,11 @@ const decks: Deck[] = [
     ],
   },
   {
-    name: "programming languages by year of development",
+    name: "Programming languages by year of invention",
+    biggerIs: "newer",
+    smallerIs: "older",
     unit: "year",
-    // source: "https://en.wikipedia.org/wiki/History_of_programming_languages",
+    source: "https://en.wikipedia.org/wiki/History_of_programming_languages",
     cards: [
       {
         text: "C",

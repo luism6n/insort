@@ -1,6 +1,9 @@
 export interface Deck {
   name: string;
   unit: string;
+  source: string;
+  smallerIs: string;
+  biggerIs: string;
   cards: Card[];
 }
 

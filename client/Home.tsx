@@ -8,7 +8,7 @@ export function Home() {
       <p>
         {/* This has to be an anchor tag, not a Link,
             so that we actually hit the server */}
-        <a className="hover:text-red-500" href={`/r/${nanoid()}`}>
+        <a className="hover:text-red-800" href={`/r/${nanoid()}`}>
           New Room
         </a>
       </p>
