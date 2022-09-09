@@ -13,13 +13,13 @@ interface RoomSettingsProps {
 export function RoomSettings(props: RoomSettingsProps) {
   return (
     <div className="flex flex-col justify-center h-full">
-      <Title>Choose Deck</Title>
+      <Title>Deck</Title>
       <Select
         selected={props.selectedDeck}
         setSelected={props.setSelectedDeck}
         options={props.deckOptions}
       ></Select>
-      <Title>Choose Game Mode</Title>
+      <Title>Game Mode</Title>
       <Select
         selected={props.selectedGameMode}
         setSelected={props.setSelectedGameMode}

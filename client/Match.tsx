@@ -97,7 +97,7 @@ export function Match(props: {
   return (
     <div
       className="w-full flex flex-col items-center justify-between relative"
-      style={{ height: "calc(100% - 30px)" }}
+      style={{ height: "calc(100% - 250px)" }}
     >
       <div className="flex flex-col items-center">
         <p className="text-sm mt-2">{"< bigger | smaller >"}</p>
@@ -179,7 +179,7 @@ export function Match(props: {
         )}
       </div>
 
-      <div className="flex flex-col items-center mb-10">
+      <div className="flex flex-col items-center mt-2">
         {props.roomState.match.concluded && (
           <Fragment>
             <Button onClick={() => props.newGame()}>Again</Button>
