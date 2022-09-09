@@ -9,6 +9,41 @@ import expandIcon from "../assets/expand_up.png";
 // @ts-ignore
 import collapseIcon from "../assets/expand_down.png";
 
+function RoomTrayHeader(props: {
+  changeTeams: () => void;
+  openTray: boolean;
+  setOpenTray: React.Dispatch<React.SetStateAction<boolean>>;
+  gameMode: string | null;
+  title: string;
+  toggleContent: () => void;
+}) {
+  return (
+    <div className="flex justify-between items-center" style={{ height: 50 }}>
+      {props.gameMode === "teams" ? (
+        <button className="underline" onClick={props.changeTeams}>
+          Switch Team
+        </button>
+      ) : (
+        // div is here for flex to justify-between
+        <div />
+      )}
+      <p>
+        {props.title} (see{" "}
+        <button className="underline" onClick={props.toggleContent}>
+          {props.title === "chat" ? "scoreboard" : "chat"}
+        </button>
+        )
+      </p>
+      <div onClick={() => props.setOpenTray(!props.openTray)}>
+        <img
+          src={props.openTray ? collapseIcon : expandIcon}
+          alt="Expand settings tray"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function RoomTray(props: {
   roomState: RoomState;
   playerId: string;
@@ -17,6 +52,7 @@ export function RoomTray(props: {
   changeTeams: () => void;
 }) {
   const [openTray, setOpenTray] = useState(false);
+  const [mode, setMode] = useState<"chat" | "scores">("chat");
 
   return (
     <div className="relative w-full h-0">
@@ -31,40 +67,36 @@ export function RoomTray(props: {
           zIndex: 5,
         }}
       >
-        <div className="flex flex-col max-w-xl w-full p-2">
-          <div
-            className="flex justify-between items-center underline"
-            style={{ height: 50 }}
-          >
-            {props.roomState.match?.gameMode === "teams" ? (
-              <button onClick={props.changeTeams}>Switch Team</button>
-            ) : (
-              // div is here for flex to justify-between
-              <div />
-            )}
-            <div onClick={() => setOpenTray(!openTray)}>
-              <img
-                src={openTray ? collapseIcon : expandIcon}
-                alt="Expand settings tray"
-              />
-            </div>
-          </div>
+        <div className="flex flex-col max-w-xl w-full p-2 bg-grey-200">
+          <RoomTrayHeader
+            changeTeams={props.changeTeams}
+            openTray={openTray}
+            gameMode={props.roomState.match?.gameMode}
+            setOpenTray={setOpenTray}
+            title={mode}
+            toggleContent={() =>
+              setMode((m) => (m === "chat" ? "scores" : "chat"))
+            }
+          />
           <div className="flex w-full" style={{ height: 200 }}>
-            <div className="flex-1">
-              <Scores playerId={props.playerId} roomState={props.roomState} />
-            </div>
-            <div
-              style={{
-                flex: 2,
-              }}
-              className="h-full pb-2"
-            >
-              <Chat
-                playerNames={props.roomState.playerNames}
-                chatMessages={props.chatMessages}
-                sendChatMessage={props.sendChatMessage}
-              />
-            </div>
+            {mode === "chat" ? (
+              <div
+                style={{
+                  flex: 2,
+                }}
+                className="h-full pb-2"
+              >
+                <Chat
+                  playerNames={props.roomState.playerNames}
+                  chatMessages={props.chatMessages}
+                  sendChatMessage={props.sendChatMessage}
+                />
+              </div>
+            ) : (
+              <div className="flex-1">
+                <Scores playerId={props.playerId} roomState={props.roomState} />
+              </div>
+            )}
           </div>
         </div>
       </div>

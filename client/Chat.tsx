@@ -25,7 +25,6 @@ export function Chat(props: {
 
   return (
     <div className="flex flex-col w-full h-full justify-between items-center">
-      <p>Chat</p>
       <div className="flex flex-col w-full" style={{ height: 180 }}>
         <ul id="messages" style={{ height: 130 }} className="overflow-y-scroll">
           {props.chatMessages.map(
@@ -38,7 +37,7 @@ export function Chat(props: {
         </ul>
         <form
           style={{ height: 50 }}
-          className="flex items-center pb-4"
+          className="flex items-center"
           onSubmit={submitChatMessage}
         >
           <TextInput
