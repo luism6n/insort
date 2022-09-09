@@ -57,7 +57,7 @@ export function RoomTray(props: {
   return (
     <div className="relative w-full h-0">
       <div
-        className="flex justify-center w-full border-t-4"
+        className="flex justify-center w-full border-t-4 p-2"
         style={{
           position: "absolute",
           backgroundColor: colors.yellow,
