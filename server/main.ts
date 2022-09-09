@@ -443,6 +443,9 @@ io.on(
       if (corrected === state.match.placeNextAfter) {
         state.scores[socket.id] += 1;
         state.match.scores[socket.id] += 1;
+        io.to(roomId).emit("notification", "Scored!");
+      } else {
+        io.to(roomId).emit("warning", "Missed!");
       }
 
       state.match.placedCards.splice(corrected + 1, 0, state.match.nextCard);
