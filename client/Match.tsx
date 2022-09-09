@@ -194,6 +194,7 @@ export function Match(props: {
             </div>
             <div ref={(r) => setNextCard(r)}>
               <Card
+                clsNames="next-card"
                 content={
                   props.roomState.match.deck.cards[
                     props.roomState.match.nextCard

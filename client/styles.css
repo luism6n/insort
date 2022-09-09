@@ -16,6 +16,10 @@ body {
     background-image: url('../assets/card_green.png');
 }
 
+.next-card {
+    background-image: url('../assets/card_orange.png');
+}
+
 .btn {
     background-image: url('../assets/text_bar_1.png');
 }

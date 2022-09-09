@@ -26,7 +26,7 @@ export function Chat(props: {
   return (
     <div className="flex flex-col w-full h-full justify-between items-center">
       <div className="flex flex-col w-full h-full">
-        <ul id="messages" style={{ height: 150 }} className="overflow-y-scroll">
+        <ul id="messages" style={{ height: 140 }} className="overflow-y-scroll">
           {props.chatMessages.map(
             (m: { text: string; senderId: string; id: string }) => (
               <li key={m.id}>
