@@ -7,6 +7,10 @@ import { colors } from "./colors";
 
 // @ts-ignore
 import arrowBig from "../assets/arrow_big.png";
+// @ts-ignore
+import redCircle from "../assets/red_circle.png";
+// @ts-ignore
+import blueCircle from "../assets/blue_circle.png";
 import { Scores } from "./Scores";
 
 export function Match(props: {
@@ -77,6 +81,30 @@ export function Match(props: {
       props.changeNextCardPosition(increment);
     }
   }
+
+  let match = props.roomState.match;
+
+  const teamIndicator =
+    props.roomState.match.gameMode !== "teams"
+      ? null
+      : props.roomState.match.teams[props.roomState.currentPlayerId] === "red"
+      ? redCircle
+      : blueCircle;
+
+  const currentPlayerIndicator = match.concluded ? null : (
+    <div className="flex flex-row gap-2 items-center">
+      {teamIndicator && (
+        <img style={{ width: 10, height: 10 }} src={teamIndicator} />
+      )}
+
+      <p className="text-sm">
+        {props.roomState.currentPlayerId === props.playerId
+          ? "your turn"
+          : props.roomState.playerNames[props.roomState.currentPlayerId] +
+            " is playing..."}
+      </p>
+    </div>
+  );
 
   let paddingX = 10;
   let paddingY = 40;
@@ -211,6 +239,7 @@ export function Match(props: {
             <span className="sr-only">Move card right</span>
           </Button>
         </div>
+        {currentPlayerIndicator}
       </div>
     </div>
   );

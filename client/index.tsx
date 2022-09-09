@@ -11,7 +11,7 @@ import { colors } from "./colors";
 function App() {
   return (
     <div
-      style={{ backgroundColor: colors.blue }}
+      style={{ backgroundColor: colors.blue, color: colors.purple }}
       className="flex flex-col items-center h-screen w-screen overflow-hidden"
     >
       <Header />

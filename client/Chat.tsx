@@ -35,11 +35,7 @@ export function Chat(props: {
             )
           )}
         </ul>
-        <form
-          style={{ height: 50 }}
-          className="flex items-center"
-          onSubmit={submitChatMessage}
-        >
+        <form className="flex items-center" onSubmit={submitChatMessage}>
           <TextInput
             classes="flex-1"
             input={chatInput}
