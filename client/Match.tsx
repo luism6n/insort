@@ -224,6 +224,7 @@ export function Match(props: {
             <a
               className="text-sm underline hover:text-red-800"
               href={props.roomState.match.deck.source}
+              target="_blank"
             >
               Deck source (external link)
             </a>
