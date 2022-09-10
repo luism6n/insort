@@ -279,7 +279,7 @@ export const decks: Deck[] = [
         value: 5.62,
       },
       {
-        text: "Uptown Funk - Mark Ronson",
+        text: "Mark Ronson - Uptown Funk",
         value: 4.68,
       },
       {
@@ -287,7 +287,7 @@ export const decks: Deck[] = [
         value: 4.53,
       },
       {
-        text: "El Chombo - Dame tu Cosita",
+        text: "El Chombo - Dame Tu Cosita",
         value: 4.05,
       },
       {
@@ -302,10 +302,6 @@ export const decks: Deck[] = [
         text: "OneRepublic - Counting Stars",
         value: 3.64,
       },      
-      {
-        text: "Alan Walker - Faded",
-        value: 3.33,
-      },
       {
         text: "Justin Bieber - Sorry",
         value: 3.58,
@@ -323,8 +319,12 @@ export const decks: Deck[] = [
         value: 3.34,
       },
       {
-        text: "Alan Walker - Faded",
+        text: "Maroon 5 - Girls Like You",
         value: 3.33,
+      },
+      {
+        text: "Passenger - Let Her Go",
+        value: 3.29,
       },
     ],
   },
