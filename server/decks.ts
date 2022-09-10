@@ -186,7 +186,7 @@ export const decks: Deck[] = [
       },
       {
         text: "Ed Sheeran - Shape of You",
-        value: 1990,
+        value: 5.80,
       },
       {
         text: "Wiz Khalifa - See You Again",
