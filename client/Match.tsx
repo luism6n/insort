@@ -218,7 +218,7 @@ export function Match(props: {
               })}
             </div>
 
-            <div className="w-full mx-4 flex text-sm justify-between">
+            <div className="w-full px-4 flex text-sm justify-between">
               <p className="flex-1 text-left">{`← ${match.deck.biggerIs}`}</p>
               <p className="flex-1 ml-auto text-right">{`${match.deck.smallerIs} →`}</p>
             </div>

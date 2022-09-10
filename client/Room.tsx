@@ -89,7 +89,10 @@ export function Room() {
   } else {
     content = (
       <Fragment>
-        <div className="flex h-0 relative" style={{ top: -50, left: "-45%" }}>
+        <div
+          className="flex h-0 relative"
+          style={{ top: -50, left: "calc(-50% + 20px + 1rem)" }}
+        >
           <Button unique="back" onClick={changeRoomSettings}>
             <span className="sr-only">Back to room settings</span>
           </Button>
