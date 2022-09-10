@@ -193,7 +193,7 @@ export const decks: Deck[] = [
         value: 5.62,
       },
       {
-        text: "Uptown Funk - Mark Ronson",
+        text: "Mark Ronson - Uptown Funk",
         value: 4.68,
       },
       {
