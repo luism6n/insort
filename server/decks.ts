@@ -48,7 +48,7 @@ export const decks: Deck[] = [
     biggerIs: "more",
     smallerIs: "less",
     unit: "M of people",
-    source: "http://google.com",
+    source: "https://www.worldometers.info/world-population/population-by-country/",
     cards: [
       {
         text: "China",
