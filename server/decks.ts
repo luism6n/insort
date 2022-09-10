@@ -173,4 +173,73 @@ export const decks: Deck[] = [
       },
     ],
   },
+  {
+    name: "YouTube music videos by views",
+    biggerIs: "highest",
+    smallerIs: "lowest",
+    unit: "billion views",
+    source: "https://en.wikipedia.org/wiki/List_of_most-viewed_YouTube_videos",
+    cards: [
+      {
+        text: "Luis Fonsi - Despacito",
+        value: 7.96,
+      },
+      {
+        text: "Ed Sheeran - Shape of You",
+        value: 5.80,
+      },
+      {
+        text: "Wiz Khalifa - See You Again",
+        value: 5.62,
+      },
+      {
+        text: "Uptown Funk - Mark Ronson",
+        value: 4.68,
+      },
+      {
+        text: "Psy - Gangnam Style",
+        value: 4.53,
+      },
+      {
+        text: "El Chombo - Dame tu Cosita",
+        value: 4.05,
+      },
+      {
+        text: "Maroon 5 - Sugar",
+        value: 3.75,
+      },
+      {
+        text: "Katy Perry - Roar",
+        value: 3.64,
+      },      
+      {
+        text: "OneRepublic - Counting Stars",
+        value: 3.64,
+      },      
+      {
+        text: "Alan Walker - Faded",
+        value: 3.33,
+      },
+      {
+        text: "Justin Bieber - Sorry",
+        value: 3.58,
+      },
+      {
+        text: "Crazy Frog - Axel F",
+        value: 3.49,
+      },
+      {
+        text: "Ed Sheeran - Thinking Out Loud",
+        value: 3.49,
+      },
+      {
+        text: "Katy Perry - Dark Horse",
+        value: 3.34,
+      },
+      {
+        text: "Alan Walker - Faded",
+        value: 3.33,
+      },
+    ],
+  },
 ];
