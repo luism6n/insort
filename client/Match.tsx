@@ -155,10 +155,8 @@ export function Match(props: {
       style={{ height: "calc(100% - 250px)" }}
     >
       <div className="flex flex-col items-center">
-        <div className="w-full flex justify-between text-sm mt-2">
-          <p className="flex-1 text-right">{`← ${match.deck.biggerIs}`}</p>
-          <p className="w-8 text-center">{" | "}</p>
-          <p className="flex-1 ml-auto text-left">{`${match.deck.smallerIs} →`}</p>
+        <div className="w-full flex justify-center text-sm mt-2">
+          <p>{match.deck.name}</p>
         </div>
         <section
           ref={(r) => setPlacedCardsArea(r)}
@@ -169,52 +167,61 @@ export function Match(props: {
             width: "100vw",
           }}
         >
-          <div
-            style={{
-              position: "relative",
-              height: cardDimensions[1] + paddingY,
-              width: 0,
-            }}
-          >
-            {/* This card is here so I can have a stable element to measure card size */}
-            <Card
-              innerRef={(r) => {
-                setVirtualReferenceCard(r);
+          <div className="flex w-full flex-col justify-between items-center max-w-xl">
+            <div
+              style={{
+                position: "relative",
+                height: cardDimensions[1] + paddingY,
+                width: 0,
               }}
-              x={-100000}
-              comesFrom={{ x: -100000, y: -100000 }}
-              content={"Virtual card"}
-              value={0}
-              unit=""
-            />
-            {clientSidePlacedCards.map((indexInDeck: number, i) => {
-              let card = props.roomState.match.deck.cards[indexInDeck];
-              let x =
-                (i - clientSidePlaceNextAfter - 1) *
-                  (cardDimensions[0] + paddingX) +
-                paddingX / 2 -
-                (match.suspense ? cardDimensions[0] / 2 + paddingX / 2 : 0);
-              let y = 0 + paddingY / 4;
-              return (
-                <Card
-                  key={card.text}
-                  unit={props.roomState.match.deck.unit}
-                  x={x}
-                  y={y}
-                  value={
-                    match.suspense && indexInDeck === match.nextCard
-                      ? "??"
-                      : card.value
-                  }
-                  content={card.text}
-                  zIndex={2}
-                  comesFrom={{
-                    x: -cardDimensions[0] / 2,
-                    y: initialY,
-                  }}
-                />
-              );
-            })}
+            >
+              {/* This card is here so I can have a stable element to measure card size */}
+              <Card
+                innerRef={(r) => {
+                  setVirtualReferenceCard(r);
+                }}
+                x={-100000}
+                comesFrom={{ x: -100000, y: -100000 }}
+                content={"Virtual card"}
+                value={0}
+                unit=""
+              />
+              {clientSidePlacedCards.map((indexInDeck: number, i) => {
+                let card = props.roomState.match.deck.cards[indexInDeck];
+                let x =
+                  (i - clientSidePlaceNextAfter - 1) *
+                    (cardDimensions[0] + paddingX) +
+                  paddingX / 2 -
+                  (match.suspense ? cardDimensions[0] / 2 + paddingX / 2 : 0);
+                let y = 0 + paddingY / 4;
+                return (
+                  <Card
+                    key={card.text}
+                    unit={props.roomState.match.deck.unit}
+                    x={x}
+                    y={y}
+                    value={
+                      match.suspense && indexInDeck === match.nextCard
+                        ? "??"
+                        : card.value
+                    }
+                    content={`#${i + 1}${
+                      indexInDeck === match.nextCard ? "?" : ""
+                    } ${card.text}`}
+                    zIndex={2}
+                    comesFrom={{
+                      x: -cardDimensions[0] / 2,
+                      y: initialY,
+                    }}
+                  />
+                );
+              })}
+            </div>
+
+            <div className="w-full mx-4 flex text-sm justify-between">
+              <p className="flex-1 text-left">{`← ${match.deck.biggerIs}`}</p>
+              <p className="flex-1 ml-auto text-right">{`${match.deck.smallerIs} →`}</p>
+            </div>
           </div>
         </section>
 
@@ -283,7 +290,11 @@ export function Match(props: {
           </div>
         )}
         <div className="flex flex-row">
-          <Button unique="left" onClick={() => moveCard(-1)}>
+          <Button
+            disabled={match.suspense}
+            unique="left"
+            onClick={() => moveCard(-1)}
+          >
             <span className="sr-only">Move card left</span>
           </Button>
           <Button
@@ -295,7 +306,11 @@ export function Match(props: {
               {match.suspense ? "CONFIRM" : "PLACE"}
             </span>
           </Button>
-          <Button unique="right" onClick={() => moveCard(+1)}>
+          <Button
+            disabled={match.suspense}
+            unique="right"
+            onClick={() => moveCard(+1)}
+          >
             <span className="sr-only">Move card right</span>
           </Button>
         </div>
