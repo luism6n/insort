@@ -203,10 +203,17 @@ export function Match(props: {
                     value={
                       match.suspense && indexInDeck === match.nextCard
                         ? "??"
-                        : card.value
+                        : Intl.NumberFormat(
+                            "en-US",
+                            match.deck.numFormatOptions
+                              ? match.deck.numFormatOptions
+                              : {}
+                          ).format(card.value)
                     }
                     content={`#${i + 1}${
-                      indexInDeck === match.nextCard ? "?" : ""
+                      indexInDeck === match.nextCard && !match.concluded
+                        ? "?"
+                        : ""
                     } ${card.text}`}
                     zIndex={2}
                     comesFrom={{

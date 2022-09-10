@@ -312,7 +312,15 @@ io.on(
       }
 
       let corrected = correctPlace(state);
-      if (corrected === state.match.placeNextAfter) {
+      let cards = state.match.deck.cards;
+      let p = state.match.placeNextAfter;
+      let n = state.match.nextCard;
+      let placedCards = state.match.placedCards;
+      console.log(cards[placedCards[p]], cards[n], cards[placedCards[p + 1]]);
+      if (
+        (cards[placedCards[p]]?.value || Infinity) >= cards[n].value &&
+        cards[n].value >= (cards[placedCards[p + 1]]?.value || -Infinity)
+      ) {
         if (!(state.match.gameMode === "Coop")) {
           state.scores[socket.id] += 1;
           state.match.scores[socket.id] += 1;

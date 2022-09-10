@@ -7,8 +7,12 @@ export const decks: Deck[] = [
     source: "https://en.wikipedia.org/wiki/List_of_highest-grossing_films",
     smallerIs: "cheaper",
     biggerIs: "more expensive",
+    numFormatOptions: {
+      notation: "compact",
+      maximumFractionDigits: 2,
+    },
     cards: [
-      { text: "[{Avatar (2009)", value: 2847397339 },
+      { text: "Avatar (2009)", value: 2847397339 },
       {
         text: "Avengers: Endgame (2019)",
         value: 2797501328,
@@ -26,7 +30,7 @@ export const decks: Deck[] = [
         value: 2048359754,
       },
       {
-        text: "Spider-Man: No Way Home film currently playing (2021)",
+        text: "Spider-Man: No Way Home (2021)",
         value: 1910675428,
       },
       {
@@ -50,7 +54,7 @@ export const decks: Deck[] = [
         value: 1450026933,
       },
       {
-        text: "Top Gun: Maverick film currently playing (2022)",
+        text: "Top Gun: Maverick (2022)",
         value: 1442880344,
       },
       {
@@ -62,7 +66,7 @@ export const decks: Deck[] = [
         value: 1347280838,
       },
       {
-        text: "Harry Potter and the Deathly Hallows – Part 2 (2011)",
+        text: "Harry Potter and the Deathly Hallows - Part 2 (2011)",
         value: 1342025430,
       },
       {
@@ -88,27 +92,31 @@ export const decks: Deck[] = [
     ],
   },
   {
-    name: "Albums of all time by copies sold",
-    unit: "M of copies",
+    name: "Albums by copies sold",
+    unit: "copies",
     source: "http://google.com",
     smallerIs: "less",
     biggerIs: "more",
+    numFormatOptions: {
+      notation: "compact",
+      maximumFractionDigits: 2,
+    },
     cards: [
       {
         text: "Back in Black - AC/DC",
-        value: 30.1,
+        value: 30100000,
       },
       {
         text: "Thriller - Michael Jackson",
-        value: 50.2,
+        value: 50200000,
       },
       {
         text: "The Bodyguard - Whitney Houston / various artists",
-        value: 28.7,
+        value: 28700000,
       },
       {
         text: "The Dark Side of the Moon - Pink Floyd",
-        value: 24.8,
+        value: 24800000,
       },
     ],
   },
@@ -133,88 +141,93 @@ export const decks: Deck[] = [
     name: "Countries by population",
     biggerIs: "more",
     smallerIs: "less",
-    unit: "M of people",
-    source: "https://www.worldometers.info/world-population/population-by-country/",
+    unit: "people",
+    numFormatOptions: {
+      notation: "compact",
+      maximumFractionDigits: 2,
+    },
+    source:
+      "https://www.worldometers.info/world-population/population-by-country/",
     cards: [
       {
         text: "China",
-        value: 1394,
+        value: 1394000000,
       },
       {
         text: "India",
-        value: 1326,
+        value: 1326000000,
       },
       {
         text: "United States",
-        value: 332,
+        value: 332000000,
       },
       {
         text: "Indonesia",
-        value: 267,
+        value: 267000000,
       },
       {
         text: "Pakistan",
-        value: 233,
+        value: 233000000,
       },
       {
         text: "Nigeria",
-        value: 214,
+        value: 214000000,
       },
       {
         text: "Brazil",
-        value: 211,
+        value: 211000000,
       },
       {
         text: "Bangladesh",
-        value: 162,
+        value: 162000000,
       },
       {
         text: "Russia",
-        value: 141,
+        value: 141000000,
       },
       {
         text: "Mexico",
-        value: 128,
+        value: 128000000,
       },
       {
         text: "Japan",
-        value: 125,
+        value: 125000000,
       },
       {
         text: "Philippines",
-        value: 109,
+        value: 109000000,
       },
       {
         text: "Ethiopia",
-        value: 108,
+        value: 108000000,
       },
       {
         text: "Egypt",
-        value: 104,
+        value: 104000000,
       },
       {
         text: "Democratic Republic of the Congo",
-        value: 101,
+        value: 101000000,
       },
       {
         text: "Vietnam",
-        value: 98,
+        value: 98000000,
       },
       {
         text: "Iran",
-        value: 84,
+        value: 84000000,
       },
       {
         text: "Turkey",
-        value: 82,
+        value: 82000000,
       },
       {
         text: "Germany",
-        value: 80,
+        value: 80000000,
       },
       {
         text: "Thailand",
-        value: 68,
+        value: 68000000,
       },
     ],
   },
@@ -222,7 +235,10 @@ export const decks: Deck[] = [
     name: "Programming languages by year of invention",
     biggerIs: "newer",
     smallerIs: "older",
-    unit: "year",
+    unit: "",
+    numFormatOptions: {
+      useGrouping: false,
+    },
     source: "https://en.wikipedia.org/wiki/History_of_programming_languages",
     cards: [
       {
@@ -263,68 +279,117 @@ export const decks: Deck[] = [
     name: "YouTube music videos by views",
     biggerIs: "highest",
     smallerIs: "lowest",
-    unit: "billion views",
+    unit: "views",
+    numFormatOptions: {
+      notation: "compact",
+      maximumFractionDigits: 2,
+    },
     source: "https://en.wikipedia.org/wiki/List_of_most-viewed_YouTube_videos",
     cards: [
       {
         text: "Luis Fonsi - Despacito",
-        value: 7.96,
+        value: 7960000000,
       },
       {
         text: "Ed Sheeran - Shape of You",
-        value: 5.80,
+        value: 5800000000,
       },
       {
         text: "Wiz Khalifa - See You Again",
-        value: 5.62,
+        value: 5620000000,
       },
       {
         text: "Mark Ronson - Uptown Funk",
-        value: 4.68,
+        value: 4680000000,
       },
       {
         text: "Psy - Gangnam Style",
-        value: 4.53,
+        value: 4530000000,
       },
       {
         text: "El Chombo - Dame Tu Cosita",
-        value: 4.05,
+        value: 4050000000,
       },
       {
         text: "Maroon 5 - Sugar",
-        value: 3.75,
+        value: 3750000000,
       },
       {
         text: "Katy Perry - Roar",
-        value: 3.64,
-      },      
+        value: 3640000000,
+      },
       {
         text: "OneRepublic - Counting Stars",
-        value: 3.64,
-      },      
+        value: 3640000000,
+      },
       {
         text: "Justin Bieber - Sorry",
-        value: 3.58,
+        value: 3580000000,
       },
       {
         text: "Crazy Frog - Axel F",
-        value: 3.49,
+        value: 3490000000,
       },
       {
         text: "Ed Sheeran - Thinking Out Loud",
-        value: 3.49,
+        value: 3490000000,
       },
       {
         text: "Katy Perry - Dark Horse",
-        value: 3.34,
+        value: 3340000000,
       },
       {
         text: "Maroon 5 - Girls Like You",
-        value: 3.33,
+        value: 3330000000,
       },
       {
         text: "Passenger - Let Her Go",
-        value: 3.29,
+        value: 3290000000,
+      },
+    ],
+  },
+  {
+    name: "Planets by size",
+    biggerIs: "bigger",
+    smallerIs: "smaller",
+    unit: "km",
+    numFormatOptions: {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    },
+    source: "https://en.wikipedia.org/wiki/List_of_most-viewed_YouTube_videos",
+    cards: [
+      {
+        text: "Mercury",
+        value: 2440,
+      },
+      {
+        text: "Venus",
+        value: 6052,
+      },
+      {
+        text: "Earth",
+        value: 6371,
+      },
+      {
+        text: "Mars",
+        value: 3390,
+      },
+      {
+        text: "Jupiter",
+        value: 69911,
+      },
+      {
+        text: "Saturn",
+        value: 58232,
+      },
+      {
+        text: "Uranus",
+        value: 25362,
+      },
+      {
+        text: "Neptune",
+        value: 24622,
       },
     ],
   },

@@ -5,6 +5,7 @@ export interface Deck {
   smallerIs: string;
   biggerIs: string;
   cards: Card[];
+  numFormatOptions?: Intl.NumberFormatOptions;
 }
 
 export interface Card {
