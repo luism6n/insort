@@ -243,8 +243,3 @@ export const decks: Deck[] = [
     ],
   },
 ];
-
-Crocodile
-Green Anaconda
-Polar Bear 
-Ostrich
