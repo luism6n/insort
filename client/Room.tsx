@@ -36,6 +36,7 @@ export function Room() {
     changeTeams,
     join,
     sendChatMessage,
+    cancelSuspense,
     playerId,
   } = useSocket(roomId, setRoomState, setToast, setChatMessages);
 
@@ -94,6 +95,7 @@ export function Room() {
           </Button>
         </div>
         <Match
+          cancelSuspense={cancelSuspense}
           roomId={roomId}
           changeNextCardPosition={changeNextCardPosition}
           placeCard={placeCard}

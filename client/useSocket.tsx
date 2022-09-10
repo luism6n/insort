@@ -48,6 +48,11 @@ export function useSocket(
     }
   }, [socket]);
 
+  function cancelSuspense() {
+    console.log("emitting cancelSuspense");
+    socket!.emit("cancelSuspense");
+  }
+
   function sendChatMessage(text: string) {
     console.log("emitting chatMessage:", text);
     socket!.emit("chatMessage", { text });
@@ -93,6 +98,7 @@ export function useSocket(
     sendChatMessage,
     changeTeams,
     join,
+    cancelSuspense,
     playerId: socket?.id,
   };
 }

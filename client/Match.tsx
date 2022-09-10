@@ -16,6 +16,7 @@ import { Scores } from "./Scores";
 export function Match(props: {
   roomId: string;
   changeNextCardPosition: (increment: number) => void;
+  cancelSuspense: () => void;
   placeCard: () => void;
   newGame: () => void;
   playerId: string;
@@ -30,6 +31,7 @@ export function Match(props: {
   const [clientSidePlaceNextAfter, setClientSidePlaceNextAfter] = useState(
     props.roomState?.match?.placeNextAfter
   );
+  const [nextComesFrom, setNextComesFrom] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!props.roomState.match.concluded) {
@@ -123,6 +125,27 @@ export function Match(props: {
     initialY = 0;
   }
 
+  function cancelSuspense() {
+    setNextComesFrom({
+      x: -cardDimensions[0] / 2,
+      y: -cardDimensions[1] - 30 + 15 - paddingY / 2,
+    });
+    props.cancelSuspense();
+  }
+
+  function placeCard() {
+    setNextComesFrom({
+      x: -cardDimensions[0] / 2,
+      y: 0,
+    });
+    props.placeCard();
+  }
+
+  let clientSidePlacedCards = Array.from(match.placedCards);
+  if (match.suspense) {
+    clientSidePlacedCards.splice(match.placeNextAfter + 1, 0, match.nextCard);
+  }
+
   return (
     <div
       className="w-full flex flex-col items-center justify-between relative"
@@ -157,12 +180,13 @@ export function Match(props: {
               value={0}
               unit=""
             />
-            {props.roomState.match.placedCards.map((indexInDeck: number, i) => {
+            {clientSidePlacedCards.map((indexInDeck: number, i) => {
               let card = props.roomState.match.deck.cards[indexInDeck];
               let x =
                 (i - clientSidePlaceNextAfter - 1) *
                   (cardDimensions[0] + paddingX) +
-                paddingX / 2;
+                paddingX / 2 -
+                (match.suspense ? cardDimensions[0] / 2 + paddingX / 2 : 0);
               let y = 0 + paddingY / 4;
               return (
                 <Card
@@ -170,7 +194,11 @@ export function Match(props: {
                   unit={props.roomState.match.deck.unit}
                   x={x}
                   y={y}
-                  value={card.value}
+                  value={
+                    match.suspense && indexInDeck === match.nextCard
+                      ? "??"
+                      : card.value
+                  }
                   content={card.text}
                   zIndex={2}
                   comesFrom={{
@@ -192,19 +220,36 @@ export function Match(props: {
                 src={arrowBig}
               ></img>
             </div>
-            <div ref={(r) => setNextCard(r)}>
-              <Card
-                clsNames="next-card"
-                content={
-                  props.roomState.match.deck.cards[
-                    props.roomState.match.nextCard
-                  ].text
-                }
-                unit={props.roomState.match.deck.unit}
-                value={"??"}
-                zIndex={1}
-              />
-            </div>
+            {!match.suspense && (
+              <div
+                className="relative"
+                style={{ height: cardDimensions[1] }}
+                ref={(r) => setNextCard(r)}
+              >
+                <Card
+                  clsNames="next-card"
+                  content={
+                    props.roomState.match.deck.cards[
+                      props.roomState.match.nextCard
+                    ].text
+                  }
+                  comesFrom={nextComesFrom}
+                  x={-cardDimensions[0] / 2}
+                  y={0}
+                  unit={props.roomState.match.deck.unit}
+                  value={"??"}
+                  zIndex={1}
+                />
+              </div>
+            )}
+            {match.suspense && (
+              <div
+                style={{ height: cardDimensions[1] }}
+                className="flex justify-center items-center"
+              >
+                <Button onClick={cancelSuspense}>Cancel</Button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -237,10 +282,10 @@ export function Match(props: {
           <Button
             unique="place"
             disabled={props.roomState.match.concluded}
-            onClick={() => props.placeCard()}
+            onClick={placeCard}
           >
             <span className="text-xl relative" style={{ top: -5, left: -2 }}>
-              PLACE
+              {match.suspense ? "CONFIRM" : "PLACE"}
             </span>
           </Button>
           <Button unique="right" onClick={() => moveCard(+1)}>

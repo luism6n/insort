@@ -23,6 +23,7 @@ export interface RoomState {
     remainingCards: number[];
     nextCard: number;
     placeNextAfter: number;
+    suspense: boolean;
     concluded: boolean;
   };
   deckOptions: string[];

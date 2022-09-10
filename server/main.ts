@@ -118,8 +118,9 @@ function newMatch(
       nextCard,
       placeNextAfter: -1,
       concluded: false,
+      suspense: false,
     },
-  };
+  } as RoomState;
 
   return state;
 }
@@ -257,11 +258,36 @@ io.on(
         return;
       }
 
+      if (state.match.suspense) {
+        socket.emit("warning", "Should not get here");
+        return;
+      }
+
       state.match.placeNextAfter = Math.min(
         state.match.placedCards.length - 1,
         Math.max(-1, state.match.placeNextAfter + data.increment)
       );
 
+      updateState(roomId, state);
+    });
+
+    socket.on("cancelSuspense", () => {
+      console.log(`got cancelSuspense, socketId=${socket.id}`);
+
+      let roomId = socketToRoom.get(socket.id);
+      let state = rooms.get(roomId);
+
+      if (state.currentPlayerId !== socket.id) {
+        socket.emit("warning", "Oops, not your turn yet.");
+        return;
+      }
+
+      if (!state.match.suspense) {
+        socket.emit("warning", "Should not get here");
+        return;
+      }
+
+      state.match.suspense = false;
       updateState(roomId, state);
     });
 
@@ -275,6 +301,14 @@ io.on(
       ) {
         socket.emit("warning", "Oops, not your turn yet.");
         return;
+      }
+
+      if (!state.match.suspense) {
+        state.match.suspense = true;
+        updateState(roomId, state);
+        return;
+      } else {
+        state.match.suspense = false;
       }
 
       let corrected = correctPlace(state);
