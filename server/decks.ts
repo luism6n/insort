@@ -174,7 +174,7 @@ export const decks: Deck[] = [
     ],
   },
   {
-    name: "15 most viewed YouTube music videos",
+    name: "YouTube music videos by views",
     biggerIs: "highest",
     smallerIs: "lowest",
     unit: "billion views",
