@@ -94,17 +94,20 @@ export function Match(props: {
       : blueCircle;
 
   const currentPlayerIndicator = match.concluded ? null : (
-    <div className="flex flex-row gap-2 items-center">
+    <div className="text-sm flex flex-row gap-2 items-center">
       {teamIndicator && (
         <img style={{ width: 10, height: 10 }} src={teamIndicator} />
       )}
 
-      <p className="text-sm">
+      <p>
         {props.roomState.currentPlayerId === props.playerId
-          ? "your turn"
+          ? "your turn..."
           : props.roomState.playerNames[props.roomState.currentPlayerId] +
             " is playing..."}
       </p>
+      <p>{`card ${match.placedCards.length + 1} out of ${
+        match.deck.cards.length
+      }`}</p>
     </div>
   );
 
@@ -152,7 +155,11 @@ export function Match(props: {
       style={{ height: "calc(100% - 250px)" }}
     >
       <div className="flex flex-col items-center">
-        <p className="text-sm mt-2">{`< ${match.deck.biggerIs} | ${match.deck.smallerIs} >`}</p>
+        <div className="w-full flex justify-between text-sm mt-2">
+          <p className="flex-1 text-right">{`← ${match.deck.biggerIs}`}</p>
+          <p className="w-8 text-center">{" | "}</p>
+          <p className="flex-1 ml-auto text-left">{`${match.deck.smallerIs} →`}</p>
+        </div>
         <section
           ref={(r) => setPlacedCardsArea(r)}
           className="flex justify-center align-center mt-1 border-y-4 relative bg-white"
