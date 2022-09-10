@@ -2,6 +2,92 @@ import { Deck } from "../types/types.d";
 
 export const decks: Deck[] = [
   {
+    name: "Movies by gross",
+    unit: "USD",
+    source: "https://en.wikipedia.org/wiki/List_of_highest-grossing_films",
+    smallerIs: "cheaper",
+    biggerIs: "more expensive",
+    cards: [
+      { text: "[{Avatar (2009)", value: 2847397339 },
+      {
+        text: "Avengers: Endgame (2019)",
+        value: 2797501328,
+      },
+      {
+        text: "Titanic (1997)",
+        value: 2187535296,
+      },
+      {
+        text: "Star Wars: The Force Awakens (2015)",
+        value: 2068223624,
+      },
+      {
+        text: "Avengers: Infinity War (2018)",
+        value: 2048359754,
+      },
+      {
+        text: "Spider-Man: No Way Home film currently playing (2021)",
+        value: 1910675428,
+      },
+      {
+        text: "Jurassic World (2015)",
+        value: 1671537444,
+      },
+      {
+        text: "The Lion King (2019)",
+        value: 1656943394,
+      },
+      {
+        text: "The Avengers (2012)",
+        value: 1518812988,
+      },
+      {
+        text: "Furious 7 (2015)",
+        value: 1516045911,
+      },
+      {
+        text: "Frozen II (2019)",
+        value: 1450026933,
+      },
+      {
+        text: "Top Gun: Maverick film currently playing (2022)",
+        value: 1442880344,
+      },
+      {
+        text: "Avengers: Age of Ultron (2015)",
+        value: 1402809540,
+      },
+      {
+        text: "Black Panther (2018)",
+        value: 1347280838,
+      },
+      {
+        text: "Harry Potter and the Deathly Hallows – Part 2 (2011)",
+        value: 1342025430,
+      },
+      {
+        text: "Star Wars: The Last Jedi (2017)",
+        value: 1332539889,
+      },
+      {
+        text: "Jurassic World: Fallen Kingdom (2018)",
+        value: 1309484461,
+      },
+      {
+        text: "Frozen (2013)",
+        value: 1290000000,
+      },
+      {
+        text: "Beauty and the Beast (2017)",
+        value: 1263521126,
+      },
+      {
+        text: "Incredibles 2 (2018)",
+        value: 1242805359,
+      },
+    ],
+  },
+  {
     name: "Albums of all time by copies sold",
     unit: "M of copies",
     source: "http://google.com",
