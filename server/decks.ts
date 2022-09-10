@@ -357,7 +357,7 @@ export const decks: Deck[] = [
       notation: "compact",
       maximumFractionDigits: 1,
     },
-    source: "https://en.wikipedia.org/wiki/List_of_most-viewed_YouTube_videos",
+    source: "https://solarsystem.nasa.gov/resources/686/solar-system-sizes/",
     cards: [
       {
         text: "Mercury",
@@ -390,6 +390,100 @@ export const decks: Deck[] = [
       {
         text: "Neptune",
         value: 24622,
+      },
+    ],
+  },
+  {
+    name: "Actors by number of Oscar nominations",
+    biggerIs: "more",
+    smallerIs: "less",
+    unit: "nominations",
+    numFormatOptions: {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    },
+    source:
+      "https://en.wikipedia.org/wiki/List_of_actors_with_two_or_more_Academy_Awards_in_acting_categories",
+    cards: [
+      {
+        text: "Meryl Streep",
+        value: 21,
+      },
+      {
+        text: "Katharine Hepburn",
+        value: 12,
+      },
+      {
+        text: "Jack Nicholson",
+        value: 12,
+      },
+      {
+        text: "Bette Davis",
+        value: 10,
+      },
+      {
+        text: "Spencer Tracy",
+        value: 9,
+      },
+      {
+        text: "Denzel Washington",
+        value: 9,
+      },
+      {
+        text: "Marlon Brando",
+        value: 8,
+      },
+      {
+        text: "Jack Lemmon",
+        value: 8,
+      },
+      {
+        text: "Ingrid Bergman",
+        value: 7,
+      },
+      {
+        text: "Cate Blanchett",
+        value: 7,
+      },
+      {
+        text: "Robert De Niro",
+        value: 7,
+      },
+      {
+        text: "Jane Fonda",
+        value: 7,
+      },
+      {
+        text: "Dustin Hoffman",
+        value: 7,
+      },
+      {
+        text: "Daniel Day-Lewis",
+        value: 6,
+      },
+      {
+        text: "Frances McDormand",
+        value: 6,
+      },
+      {
+        text: "Michael Caine",
+        value: 6,
+      },
+      {
+        text: "Tom Hanks",
+        value: 6,
+      },
+      {
+        text: "Anthony Hopkins",
+        value: 6,
+      },
+      {
+        text: "Jessica Lange",
+        value: 6,
+      },
+      {
+        text: "Maggie Smith",
+        value: 6,
       },
     ],
   },
