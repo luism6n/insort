@@ -5,8 +5,8 @@ export const decks: Deck[] = [
     name: "Movies by gross",
     unit: "USD",
     source: "https://en.wikipedia.org/wiki/List_of_highest-grossing_films",
-    smallerIs: "cheaper",
-    biggerIs: "more expensive",
+    smallerIs: "lower",
+    biggerIs: "higher",
     numFormatOptions: {
       notation: "compact",
       maximumFractionDigits: 2,
