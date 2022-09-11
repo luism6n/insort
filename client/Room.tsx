@@ -8,6 +8,7 @@ import { RoomSettings } from "./RoomSettings";
 import { useSocket } from "./useSocket";
 import { Button, Toast } from "./designSystem";
 import { colors } from "./colors";
+import slug from "slug";
 
 export function admin(state: RoomState) {
   return state.playerIds[0];
@@ -81,7 +82,9 @@ export function Room() {
         </div>
         <div className="flex">
           <Button
-            trackEventCls={`umami--click--deck-${roomState.deckOptions[selectedDeck]}-gameMode-${roomState.gameModeOptions[selectedGameMode]}`}
+            trackEventCls={`umami--click--deck-${slug(
+              roomState.deckOptions[selectedDeck]
+            )}-gameMode-${slug(roomState.gameModeOptions[selectedGameMode])}`}
             onClick={() => newGame(selectedDeck, selectedGameMode)}
           >
             Play
