@@ -71,27 +71,46 @@ export function Scores(props: {
             <th>Overall Score</th>
           </tr>
         </thead>
-        {props.roomState.playerIds
-          .slice(0, props.numPlayersToShow || props.roomState.playerIds.length)
-          .sort((a, b) => {
-            if (props.roomState.match) {
+        <tbody>
+          {props.roomState.playerIds
+            .slice(
+              0,
+              props.numPlayersToShow || props.roomState.playerIds.length
+            )
+            .sort((a, b) => {
+              if (props.roomState.match) {
+                return (
+                  props.roomState.match.scores[b] -
+                  props.roomState.match.scores[a]
+                );
+              } else {
+                return props.roomState.scores[b] - props.roomState.scores[a];
+              }
+            })
+            .map((id) => {
               return (
-                props.roomState.match.scores[b] -
-                props.roomState.match.scores[a]
-              );
-            } else {
-              return props.roomState.scores[b] - props.roomState.scores[a];
-            }
-          })
-          .map((id) => {
-            return (
-              <tr key={id}>
-                <td className="text-center">
-                  {props.roomState.playerNames[id]}
-                </td>
-                {props.roomState.match ? (
+                <tr key={id}>
+                  <td className="text-center">
+                    {props.roomState.playerNames[id]}
+                  </td>
+                  {props.roomState.match ? (
+                    <td className="text-center relative">
+                      {maxMatchScoreId === id && (
+                        <img
+                          className="absolute"
+                          style={{
+                            height: "1rem",
+                            left: "65%",
+                            top: 5,
+                          }}
+                          src={trophyIcon}
+                        />
+                      )}
+                      <p>{props.roomState.match.scores[id]}</p>
+                    </td>
+                  ) : null}
                   <td className="text-center relative">
-                    {maxMatchScoreId === id && (
+                    {maxOverallScoreId === id && (
                       <img
                         className="absolute"
                         style={{
@@ -99,29 +118,15 @@ export function Scores(props: {
                           left: "65%",
                           top: 5,
                         }}
-                        src={trophyIcon}
+                        src={crownIcon}
                       />
                     )}
-                    <p>{props.roomState.match.scores[id]}</p>
+                    {props.roomState.scores[id]}
                   </td>
-                ) : null}
-                <td className="text-center relative">
-                  {maxOverallScoreId === id && (
-                    <img
-                      className="absolute"
-                      style={{
-                        height: "1rem",
-                        left: "65%",
-                        top: 5,
-                      }}
-                      src={crownIcon}
-                    />
-                  )}
-                  {props.roomState.scores[id]}
-                </td>
-              </tr>
-            );
-          })}
+                </tr>
+              );
+            })}
+        </tbody>
       </table>
     </div>
   );

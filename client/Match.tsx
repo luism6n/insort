@@ -196,7 +196,7 @@ export function Match(props: {
                 let y = 0 + paddingY / 4;
                 return (
                   <Card
-                    key={card.text}
+                    key={indexInDeck}
                     unit={props.roomState.match.deck.unit}
                     x={x}
                     y={y}
