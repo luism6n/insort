@@ -12,7 +12,7 @@ function App() {
   return (
     <div
       style={{ backgroundColor: colors.blue, color: colors.purple }}
-      className="flex flex-col items-center h-screen w-screen overflow-hidden"
+      className="flex flex-col items-center h-full w-screen overflow-hidden"
     >
       <Header />
       <BrowserRouter>
