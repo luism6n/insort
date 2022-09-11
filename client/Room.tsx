@@ -80,7 +80,10 @@ export function Room() {
           />
         </div>
         <div className="flex">
-          <Button onClick={() => newGame(selectedDeck, selectedGameMode)}>
+          <Button
+            trackEventCls={`umami--click--deck-${roomState.deckOptions[selectedDeck]}-gameMode-${roomState.gameModeOptions[selectedGameMode]}`}
+            onClick={() => newGame(selectedDeck, selectedGameMode)}
+          >
             Play
           </Button>
         </div>

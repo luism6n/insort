@@ -10,12 +10,14 @@ export function Button({
   children,
   disabled,
   type = "button",
+  trackEventCls = "",
 }: {
   unique?: string;
   onClick?: () => void;
   children: ReactNode;
   disabled?: boolean;
   type?: "button" | "submit";
+  trackEventCls?: string;
 }) {
   let extraClasses = "";
   let extraStyle = {};
@@ -47,7 +49,11 @@ export function Button({
       type={type}
       disabled={disabled}
       className={
-        "btn p-1 m-1 h-7" + (disabled ? " opacity-50" : "") + extraClasses
+        "btn p-1 m-1 h-7" +
+        (disabled ? " opacity-50" : "") +
+        extraClasses +
+        " " +
+        trackEventCls
       }
       style={{
         height: 40,
