@@ -31,7 +31,7 @@ export function Header({}) {
         <img src={logoUrl} className="h-full m-auto" />
         <button
           onClick={() => setOpenCredits(true)}
-          className="flex-1 ml-auto text-end pr-1 underline"
+          className="umami--click--credits flex-1 ml-auto text-end pr-1 underline"
         >
           Credits
         </button>

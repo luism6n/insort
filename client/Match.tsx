@@ -12,6 +12,7 @@ import redCircle from "../assets/red_circle.png";
 // @ts-ignore
 import blueCircle from "../assets/blue_circle.png";
 import { Scores } from "./Scores";
+import slug from "slug";
 
 export function Match(props: {
   roomId: string;
@@ -148,6 +149,11 @@ export function Match(props: {
   if (match.suspense) {
     clientSidePlacedCards.splice(match.placeNextAfter + 1, 0, match.nextCard);
   }
+
+  let isLastCardToBePlaced =
+    clientSidePlacedCards.length === match.deck.cards.length - 1 &&
+    match.suspense &&
+    !match.concluded;
 
   return (
     <div
@@ -286,9 +292,18 @@ export function Match(props: {
               roomState={props.roomState}
               numPlayersToShow={3}
             />
-            <Button onClick={() => props.newGame()}>Again</Button>
+            <Button
+              trackEventCls={`umami--click--play-again-deck-${slug(
+                match.deck.shortId
+              )}-mode-${slug(match.gameMode)}`}
+              onClick={() => props.newGame()}
+            >
+              Again
+            </Button>
             <a
-              className="text-sm underline hover:text-red-800"
+              className={`umami--click--deck-source-deck-${slug(
+                match.deck.shortId
+              )} text-sm underline hover:text-red-800`}
               href={props.roomState.match.deck.source}
               target="_blank"
             >
@@ -305,6 +320,13 @@ export function Match(props: {
             <span className="sr-only">Move card left</span>
           </Button>
           <Button
+            trackEventCls={
+              isLastCardToBePlaced
+                ? `umami--click--finished-game-${slug(
+                    match.deck.shortId
+                  )}-mode-${slug(match.gameMode)}`
+                : ""
+            }
             unique="place"
             disabled={props.roomState.match.concluded}
             onClick={placeCard}

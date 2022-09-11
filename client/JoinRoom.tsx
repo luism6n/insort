@@ -14,7 +14,9 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
       <Title>Join Room</Title>
       <form onSubmit={handleJoin} className="flex flex-col gap-2 items-center">
         <TextInput input={nameInput} setInput={setNameInput} />
-        <Button type="submit">Join</Button>
+        <Button trackEventCls="umami--click--join-room" type="submit">
+          Join
+        </Button>
       </form>
     </div>
   );

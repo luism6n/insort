@@ -42,7 +42,11 @@ export function Chat(props: {
             setInput={setChatInput}
           />
 
-          <Button unique="send" type="submit">
+          <Button
+            trackEventCls="umami--click--send-chat-message"
+            unique="send"
+            type="submit"
+          >
             <span className="sr-only">Send message</span>
           </Button>
         </form>

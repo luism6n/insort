@@ -72,7 +72,7 @@ export function Room() {
       <Fragment>
         <div className="w-1/2">
           <RoomSettings
-            deckOptions={roomState.deckOptions}
+            deckOptions={roomState.deckNames}
             selectedDeck={selectedDeck}
             setSelectedDeck={setSelectedDeck}
             gameModeOptions={roomState.gameModeOptions}
@@ -83,8 +83,8 @@ export function Room() {
         <div className="flex">
           <Button
             trackEventCls={`umami--click--play-deck-${slug(
-              roomState.deckOptions[selectedDeck]
-            )}-game-mode-${slug(roomState.gameModeOptions[selectedGameMode])}`}
+              roomState.deckShortIds[selectedDeck]
+            )}-mode-${slug(roomState.gameModeOptions[selectedGameMode])}`}
             onClick={() => newGame(selectedDeck, selectedGameMode)}
           >
             Play

@@ -3,6 +3,7 @@ import { Deck } from "../types/types.d";
 export const decks: Deck[] = [
   {
     name: "Movies by gross",
+    shortId: "moviesgross",
     unit: "USD",
     source: "https://en.wikipedia.org/wiki/List_of_highest-grossing_films",
     smallerIs: "lower",
@@ -93,6 +94,7 @@ export const decks: Deck[] = [
   },
   {
     name: "Albums by copies sold",
+    shortId: "albumscopies",
     unit: "copies",
     source: "http://google.com",
     smallerIs: "less",
@@ -122,6 +124,7 @@ export const decks: Deck[] = [
   },
   {
     name: "Planets by distance from Sun",
+    shortId: "planets-by-distance",
     unit: "UA",
     smallerIs: "closer",
     biggerIs: "farther",
@@ -139,6 +142,7 @@ export const decks: Deck[] = [
   },
   {
     name: "Countries by population",
+    shortId: "countrypop",
     biggerIs: "more",
     smallerIs: "less",
     unit: "people",
@@ -233,6 +237,7 @@ export const decks: Deck[] = [
   },
   {
     name: "Programming languages by year of invention",
+    shortId: "plangbyyear",
     biggerIs: "newer",
     smallerIs: "older",
     unit: "",
@@ -277,6 +282,7 @@ export const decks: Deck[] = [
   },
   {
     name: "YouTube music videos by views",
+    shortId: "ytmusicviews",
     biggerIs: "highest",
     smallerIs: "lowest",
     unit: "views",
@@ -350,6 +356,7 @@ export const decks: Deck[] = [
   },
   {
     name: "Planets by size",
+    shortId: "planetsize",
     biggerIs: "bigger",
     smallerIs: "smaller",
     unit: "km",
@@ -395,6 +402,7 @@ export const decks: Deck[] = [
   },
   {
     name: "Actors by number of Oscar nominations",
+    shortId: "actorsnominations",
     biggerIs: "more",
     smallerIs: "less",
     unit: "nominations",

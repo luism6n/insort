@@ -42,7 +42,8 @@ function newRoomState() {
   const state: RoomState = {
     match: null,
     playerIds: [],
-    deckOptions: decks.map((d) => d.name),
+    deckShortIds: decks.map((d) => d.shortId),
+    deckNames: decks.map((d) => d.name),
     gameModeOptions: gameModes,
     scores: {},
     playerNames: {},
@@ -101,7 +102,7 @@ function newMatch(
   }
 
   const state = {
-    deckOptions: decks.map((d) => d.name),
+    deckShortIds: decks.map((d) => d.name),
     gameModeOptions: gameModes,
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},

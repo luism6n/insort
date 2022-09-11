@@ -1,5 +1,6 @@
 export interface Deck {
   name: string;
+  shortId: string;
   unit: string;
   source: string;
   smallerIs: string;
@@ -29,7 +30,8 @@ export interface Match {
 
 export interface RoomState {
   match: null | Match;
-  deckOptions: string[];
+  deckShortIds: string[];
+  deckNames: string[];
   gameModeOptions: string[];
   playerIds: string[];
   scores: { [playerId: string]: number };
