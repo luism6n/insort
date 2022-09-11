@@ -82,9 +82,9 @@ export function Room() {
         </div>
         <div className="flex">
           <Button
-            trackEventCls={`umami--click--deck-${slug(
+            trackEventCls={`umami--click--play-deck-${slug(
               roomState.deckOptions[selectedDeck]
-            )}-gameMode-${slug(roomState.gameModeOptions[selectedGameMode])}`}
+            )}-game-mode-${slug(roomState.gameModeOptions[selectedGameMode])}`}
             onClick={() => newGame(selectedDeck, selectedGameMode)}
           >
             Play
