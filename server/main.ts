@@ -2,7 +2,7 @@ const path = require("path");
 const http = require("http");
 import express, { Request as ExpressReq } from "express";
 import { Server as SocketServer } from "socket.io";
-import { Deck, RoomState } from "../types/types";
+import { Deck, Match, RoomState } from "../types/types";
 import { decks } from "./decks";
 
 function admin(state: RoomState) {
@@ -131,13 +131,18 @@ function updateState(roomId: string, state: RoomState) {
   io.to(roomId).emit("roomState", state);
 }
 
-function correctPlace(state: RoomState) {
+function correctPlace(match: Match) {
+  if (match === null) {
+    console.error("correctPlace called with null match");
+    return null;
+  }
+
   let pos = 0;
 
-  for (let i of state.match.placedCards) {
+  for (let i of match.placedCards) {
     if (
-      state.match.correctFinalPositions.get(i) >
-      state.match.correctFinalPositions.get(state.match.nextCard)
+      match.correctFinalPositions.get(i) >
+      match.correctFinalPositions.get(match.nextCard)
     ) {
       break;
     }
@@ -217,9 +222,10 @@ io.on(
     socket.on("chatMessage", (data: { text: string }) => {
       const roomId = socketToRoom.get(socket.id);
       if (!roomId) {
+        console.warn(`${socket.id} called "chatMessage" in non-existing room`);
         socket.emit(
           "notification",
-          "You are not in a room, how did you get here?"
+          "You are not in a room, how did you get here? Please, refresh the page."
         );
         return;
       }
@@ -234,10 +240,24 @@ io.on(
       console.log(`got changeTeams, socketId=${socket.id}`);
 
       let roomId = socketToRoom.get(socket.id);
-      let state = rooms.get(roomId);
+      if (!roomId) {
+        console.warn(`${socket.id} called "changeTeams" in non-existing room`);
+        return;
+      }
 
+      let state = rooms.get(roomId);
       if (!state || !state.match || state.match.gameMode !== "Teams") {
-        socket.emit("warning", "How did you get here?");
+        console.warn(
+          `${socket.id} called "changeTeams" in non-team game: null_state=${
+            state === null
+          }, null_match=${state?.match === null}, gameMode=${
+            state?.match?.gameMode
+          }`
+        );
+        socket.emit(
+          "warning",
+          "You're not in a team match, how did you get here? Refresh the page to rejoin the room."
+        );
         return;
       }
 
@@ -251,7 +271,31 @@ io.on(
       console.log(`got changeNextCardPosition, socketId=${socket.id}`);
 
       let roomId = socketToRoom.get(socket.id);
+      if (!roomId) {
+        console.warn(
+          `${socket.id} called "changeNextCardPosition" in non-existing room`
+        );
+        socket.emit(
+          "warning",
+          "You're not in a room, how did you get here? Refresh the page to rejoin the room."
+        );
+        return;
+      }
       let state = rooms.get(roomId);
+      if (!state || !state.match) {
+        console.warn(
+          `${
+            socket.id
+          } called "changeNextCardPosition" in non-existing match: null_state=${
+            state === null
+          }, null_match=${state?.match === null}`
+        );
+        socket.emit(
+          "warning",
+          "You're not in a match, how did you get here? Refresh the page to rejoin the room."
+        );
+        return;
+      }
 
       if (state.currentPlayerId !== socket.id) {
         socket.emit("warning", "Oops, not your turn yet.");
@@ -259,7 +303,7 @@ io.on(
       }
 
       if (state.match.suspense) {
-        socket.emit("warning", "Should not get here");
+        socket.emit("warning", "Should not get here...");
         return;
       }
 
@@ -275,7 +319,24 @@ io.on(
       console.log(`got cancelSuspense, socketId=${socket.id}`);
 
       let roomId = socketToRoom.get(socket.id);
+      if (!roomId) {
+        console.warn(
+          `${socket.id} called "cancelSuspense" in non-existing room`
+        );
+        return;
+      }
+
       let state = rooms.get(roomId);
+      if (!state || !state.match) {
+        console.warn(
+          `${
+            socket.id
+          } called "cancelSuspense" in non-existing match: null_state=${
+            state === null
+          }, null_match=${state?.match === null}`
+        );
+        return;
+      }
 
       if (state.currentPlayerId !== socket.id) {
         socket.emit("warning", "Oops, not your turn yet.");
@@ -293,7 +354,24 @@ io.on(
 
     socket.on("placeCard", () => {
       let roomId = socketToRoom.get(socket.id);
+      if (!roomId) {
+        console.warn(`${socket.id} called "" in non-existing room`);
+        return;
+      }
       let state = rooms.get(roomId);
+
+      if (!state || !state.match) {
+        console.warn(
+          `${socket.id} called "placeCard" in non-existing match: null_state=${
+            state === null
+          }, null_match=${state?.match === null}`
+        );
+        socket.emit(
+          "warning",
+          "You're not in a match, how did you get here? Refresh the page to rejoin the room."
+        );
+        return;
+      }
 
       if (
         state.currentPlayerId !== socket.id &&
@@ -311,7 +389,7 @@ io.on(
         state.match.suspense = false;
       }
 
-      let corrected = correctPlace(state);
+      let corrected = correctPlace(state.match);
       let cards = state.match.deck.cards;
       let p = state.match.placeNextAfter;
       let n = state.match.nextCard;
@@ -351,6 +429,16 @@ io.on(
 
     socket.on("changeRoomSettings", () => {
       let roomId = socketToRoom.get(socket.id);
+      if (!roomId) {
+        console.warn(
+          `${socket.id} called "changeRoomSettings" in non-existing room`
+        );
+        socket.emit(
+          "warning",
+          "You're not in a room, how did you get here? Refresh the page to rejoin the room."
+        );
+        return;
+      }
       let state = rooms.get(roomId);
 
       if (socket.id !== admin(state)) {
@@ -368,6 +456,14 @@ io.on(
       (data: { selectedDeck: number; selectedGameMode: number }) => {
         console.log(`got newGame, data=${JSON.stringify(data)}`);
         let roomId = socketToRoom.get(socket.id);
+        if (!roomId) {
+          console.warn(`${socket.id} called "newGame" in non-existing room`);
+          socket.emit(
+            "warning",
+            "You're not in a room, how did you get here? Refresh the page to rejoin the room."
+          );
+          return;
+        }
 
         if (!roomId) {
           console.warn(`newGame on invalid room, socketId=${socket.id}`);
@@ -389,6 +485,10 @@ io.on(
 
     socket.on("disconnect", () => {
       let roomId = socketToRoom.get(socket.id);
+      if (!roomId) {
+        console.warn(`${socket.id} called "" in non-existing room`);
+        return;
+      }
 
       if (!roomId) {
         console.warn(`disconnect with no room, socketId=${socket.id}`);

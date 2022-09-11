@@ -13,20 +13,22 @@ export interface Card {
   value: number;
 }
 
+export interface Match {
+  scores: { [playerId: string]: number };
+  gameMode: string;
+  teams: { [playerId: string]: string } | null;
+  deck: Deck;
+  placedCards: number[];
+  correctFinalPositions: Map<number, number>;
+  remainingCards: number[];
+  nextCard: number;
+  placeNextAfter: number;
+  suspense: boolean;
+  concluded: boolean;
+}
+
 export interface RoomState {
-  match: null | {
-    scores: { [playerId: string]: number };
-    gameMode: string;
-    teams: { [playerId: string]: string } | null;
-    deck: Deck;
-    placedCards: number[];
-    correctFinalPositions: Map<number, number>;
-    remainingCards: number[];
-    nextCard: number;
-    placeNextAfter: number;
-    suspense: boolean;
-    concluded: boolean;
-  };
+  match: null | Match;
   deckOptions: string[];
   gameModeOptions: string[];
   playerIds: string[];
