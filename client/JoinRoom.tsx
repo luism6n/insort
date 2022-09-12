@@ -13,7 +13,11 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
     <div className="flex flex-col w-1/2">
       <Title>Join Room</Title>
       <form onSubmit={handleJoin} className="flex flex-col gap-2 items-center">
-        <TextInput input={nameInput} setInput={setNameInput} />
+        <TextInput
+          placeholder="Enter username"
+          input={nameInput}
+          setInput={setNameInput}
+        />
         <Button trackEventCls="umami--click--join-room" type="submit">
           Join
         </Button>

@@ -117,13 +117,18 @@ export function Toast(props: { message: string; type: string }) {
 }
 
 export function TextInput(props: {
+  placeholder?: string;
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   classes?: string;
 }) {
   return (
     <input
-      className={"p-1 w-full " + (props.classes ? props.classes : "")}
+      placeholder={props.placeholder}
+      className={
+        "placeholder-gray-400 p-2 w-full " +
+        (props.classes ? props.classes : "")
+      }
       type="text"
       value={props.input}
       onChange={(e) => props.setInput(e.target.value)}
