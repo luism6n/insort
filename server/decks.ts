@@ -355,7 +355,7 @@ export const decks: Deck[] = [
     ],
   },
   {
-    name: "Planets by size",
+    name: "Planets by radius size",
     shortId: "planetsize",
     biggerIs: "bigger",
     smallerIs: "smaller",
