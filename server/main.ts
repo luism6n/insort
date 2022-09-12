@@ -102,7 +102,8 @@ function newMatch(
   }
 
   const state = {
-    deckShortIds: decks.map((d) => d.name),
+    deckShortIds: decks.map((d) => d.shortId),
+    deckNames: decks.map((d) => d.name),
     gameModeOptions: gameModes,
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},
@@ -371,6 +372,11 @@ io.on(
           "warning",
           "You're not in a match, how did you get here? Refresh the page to rejoin the room."
         );
+        return;
+      }
+
+      if (state.match.concluded) {
+        console.warn(`"placeCard" called in a match that's concluded`);
         return;
       }
 

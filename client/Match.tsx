@@ -146,7 +146,7 @@ export function Match(props: {
   }
 
   let clientSidePlacedCards = Array.from(match.placedCards);
-  if (match.suspense) {
+  if (match.suspense && !match.concluded) {
     clientSidePlacedCards.splice(match.placeNextAfter + 1, 0, match.nextCard);
   }
 
