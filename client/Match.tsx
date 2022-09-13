@@ -284,8 +284,8 @@ export function Match(props: {
             </div>
 
             <div className="w-full px-4 flex text-sm justify-between">
-              <p className="flex-1 text-left">{`← ${match.deck.biggerIs}`}</p>
-              <p className="flex-1 ml-auto text-right">{`${match.deck.smallerIs} →`}</p>
+              <p className="flex-1 text-left">{`← ${match.deck.biggerMeans}`}</p>
+              <p className="flex-1 ml-auto text-right">{`${match.deck.smallerMeans} →`}</p>
             </div>
           </div>
         </section>
@@ -300,6 +300,12 @@ export function Match(props: {
                 </div>
               </div>
               <div className="flex flex-col gap-2 p-2">
+                {props.roomState.match.deck.creatorCredit?.length > 0 && (
+                  <div>
+                    <p>deck creator:</p>
+                    <p>{props.roomState.match.deck.creatorCredit}</p>
+                  </div>
+                )}
                 {!props.roomState.match.concluded && (
                   <div>
                     <p>cards left:</p>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextInput, Title } from "./designSystem";
+import { Button, Input, Title } from "./designSystem";
 
 export function JoinRoom(props: { join: (playerName: string) => void }) {
   const [nameInput, setNameInput] = useState("");
@@ -13,10 +13,10 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
     <div className="flex flex-col w-1/2">
       <Title>Join Room</Title>
       <form onSubmit={handleJoin} className="flex flex-col gap-2 items-center">
-        <TextInput
+        <Input
           placeholder="Enter username"
-          input={nameInput}
-          setInput={setNameInput}
+          value={nameInput}
+          setValue={setNameInput}
         />
         <Button trackEventCls="umami--click--join-room" type="submit">
           Join

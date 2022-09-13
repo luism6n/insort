@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Deck } from "../types/types";
-import { TextInput, Button } from "./designSystem";
+import { Card, Deck } from "../types/types";
+import { Card as CardElement } from "./Card";
+import { Input, Button } from "./designSystem";
 
 export default function BuildDeck() {
   const [deck, setDeck] = useState<Deck>({
@@ -8,10 +9,11 @@ export default function BuildDeck() {
     shortId: "",
     unit: "",
     source: "",
-    smallerIs: "",
-    biggerIs: "",
+    smallerMeans: "",
+    biggerMeans: "",
     cards: [{ text: "", value: 0 }],
     numFormatOptions: {},
+    creatorCredit: "",
   });
 
   function handleSubmit(e?: React.FormEvent) {
@@ -30,47 +32,63 @@ export default function BuildDeck() {
     setDeck({ ...deck, cards: deck.cards.slice(0, deck.cards.length - 1) });
   }
 
+  function cardWithLongestName(cards: Card[]) {
+    return cards.reduce(
+      (longest, card) => {
+        return card.text.length > longest.text.length ? card : longest;
+      },
+      { text: "", value: 0 }
+    );
+  }
+
+  let sampleCard = cardWithLongestName(deck.cards);
+
   return (
     <div className="w-full max-w-xl overflow-y-scroll p-4">
       <form
-        className="flex flex-col items-center justify-center gap-1"
+        className="flex flex-col items-start justify-center gap-1"
         onSubmit={handleSubmit}
       >
-        <TextInput
+        <Input
+          required
           label="Deck name"
-          input={deck.name}
+          value={deck.name}
           placeholder="E.g., Cities by Population"
-          setInput={(n: string) => {
+          setValue={(n: string) => {
             setDeck({ ...deck, name: n });
           }}
         />
-        <TextInput
+        <Input
+          required
+          type="url"
           label="Source URL"
-          input={deck.source}
+          value={deck.source}
           placeholder="E.g., https://en.wikipedia.org/List_of_cities_by_population"
-          setInput={(n: string) => {
+          setValue={(n: string) => {
             setDeck({ ...deck, source: n });
           }}
         />
 
         <div className="flex gap-4 w-full">
-          <div className="flex flex-col gap-1">
-            <TextInput
+          <div className="flex flex-1 flex-col gap-1">
+            <Input
+              required
               label="Unit"
-              input={deck.unit}
+              value={deck.unit}
               placeholder="E.g., M of people"
-              setInput={(n: string) => {
+              setValue={(n: string) => {
                 setDeck({ ...deck, unit: n });
               }}
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <TextInput
+          <div className="flex flex-1 flex-col gap-1">
+            <Input
+              required
               maxLength={10}
               label="Short ID (max. 10 characters)"
-              input={deck.shortId}
+              value={deck.shortId}
               placeholder="E.g., citiespop"
-              setInput={(n: string) => {
+              setValue={(n: string) => {
                 setDeck({ ...deck, shortId: n });
               }}
             />
@@ -78,24 +96,26 @@ export default function BuildDeck() {
         </div>
         <div className="flex w-full flex-between gap-4">
           <div className="flex-1 flex flex-col gap-1">
-            <TextInput
+            <Input
               maxLength={15}
+              required
               label="Smaller means..."
-              input={deck.smallerIs}
+              value={deck.smallerMeans}
               placeholder="E.g., less people"
-              setInput={(n: string) => {
-                setDeck({ ...deck, smallerIs: n });
+              setValue={(n: string) => {
+                setDeck({ ...deck, smallerMeans: n });
               }}
             />
           </div>
           <div className="flex-1 flex flex-col gap-1">
-            <TextInput
+            <Input
               maxLength={15}
+              required
               label="Bigger means..."
-              input={deck.biggerIs}
+              value={deck.biggerMeans}
               placeholder="E.g., more people"
-              setInput={(n: string) => {
-                setDeck({ ...deck, biggerIs: n });
+              setValue={(n: string) => {
+                setDeck({ ...deck, biggerMeans: n });
               }}
             />
           </div>
@@ -104,11 +124,12 @@ export default function BuildDeck() {
           return (
             <div key={i} className="flex gap-4 w-full">
               <div className="flex-1 flex flex-col gap-1">
-                <TextInput
+                <Input
+                  required
                   label={`Card #${i + 1}`}
                   placeholder="E.g., Monaco"
-                  input={c.text}
-                  setInput={(t: string) =>
+                  value={c.text}
+                  setValue={(t: string) =>
                     setDeck({
                       ...deck,
                       cards: [
@@ -121,12 +142,13 @@ export default function BuildDeck() {
                 />
               </div>
               <div style={{ flex: 0.5 }} className="flex flex-col gap-1">
-                <TextInput
+                <Input
+                  required
                   label="Value"
                   type="number"
                   placeholder="E.g., 39244"
-                  input={c.value}
-                  setInput={(v: number) =>
+                  value={c.value}
+                  setValue={(v: number) =>
                     setDeck({
                       ...deck,
                       cards: [
@@ -146,6 +168,39 @@ export default function BuildDeck() {
           <Button onClick={handleAddCard}>Add card</Button>
           <Button onClick={handleRemoveCard}>Remove card</Button>
         </div>
+
+        <div className="w-full flex flex-col items-center">
+          <h4>Sample card</h4>
+
+          <CardElement
+            content={sampleCard.text}
+            value={sampleCard.value}
+            unit={deck.unit}
+          />
+        </div>
+
+        <Input
+          label="If you want to know when this deck is approved..."
+          placeholder="Leave your e-mail"
+          value={deck.creatorEmail}
+          setValue={(e: string) => ({ ...deck, creatorEmail: e })}
+        />
+
+        <div className="flex flex-col gap-2 w-full">
+          <Input
+            label="Credit me as..."
+            placeholder="E.g., name, email, link to twitter, portfolio, etc."
+            value={deck.creatorCredit}
+            setValue={(c: string) => setDeck({ ...deck, creatorCredit: c })}
+          />
+        </div>
+
+        <p className="text-sm">
+          Notice: Your deck may be subject to changes by the moderator before
+          becoming public. It'll be checked for sources, typos and formatting to
+          make it feel similar to other decks. Your email won't be shown unless
+          you opt in.
+        </p>
 
         <Button type="submit" onClick={() => handleSubmit()}>
           Submit deck

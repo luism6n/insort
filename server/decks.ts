@@ -6,8 +6,8 @@ export const decks: Deck[] = [
     shortId: "moviesgross",
     unit: "USD",
     source: "https://en.wikipedia.org/wiki/List_of_highest-grossing_films",
-    smallerIs: "lower",
-    biggerIs: "higher",
+    smallerMeans: "lower",
+    biggerMeans: "higher",
     numFormatOptions: {
       notation: "compact",
       maximumFractionDigits: 2,
@@ -97,8 +97,8 @@ export const decks: Deck[] = [
     shortId: "albumscopies",
     unit: "copies",
     source: "http://google.com",
-    smallerIs: "less",
-    biggerIs: "more",
+    smallerMeans: "less",
+    biggerMeans: "more",
     numFormatOptions: {
       notation: "compact",
       maximumFractionDigits: 2,
@@ -126,9 +126,10 @@ export const decks: Deck[] = [
     name: "Planets by distance from Sun",
     shortId: "planets-by-distance",
     unit: "UA",
-    smallerIs: "closer",
-    biggerIs: "farther",
+    smallerMeans: "closer",
+    biggerMeans: "farther",
     source: "http://google.com",
+    creatorCredit: "github.com/luism6n",
     cards: [
       { text: "Mercury", value: 0.39 },
       { text: "Venus", value: 0.72 },
@@ -143,8 +144,8 @@ export const decks: Deck[] = [
   {
     name: "Countries by population",
     shortId: "countrypop",
-    biggerIs: "more",
-    smallerIs: "less",
+    biggerMeans: "more",
+    smallerMeans: "less",
     unit: "people",
     numFormatOptions: {
       notation: "compact",
@@ -238,8 +239,8 @@ export const decks: Deck[] = [
   {
     name: "Programming languages by year of invention",
     shortId: "plangbyyear",
-    biggerIs: "newer",
-    smallerIs: "older",
+    biggerMeans: "newer",
+    smallerMeans: "older",
     unit: "",
     numFormatOptions: {
       useGrouping: false,
@@ -283,8 +284,8 @@ export const decks: Deck[] = [
   {
     name: "YouTube music videos by views",
     shortId: "ytmusicviews",
-    biggerIs: "highest",
-    smallerIs: "lowest",
+    biggerMeans: "highest",
+    smallerMeans: "lowest",
     unit: "views",
     numFormatOptions: {
       notation: "compact",
@@ -357,8 +358,8 @@ export const decks: Deck[] = [
   {
     name: "Planets by radius size",
     shortId: "planetsize",
-    biggerIs: "bigger",
-    smallerIs: "smaller",
+    biggerMeans: "bigger",
+    smallerMeans: "smaller",
     unit: "km",
     numFormatOptions: {
       notation: "compact",
@@ -403,8 +404,8 @@ export const decks: Deck[] = [
   {
     name: "Actors by number of Oscar nominations",
     shortId: "actorsnominations",
-    biggerIs: "more",
-    smallerIs: "less",
+    biggerMeans: "more",
+    smallerMeans: "less",
     unit: "nominations",
     numFormatOptions: {
       notation: "compact",

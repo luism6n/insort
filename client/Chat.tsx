@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import { RoomState } from "../types/types";
-import { Button, TextInput } from "./designSystem";
+import { Button, Input } from "./designSystem";
 
 export function Chat(props: {
   playerNames: { [id: string]: string };
@@ -36,11 +36,7 @@ export function Chat(props: {
           )}
         </ul>
         <form className="flex items-center" onSubmit={submitChatMessage}>
-          <TextInput
-            classes="flex-1"
-            input={chatInput}
-            setInput={setChatInput}
-          />
+          <Input classes="flex-1" value={chatInput} setValue={setChatInput} />
 
           <Button
             trackEventCls="umami--click--send-chat-message"

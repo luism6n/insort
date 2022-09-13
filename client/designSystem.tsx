@@ -117,15 +117,16 @@ export function Toast(props: { message: string; type: string }) {
   );
 }
 
-export function TextInput(props: {
+export function Input(props: {
   maxLength?: number;
-  type?: "number" | "text";
+  type?: "number" | "text" | "email" | "url";
   label?: string;
   placeholder?: string;
-  input: string | number;
-  setInput: React.Dispatch<React.SetStateAction<string | number>>;
+  value: string | number;
+  setValue: React.Dispatch<React.SetStateAction<string | number>>;
   classes?: string;
   style?: { [key: string]: string };
+  required?: boolean;
 }) {
   let inputLabel = null;
   let inputId = null;
@@ -154,8 +155,8 @@ export function TextInput(props: {
           (props.classes ? props.classes : "")
         }
         type={type}
-        value={props.input}
-        onChange={(e) => props.setInput(e.target.value)}
+        value={props.value}
+        onChange={(e) => props.setValue(e.target.value)}
       ></input>
     </Fragment>
   );

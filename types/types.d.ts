@@ -3,10 +3,12 @@ export interface Deck {
   shortId: string;
   unit: string;
   source: string;
-  smallerIs: string;
-  biggerIs: string;
+  smallerMeans: string;
+  biggerMeans: string;
   cards: Card[];
   numFormatOptions?: Intl.NumberFormatOptions;
+  creatorEmail?: string;
+  creatorCredit?: string;
 }
 
 export interface Card {
