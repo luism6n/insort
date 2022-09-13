@@ -2,7 +2,8 @@ import { nanoid } from "nanoid";
 import React, { useState } from "react";
 import { Card, Deck } from "../types/types";
 import { Card as CardElement } from "./Card";
-import { Input, Button } from "./designSystem";
+import { Input, Button, Toast } from "./designSystem";
+import { useToast } from "./useToast";
 
 export default function BuildDeck() {
   const [deck, setDeck] = useState<Deck>({
@@ -18,12 +19,41 @@ export default function BuildDeck() {
     creatorCredit: "",
   });
 
-  function handleSubmit(e?: React.FormEvent) {
+  const { toast, setToast } = useToast();
+
+  async function handleSubmit(e?: React.FormEvent) {
     if (e) {
       e.preventDefault();
     }
 
     console.log(deck);
+
+    try {
+      let res = await fetch("/decks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(deck),
+      });
+
+      if (res.status === 200) {
+        setToast({ ...toast, message: "Deck saved!", type: "notification" });
+      } else {
+        setToast({
+          ...toast,
+          message: "Error saving deck :( Try again later",
+          type: "warning",
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      setToast({
+        ...toast,
+        message: "Error saving deck :( Try again later",
+        type: "warning",
+      });
+    }
   }
 
   function handleAddCard() {
@@ -188,10 +218,14 @@ export default function BuildDeck() {
           make it feel similar to other decks. Your email will never be public.
         </p>
 
-        <Button type="submit" onClick={() => handleSubmit()}>
+        <Button trackEventCls="umami--click--submit-deck" type="submit">
           Submit deck
         </Button>
       </form>
+
+      {toast?.message.length > 0 && (
+        <Toast message={toast.message} type={toast.type} />
+      )}
     </div>
   );
 }

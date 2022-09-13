@@ -1,5 +1,6 @@
 const path = require("path");
 const http = require("http");
+import bodyParser from "body-parser";
 import express, { Request as ExpressReq } from "express";
 import { Server as SocketServer } from "socket.io";
 import { Deck, Match, RoomState } from "../types/types";
@@ -26,6 +27,11 @@ for (let route of clientSideRoutes) {
     res.sendFile(path.join(publicPath, "/index.html"));
   });
 }
+
+app.post("/decks", bodyParser.json(), (req: ExpressReq, res: any) => {
+  console.log(req.body);
+  res.sendStatus(200);
+});
 
 let server = http.createServer(app);
 let io = new SocketServer(server);
@@ -132,7 +138,7 @@ function updateState(roomId: string, state: RoomState) {
   rooms.set(roomId, state);
   if (state.match?.deck?.creatorEmail) {
     // Hide creator e-mail from clients
-    state.match.deck.creatorEmail = ""
+    state.match.deck.creatorEmail = "";
   }
   io.to(roomId).emit("roomState", state);
 }

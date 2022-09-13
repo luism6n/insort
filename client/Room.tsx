@@ -1,7 +1,7 @@
 import { RoomTray } from "./RoomTray";
 import { Match } from "./Match";
 import { JoinRoom } from "./JoinRoom";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RoomState } from "../types/types";
 import { RoomSettings } from "./RoomSettings";
@@ -9,6 +9,7 @@ import { useSocket } from "./useSocket";
 import { Button, Toast } from "./designSystem";
 import { colors } from "./colors";
 import slug from "slug";
+import { useToast } from "./useToast";
 
 export function admin(state: RoomState) {
   return state.playerIds[0];
@@ -19,14 +20,11 @@ export function Room() {
   const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [selectedDeck, setSelectedDeck] = useState(0);
   const [selectedGameMode, setSelectedGameMode] = useState(0);
-  const [toast, setToast] = useState<{
-    message: string;
-    timeoutId: ReturnType<typeof setTimeout>;
-    type: string;
-  }>({ message: "", timeoutId: null, type: "" });
   const [chatMessages, setChatMessages] = useState<
     { text: string; senderId: string }[]
   >([]);
+
+  const { toast, setToast } = useToast();
 
   const {
     socketLoading,
@@ -40,26 +38,6 @@ export function Room() {
     cancelSuspense,
     playerId,
   } = useSocket(roomId, setRoomState, setToast, setChatMessages);
-
-  useEffect(() => {
-    if (toast.message.length === 0) {
-      return;
-    }
-
-    if (toast.timeoutId !== null) {
-      console.log("clearing timeout id", toast.timeoutId);
-      clearTimeout(toast.timeoutId);
-    }
-
-    const timeoutId = setTimeout(() => {
-      setToast({ message: "", timeoutId: null, type: "" });
-    }, 3000);
-
-    return () => {
-      console.log("clearing timeout id", timeoutId);
-      clearTimeout(timeoutId);
-    };
-  }, [toast]);
 
   let content = null;
 
