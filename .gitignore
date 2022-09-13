@@ -3,3 +3,5 @@ public/bundle.js
 public/*.png
 public/*.ttf
 build/
+.DS_Store
+*~
