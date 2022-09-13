@@ -96,7 +96,7 @@ export function Match(props: {
     let teamIndicator = null;
     if (
       pId === props.roomState.currentPlayerId &&
-      props.roomState.match.gameMode !== "Teams"
+      props.roomState.match.gameMode === "Teams"
     ) {
       const teamIcon =
         props.roomState.match.teams[props.roomState.currentPlayerId] === "red"
@@ -129,7 +129,7 @@ export function Match(props: {
 
   const currentPlayerIndicator = match.concluded ? null : match.gameMode ===
     "Coop" ? (
-    "coop mode, anyone can play"
+    "anyone can place cards"
   ) : (
     <div className="relative">
       <motion.div

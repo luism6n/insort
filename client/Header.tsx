@@ -17,7 +17,7 @@ export function Header({}) {
     >
       <div className="flex justify-center items-center w-full max-w-xl ">
         <div className="flex-1 mr-auto"></div>
-        <p
+        <a
           className="relative w-0"
           style={{
             color: colors.purple,
@@ -25,9 +25,10 @@ export function Header({}) {
             left: "22px",
             top: "-5px",
           }}
+          href="/"
         >
           INSORT
-        </p>
+        </a>
         <img src={logoUrl} className="h-full m-auto" />
         <button
           onClick={() => setOpenCredits(true)}
