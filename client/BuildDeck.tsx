@@ -102,10 +102,9 @@ export default function BuildDeck() {
         />
 
         <Input
-          required
-          label="Unit"
+          label="Unit (optional)"
           value={deck.unit}
-          placeholder="E.g., M of people"
+          placeholder="E.g., residents, m/s, years, etc."
           setValue={(n: string) => {
             setDeck({ ...deck, unit: n });
           }}
@@ -118,7 +117,7 @@ export default function BuildDeck() {
               required
               label="Smaller means..."
               value={deck.smallerMeans}
-              placeholder="E.g., less people"
+              placeholder="E.g., less people, slower, older, etc."
               setValue={(n: string) => {
                 setDeck({ ...deck, smallerMeans: n });
               }}
@@ -130,7 +129,7 @@ export default function BuildDeck() {
               required
               label="Bigger means..."
               value={deck.biggerMeans}
-              placeholder="E.g., more people"
+              placeholder="E.g., more people, faster, younger, etc."
               setValue={(n: string) => {
                 setDeck({ ...deck, biggerMeans: n });
               }}
