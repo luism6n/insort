@@ -66,7 +66,7 @@ export function RoomTray(props: {
   changeTeams: () => void;
 }) {
   const [openTray, setOpenTray] = useState(false);
-  const [mode, setMode] = useState<"chat" | "scores">("chat");
+  const [mode, setMode] = useState<"chat" | "scores">("scores");
   const [newMessages, setNewMessages] = useState(false);
   const [firstRun, setFirstRun] = useState(true);
 
