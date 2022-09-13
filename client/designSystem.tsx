@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react";
+import { nanoid } from "nanoid";
+import React, { Fragment, ReactNode } from "react";
 import { colors, colors as systemColors } from "./colors";
 
 export function Title({ children }: { children: ReactNode }) {
@@ -117,21 +118,45 @@ export function Toast(props: { message: string; type: string }) {
 }
 
 export function TextInput(props: {
+  maxLength?: number;
+  type?: "number" | "text";
+  label?: string;
   placeholder?: string;
-  input: string;
-  setInput: React.Dispatch<React.SetStateAction<string>>;
+  input: string | number;
+  setInput: React.Dispatch<React.SetStateAction<string | number>>;
   classes?: string;
+  style?: { [key: string]: string };
 }) {
+  let inputLabel = null;
+  let inputId = null;
+  if (props.label) {
+    inputId = nanoid();
+    inputLabel = <label htmlFor={inputId}>{props.label}</label>;
+  }
+
+  let type;
+  if (!props.type) {
+    type = "text";
+  } else {
+    type = props.type;
+  }
+
   return (
-    <input
-      placeholder={props.placeholder}
-      className={
-        "placeholder-gray-400 p-2 w-full " +
-        (props.classes ? props.classes : "")
-      }
-      type="text"
-      value={props.input}
-      onChange={(e) => props.setInput(e.target.value)}
-    ></input>
+    <Fragment>
+      {inputLabel}
+      <input
+        style={props.style}
+        maxLength={props.maxLength}
+        id={inputId}
+        placeholder={props.placeholder}
+        className={
+          "placeholder-gray-400 p-2 w-full " +
+          (props.classes ? props.classes : "")
+        }
+        type={type}
+        value={props.input}
+        onChange={(e) => props.setInput(e.target.value)}
+      ></input>
+    </Fragment>
   );
 }
