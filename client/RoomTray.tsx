@@ -18,7 +18,20 @@ function RoomTrayHeader(props: {
   toggleContent: () => void;
 }) {
   return (
-    <div className="flex justify-between items-center" style={{ height: 50 }}>
+    <div className="flex justify-between items-center" style={{ height: 30 }}>
+      <div onClick={() => props.setOpenTray(!props.openTray)}>
+        <img
+          src={props.openTray ? collapseIcon : expandIcon}
+          alt="Expand settings tray"
+        />
+      </div>
+      <p>
+        {props.title} (see{" "}
+        <button className="underline" onClick={props.toggleContent}>
+          {props.title === "chat" ? "scores" : "chat"}
+        </button>
+        )
+      </p>
       {props.gameMode === "Teams" ? (
         <button className="underline" onClick={props.changeTeams}>
           Switch Team
@@ -27,19 +40,6 @@ function RoomTrayHeader(props: {
         // div is here for flex to justify-between
         <div />
       )}
-      <p>
-        {props.title} (see{" "}
-        <button className="underline" onClick={props.toggleContent}>
-          {props.title === "chat" ? "scores" : "chat"}
-        </button>
-        )
-      </p>
-      <div onClick={() => props.setOpenTray(!props.openTray)}>
-        <img
-          src={props.openTray ? collapseIcon : expandIcon}
-          alt="Expand settings tray"
-        />
-      </div>
     </div>
   );
 }
@@ -62,8 +62,8 @@ export function RoomTray(props: {
           position: "absolute",
           backgroundColor: colors.yellow,
           borderColor: colors.purple,
-          top: openTray ? -250 : -50,
-          height: 250,
+          top: openTray ? -240 : -40,
+          height: 240,
           zIndex: 5,
         }}
       >

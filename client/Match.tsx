@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { RoomState } from "../types/types";
 import { Button } from "./designSystem";
 import { getDivDimensions, getRefYDistance } from "./htmlMeasuring";
@@ -13,6 +13,7 @@ import redCircle from "../assets/red_circle.png";
 import blueCircle from "../assets/blue_circle.png";
 import { Scores } from "./Scores";
 import slug from "slug";
+import { motion } from "framer-motion";
 
 export function Match(props: {
   roomId: string;
@@ -33,6 +34,8 @@ export function Match(props: {
     props.roomState?.match?.placeNextAfter
   );
   const [nextComesFrom, setNextComesFrom] = useState({ x: 0, y: 0 });
+  const [currentPlayerNameRef, setCurrentPlayerNameRef] =
+    useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!props.roomState.match.concluded) {
@@ -87,28 +90,73 @@ export function Match(props: {
 
   let match = props.roomState.match;
 
-  const teamIndicator =
-    props.roomState.match.gameMode !== "Teams"
-      ? null
-      : props.roomState.match.teams[props.roomState.currentPlayerId] === "red"
-      ? redCircle
-      : blueCircle;
+  function playerName(pId: string) {
+    const playerName = <p>{props.roomState.playerNames[pId]}</p>;
+    let teamIndicator = null;
+    if (
+      pId === props.roomState.currentPlayerId &&
+      props.roomState.match.gameMode !== "Teams"
+    ) {
+      const teamIcon =
+        props.roomState.match.teams[props.roomState.currentPlayerId] === "red"
+          ? redCircle
+          : blueCircle;
+
+      teamIndicator = (
+        <img
+          className="mr-1"
+          style={{ width: 10, height: 10 }}
+          src={teamIcon}
+        />
+      );
+    }
+
+    return (
+      <div className="flex flex-row items-baseline mx-2" key={pId}>
+        {teamIndicator}
+        {playerName}
+      </div>
+    );
+  }
+
+  let currentPayerNameXOffset = 0;
+  let currentPlayerDivDimensions = [0, 0];
+  if (currentPlayerNameRef) {
+    currentPayerNameXOffset = currentPlayerNameRef.offsetLeft;
+    currentPlayerDivDimensions = getDivDimensions(currentPlayerNameRef);
+  }
 
   const currentPlayerIndicator = match.concluded ? null : (
-    <div className="text-sm flex flex-row gap-2 items-center">
-      {teamIndicator && (
-        <img style={{ width: 10, height: 10 }} src={teamIndicator} />
-      )}
-
-      <p>
-        {props.roomState.currentPlayerId === props.playerId
-          ? "your turn..."
-          : props.roomState.playerNames[props.roomState.currentPlayerId] +
-            " is playing..."}
-      </p>
-      <p>{`card ${match.placedCards.length + 1} out of ${
-        match.deck.cards.length
-      }`}</p>
+    <div className="relative">
+      <motion.div
+        animate={{
+          left: `calc(-${currentPayerNameXOffset}px - ${
+            currentPlayerDivDimensions[0] / 2
+          }px)`,
+        }}
+        className="absolute flex flex-row justify-center"
+      >
+        {props.roomState.playerIds
+          .slice(
+            0,
+            props.roomState.playerIds.indexOf(props.roomState.currentPlayerId)
+          )
+          .map((pId) => {
+            return playerName(pId);
+          })}
+        <div className="mx-2 underline" ref={(r) => setCurrentPlayerNameRef(r)}>
+          {playerName(props.roomState.currentPlayerId)}
+        </div>
+        {props.roomState.playerIds
+          .slice(
+            props.roomState.playerIds.indexOf(props.roomState.currentPlayerId) +
+              1,
+            props.roomState.playerIds.length
+          )
+          .map((pId) => {
+            return playerName(pId);
+          })}
+      </motion.div>
     </div>
   );
 
