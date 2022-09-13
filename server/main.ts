@@ -20,7 +20,7 @@ const gameModes = ["Individual", "Teams", "Coop"];
 
 let app = express();
 
-const clientSideRoutes = ["/r/:roomId", "/cards-demo"];
+const clientSideRoutes = ["/r/:roomId", "/cards-demo", "/build-deck"];
 
 for (let route of clientSideRoutes) {
   app.get(route, (req: ExpressReq, res: any) => {
