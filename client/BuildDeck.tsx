@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import React, { useState } from "react";
 import { Card, Deck } from "../types/types";
 import { Card as CardElement } from "./Card";
@@ -6,7 +7,8 @@ import { Input, Button } from "./designSystem";
 export default function BuildDeck() {
   const [deck, setDeck] = useState<Deck>({
     name: "",
-    shortId: "",
+    // https://alex7kom.github.io/nano-nanoid-cc/?alphabet=_-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&size=10&speed=1&speedUnit=hour
+    shortId: nanoid(10),
     unit: "",
     source: "",
     smallerMeans: "",
@@ -69,31 +71,16 @@ export default function BuildDeck() {
           }}
         />
 
-        <div className="flex gap-4 w-full">
-          <div className="flex flex-1 flex-col gap-1">
-            <Input
-              required
-              label="Unit"
-              value={deck.unit}
-              placeholder="E.g., M of people"
-              setValue={(n: string) => {
-                setDeck({ ...deck, unit: n });
-              }}
-            />
-          </div>
-          <div className="flex flex-1 flex-col gap-1">
-            <Input
-              required
-              maxLength={10}
-              label="Short ID (max. 10 characters)"
-              value={deck.shortId}
-              placeholder="E.g., citiespop"
-              setValue={(n: string) => {
-                setDeck({ ...deck, shortId: n });
-              }}
-            />
-          </div>
-        </div>
+        <Input
+          required
+          label="Unit"
+          value={deck.unit}
+          placeholder="E.g., M of people"
+          setValue={(n: string) => {
+            setDeck({ ...deck, unit: n });
+          }}
+        />
+
         <div className="flex w-full flex-between gap-4">
           <div className="flex-1 flex flex-col gap-1">
             <Input
