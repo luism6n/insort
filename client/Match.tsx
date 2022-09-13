@@ -127,7 +127,10 @@ export function Match(props: {
     currentPlayerDivDimensions = getDivDimensions(currentPlayerNameRef);
   }
 
-  const currentPlayerIndicator = match.concluded ? null : (
+  const currentPlayerIndicator = match.concluded ? null : match.gameMode ===
+    "Coop" ? (
+    "coop mode, anyone can play"
+  ) : (
     <div className="relative">
       <motion.div
         animate={{
@@ -287,29 +290,29 @@ export function Match(props: {
           </div>
         </section>
 
-        <div className="flex justify-between w-full text-sm max-w-xl h-0 overflow-visible">
-          <div className="flex flex-col gap-2 p-2">
-            <div>
-              <p>admin:</p>
-              <p>{props.roomState.playerNames[admin(props.roomState)]}</p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 p-2">
-            {!props.roomState.match.concluded && (
-              <div>
-                <p>cards left:</p>
-                <p>
-                  {props.roomState.match.deck.cards.length -
-                    props.roomState.match.placedCards.length}{" "}
-                  out of {props.roomState.match.deck.cards.length}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
         {!props.roomState.match.concluded && (
           <div className="flex flex-col items-center w-full">
+            <div className="flex justify-between w-full text-sm max-w-xl h-0 overflow-visible">
+              <div className="flex flex-col gap-2 p-2">
+                <div>
+                  <p>admin:</p>
+                  <p>{props.roomState.playerNames[admin(props.roomState)]}</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 p-2">
+                {!props.roomState.match.concluded && (
+                  <div>
+                    <p>cards left:</p>
+                    <p>
+                      {props.roomState.match.deck.cards.length -
+                        props.roomState.match.placedCards.length}{" "}
+                      out of {props.roomState.match.deck.cards.length}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div style={{ height: 30 - 15 }}>
               <img
                 style={{ top: 15 - 30 }}
@@ -351,36 +354,37 @@ export function Match(props: {
         )}
       </div>
 
-      <div className="flex flex-col w-full items-center mt-2">
-        {props.roomState.match.concluded && (
-          <div
-            className="flex flex-col items-center w-full"
-            style={{ height: 30 - 15 + cardDimensions[1] }}
+      {props.roomState.match.concluded && (
+        <div
+          className="flex flex-col items-center w-full"
+          style={{ minHeight: 30 - 15 + cardDimensions[1] }}
+        >
+          <Scores
+            playerId={props.playerId}
+            roomState={props.roomState}
+            numPlayersToShow={3}
+          />
+          <Button
+            trackEventCls={`umami--click--play-again-deck-${slug(
+              match.deck.shortId
+            )}-mode-${slug(match.gameMode)}`}
+            onClick={() => props.newGame()}
           >
-            <Scores
-              playerId={props.playerId}
-              roomState={props.roomState}
-              numPlayersToShow={3}
-            />
-            <Button
-              trackEventCls={`umami--click--play-again-deck-${slug(
-                match.deck.shortId
-              )}-mode-${slug(match.gameMode)}`}
-              onClick={() => props.newGame()}
-            >
-              Again
-            </Button>
-            <a
-              className={`umami--click--deck-source-deck-${slug(
-                match.deck.shortId
-              )} text-sm underline hover:text-red-800`}
-              href={props.roomState.match.deck.source}
-              target="_blank"
-            >
-              Deck source (external link)
-            </a>
-          </div>
-        )}
+            Again
+          </Button>
+          <a
+            className={`umami--click--deck-source-deck-${slug(
+              match.deck.shortId
+            )} text-sm underline hover:text-red-800`}
+            href={props.roomState.match.deck.source}
+            target="_blank"
+          >
+            Deck source (external link)
+          </a>
+        </div>
+      )}
+
+      <div className="flex flex-col w-full items-center mt-2">
         <div className="flex flex-row">
           <Button
             disabled={match.suspense}
