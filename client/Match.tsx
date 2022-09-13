@@ -14,6 +14,7 @@ import blueCircle from "../assets/blue_circle.png";
 import { Scores } from "./Scores";
 import slug from "slug";
 import { motion } from "framer-motion";
+import { admin } from "./Room";
 
 export function Match(props: {
   roomId: string;
@@ -285,6 +286,27 @@ export function Match(props: {
             </div>
           </div>
         </section>
+
+        <div className="flex justify-between w-full text-sm max-w-xl h-0 overflow-visible">
+          <div className="flex flex-col gap-2 p-2">
+            <div>
+              <p>admin:</p>
+              <p>{props.roomState.playerNames[admin(props.roomState)]}</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 p-2">
+            {!props.roomState.match.concluded && (
+              <div>
+                <p>cards left:</p>
+                <p>
+                  {props.roomState.match.deck.cards.length -
+                    props.roomState.match.placedCards.length}{" "}
+                  out of {props.roomState.match.deck.cards.length}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
         {!props.roomState.match.concluded && (
           <div className="flex flex-col items-center w-full">

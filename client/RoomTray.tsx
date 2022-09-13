@@ -1,8 +1,9 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { RoomState } from "../types/types";
 import { Chat } from "./Chat";
 import { colors } from "./colors";
 import { Scores } from "./Scores";
+import { motion } from "framer-motion";
 
 // @ts-ignore
 import expandIcon from "../assets/expand_up.png";
@@ -16,7 +17,20 @@ function RoomTrayHeader(props: {
   gameMode: string | null;
   title: string;
   toggleContent: () => void;
+  newMessages: boolean;
 }) {
+  const chatSpan = props.newMessages ? (
+    <motion.span
+      transition={{ duration: 0.5, repeat: Infinity }}
+      animate={{ color: colors.red }}
+      initial={{ color: colors.purple }}
+    >
+      chat
+    </motion.span>
+  ) : (
+    <span>chat</span>
+  );
+
   return (
     <div className="flex justify-between items-center" style={{ height: 30 }}>
       <div onClick={() => props.setOpenTray(!props.openTray)}>
@@ -26,9 +40,9 @@ function RoomTrayHeader(props: {
         />
       </div>
       <p>
-        {props.title} (see{" "}
+        {props.title === "chat" ? chatSpan : "scores"} (see{" "}
         <button className="underline" onClick={props.toggleContent}>
-          {props.title === "chat" ? "scores" : "chat"}
+          {props.title === "chat" ? "scores" : chatSpan}
         </button>
         )
       </p>
@@ -53,6 +67,21 @@ export function RoomTray(props: {
 }) {
   const [openTray, setOpenTray] = useState(false);
   const [mode, setMode] = useState<"chat" | "scores">("chat");
+  const [newMessages, setNewMessages] = useState(false);
+  const [firstRun, setFirstRun] = useState(true);
+
+  useEffect(() => {
+    if (firstRun) {
+      setFirstRun(false);
+      return;
+    }
+
+    setNewMessages(true);
+  }, [props.chatMessages.length]);
+
+  if (openTray && mode === "chat" && newMessages) {
+    setNewMessages(false);
+  }
 
   return (
     <div className="relative w-full h-0">
@@ -77,6 +106,7 @@ export function RoomTray(props: {
             toggleContent={() =>
               setMode((m) => (m === "chat" ? "scores" : "chat"))
             }
+            newMessages={newMessages}
           />
           <div className="flex w-full" style={{ height: 200 }}>
             {mode === "chat" ? (
