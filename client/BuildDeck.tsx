@@ -198,8 +198,7 @@ export default function BuildDeck() {
         <p className="text-sm">
           Notice: Your deck may be subject to changes by the moderator before
           becoming public. It'll be checked for sources, typos and formatting to
-          make it feel similar to other decks. Your email won't be shown unless
-          you opt in.
+          make it feel similar to other decks. Your email will never be public.
         </p>
 
         <Button type="submit" onClick={() => handleSubmit()}>

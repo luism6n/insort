@@ -130,6 +130,10 @@ function newMatch(
 function updateState(roomId: string, state: RoomState) {
   console.log("state update", state);
   rooms.set(roomId, state);
+  if (state.match?.deck?.creatorEmail) {
+    // Hide creator e-mail from clients
+    state.match.deck.creatorEmail = ""
+  }
   io.to(roomId).emit("roomState", state);
 }
 
