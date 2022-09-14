@@ -9,7 +9,7 @@ import {
   incrementDeckLikeCount,
   retrieveDeckNamesAndShortIds,
   retrieveDeckByShortId,
-  DBConstraintError,
+  DBUniqueConstraintError,
 } from "./db";
 
 function admin(state: RoomState) {
@@ -56,8 +56,8 @@ app.post("/decks", bodyParser.json(), async (req: ExpressReq, res: any) => {
     try {
       insertDeck(deck);
     } catch (e) {
-      if (e instanceof DBConstraintError) {
-        status = 400;
+      if (e instanceof DBUniqueConstraintError) {
+        status = 409;
       } else {
         status = 500;
       }

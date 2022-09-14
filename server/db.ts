@@ -11,12 +11,12 @@ export class DBServerError extends Error {
   }
 }
 
-export class DBConstraintError extends Error {
+export class DBUniqueConstraintError extends Error {
   constructor(msg: string) {
     super(msg);
 
     // Set the prototype explicitly.
-    Object.setPrototypeOf(this, DBConstraintError.prototype);
+    Object.setPrototypeOf(this, DBUniqueConstraintError.prototype);
   }
 }
 
@@ -159,7 +159,7 @@ export async function insertDeck(deck: Deck) {
     await db.query("COMMIT");
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
-      throw new DBConstraintError("Deck already saved");
+      throw new DBUniqueConstraintError("Deck already saved");
     } else {
       throw new DBServerError("Error saving deck");
     }
