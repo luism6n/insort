@@ -149,7 +149,11 @@ async function getDeckNamesAndShortIds() {
   let db = createPgClient();
   db.connect();
   try {
-    return (await db.query("SELECT name, short_id FROM decks")).rows;
+    return (
+      await db.query(
+        "SELECT name, short_id FROM decks WHERE approved_at IS NOT NULL"
+      )
+    ).rows;
   } catch (e) {
     console.error(e);
     return [];
@@ -163,7 +167,10 @@ async function getDeckByShortId(shortId: string): Promise<Deck> {
   let rows;
   try {
     rows = (
-      await db.query("SELECT * FROM decks WHERE short_id = $1", [shortId])
+      await db.query(
+        "SELECT * FROM decks WHERE short_id = $1 AND approved_at IS NOT NULL",
+        [shortId]
+      )
     ).rows;
   } catch (e) {
     console.error(e);
