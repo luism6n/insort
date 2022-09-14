@@ -1,7 +1,8 @@
 import { nanoid } from "nanoid";
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Card, Deck } from "../types/types";
 import { Card as CardElement } from "./Card";
+import { colors } from "./colors";
 import { Input, Button, Toast } from "./designSystem";
 import { useToast } from "./useToast";
 
@@ -24,8 +25,9 @@ export default function BuildDeck() {
   });
 
   const { toast, setToast } = useToast();
+  const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
 
-  async function handleSubmit() {
+  async function handleConfirmSubmit() {
     console.log(deck);
 
     try {
@@ -82,6 +84,12 @@ export default function BuildDeck() {
     }
   }
 
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+
+    setShowConfirmSubmit(true);
+  }
+
   function handleAddCard() {
     setDeck({ ...deck, cards: [...deck.cards, { text: "", value: 0 }] });
   }
@@ -106,7 +114,10 @@ export default function BuildDeck() {
 
   return (
     <div className="w-full max-w-xl overflow-y-scroll p-4">
-      <form className="flex flex-col items-start justify-center gap-1">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-start justify-center gap-1"
+      >
         <Input
           required
           label="Deck name"
@@ -244,15 +255,42 @@ export default function BuildDeck() {
         </p>
 
         <div className="flex w-full justify-center">
-          <Button
-            onClick={handleSubmit}
-            trackEventCls="umami--click--submit-deck"
-            type="submit"
-          >
+          <Button trackEventCls="umami--click--submit-deck" type="submit">
             Submit deck
           </Button>
         </div>
       </form>
+
+      {showConfirmSubmit && (
+        <div
+          onClick={() => setShowConfirmSubmit(false)}
+          className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center"
+        >
+          <div
+            style={{ borderColor: colors.purple }}
+            className="border border-4 p-4 bg-white flex flex-col"
+          >
+            <p className="text-lg mb-4">Are you sure you want to submit?</p>
+            <p>Deck name: {deck.name}</p>
+            <p>Unit: {deck.unit}</p>
+            <p>Smaller means: {deck.smallerMeans}</p>
+            <p>Bigger means: {deck.biggerMeans}</p>
+            <p>Source: {deck.source}</p>
+            <p>Cards: {deck.cards.length}</p>
+            <p>Creator credit: {deck.creatorCredit}</p>
+            <p>Creator email: {deck.creatorEmail}</p>
+
+            <div className="flex w-full justify-center mt-4">
+              <Button
+                onClick={handleConfirmSubmit}
+                trackEventCls="umami--click--confirm-submit-deck"
+              >
+                Confirm submission
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast?.message.length > 0 && (
         <Toast message={toast.message} type={toast.type} />
