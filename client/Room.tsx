@@ -1,7 +1,7 @@
 import { RoomTray } from "./RoomTray";
 import { Match } from "./Match";
 import { JoinRoom } from "./JoinRoom";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RoomState } from "../types/types";
 import { RoomSettings } from "./RoomSettings";
@@ -18,7 +18,7 @@ export function admin(state: RoomState) {
 export function Room() {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
-  const [selectedDeck, setSelectedDeck] = useState(0);
+  const [selectedDeck, setSelectedDeck] = useState("");
   const [selectedGameMode, setSelectedGameMode] = useState(0);
   const [chatMessages, setChatMessages] = useState<
     { text: string; senderId: string }[]
@@ -39,6 +39,10 @@ export function Room() {
     playerId,
   } = useSocket(roomId, setRoomState, setToast, setChatMessages);
 
+  useEffect(() => {
+    setSelectedDeck(roomState?.deckShortIds[0] || "");
+  }, [roomState?.deckShortIds]);
+
   let content = null;
 
   if (socketLoading) {
@@ -50,6 +54,7 @@ export function Room() {
       <Fragment>
         <div className="w-1/2">
           <RoomSettings
+            deckShortIds={roomState.deckShortIds}
             deckOptions={roomState.deckNames}
             selectedDeck={selectedDeck}
             setSelectedDeck={setSelectedDeck}
@@ -61,7 +66,7 @@ export function Room() {
         <div className="flex">
           <Button
             trackEventCls={`umami--click--play-deck-${slug(
-              roomState.deckShortIds[selectedDeck]
+              selectedDeck
             )}-mode-${slug(roomState.gameModeOptions[selectedGameMode])}`}
             onClick={() => newGame(selectedDeck, selectedGameMode)}
           >

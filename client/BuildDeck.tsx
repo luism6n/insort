@@ -14,9 +14,13 @@ export default function BuildDeck() {
     source: "",
     smallerMeans: "",
     biggerMeans: "",
-    cards: [{ text: "", value: 0 }],
+    cards: [
+      { text: "", value: 0 },
+      { text: "", value: 0 },
+    ],
     numFormatOptions: {},
     creatorCredit: "",
+    creatorEmail: "",
   });
 
   const { toast, setToast } = useToast();
@@ -39,10 +43,32 @@ export default function BuildDeck() {
 
       if (res.status === 200) {
         setToast({ ...toast, message: "Deck saved!", type: "notification" });
+        setDeck({
+          name: "",
+          // https://alex7kom.github.io/nano-nanoid-cc/?alphabet=_-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&size=10&speed=1&speedUnit=hour
+          shortId: nanoid(10),
+          unit: "",
+          source: "",
+          smallerMeans: "",
+          biggerMeans: "",
+          cards: [
+            { text: "", value: 0 },
+            { text: "", value: 0 },
+          ],
+          numFormatOptions: {},
+          creatorCredit: "",
+          creatorEmail: "",
+        });
+      } else if (res.status === 409) {
+        setToast({
+          ...toast,
+          message: (await res.json()).message,
+          type: "notification",
+        });
       } else {
         setToast({
           ...toast,
-          message: "Error saving deck :( Try again later",
+          message: (await res.json()).message,
           type: "warning",
         });
       }
@@ -50,7 +76,7 @@ export default function BuildDeck() {
       console.error(e);
       setToast({
         ...toast,
-        message: "Error saving deck :( Try again later",
+        message: "Error connecting to server",
         type: "warning",
       });
     }
@@ -61,6 +87,9 @@ export default function BuildDeck() {
   }
 
   function handleRemoveCard() {
+    if (deck.cards.length === 2) {
+      return;
+    }
     setDeck({ ...deck, cards: deck.cards.slice(0, deck.cards.length - 1) });
   }
 
@@ -180,7 +209,7 @@ export default function BuildDeck() {
           );
         })}
 
-        <div className="flex w-full justify-around">
+        <div className="flex flex-wrap w-full justify-around">
           <Button onClick={handleAddCard}>Add card</Button>
           <Button onClick={handleRemoveCard}>Remove card</Button>
         </div>
@@ -199,7 +228,7 @@ export default function BuildDeck() {
           label="If you want to know when this deck is approved..."
           placeholder="Leave your e-mail"
           value={deck.creatorEmail}
-          setValue={(e: string) => ({ ...deck, creatorEmail: e })}
+          setValue={(e: string) => setDeck({ ...deck, creatorEmail: e })}
         />
 
         <div className="flex flex-col gap-2 w-full">
@@ -217,9 +246,11 @@ export default function BuildDeck() {
           make it feel similar to other decks. Your email will never be public.
         </p>
 
-        <Button trackEventCls="umami--click--submit-deck" type="submit">
-          Submit deck
-        </Button>
+        <div className="flex w-full justify-center">
+          <Button trackEventCls="umami--click--submit-deck" type="submit">
+            Submit deck
+          </Button>
+        </div>
       </form>
 
       {toast?.message.length > 0 && (

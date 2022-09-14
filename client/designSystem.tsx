@@ -69,19 +69,27 @@ export function Button({
   );
 }
 export function Select(props: {
-  selected: number;
-  setSelected: React.Dispatch<React.SetStateAction<number>>;
+  selected: number | string;
+  setSelected: React.Dispatch<React.SetStateAction<number | string>>;
   options: string[];
+  values?: string[];
 }) {
+  let values: (number | string)[];
+  if (!props.values) {
+    values = Array.from(Array(props.options.length).keys());
+  } else {
+    values = props.values;
+  }
+
   return (
     <select
       className="m-1"
       value={props.selected}
-      onChange={(e) => props.setSelected(Number.parseInt(e.target.value))}
+      onChange={(e) => props.setSelected(e.target.value)}
     >
       {props.options.map((opt, i) => {
         return (
-          <option value={i} key={opt}>
+          <option value={values[i]} key={values[i]}>
             {opt}
           </option>
         );
@@ -146,6 +154,7 @@ export function Input(props: {
     <Fragment>
       {inputLabel}
       <input
+        required={props.required}
         style={props.style}
         maxLength={props.maxLength}
         id={inputId}

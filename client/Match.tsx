@@ -11,6 +11,10 @@ import arrowBig from "../assets/arrow_big.png";
 import redCircle from "../assets/red_circle.png";
 // @ts-ignore
 import blueCircle from "../assets/blue_circle.png";
+// @ts-ignore
+import deckToLikeIcon from "../assets/heart_dark.png";
+// @ts-ignore
+import deckLikedIcon from "../assets/heart_light.png";
 import { Scores } from "./Scores";
 import slug from "slug";
 import { motion } from "framer-motion";
@@ -37,6 +41,7 @@ export function Match(props: {
   const [nextComesFrom, setNextComesFrom] = useState({ x: 0, y: 0 });
   const [currentPlayerNameRef, setCurrentPlayerNameRef] =
     useState<HTMLDivElement | null>(null);
+  const [deckLiked, setDeckLiked] = useState(false);
 
   useEffect(() => {
     if (!props.roomState.match.concluded) {
@@ -44,11 +49,24 @@ export function Match(props: {
     }
   }, [props.roomState.match.placeNextAfter]);
 
+  console.log(props.roomState);
+
   useEffect(() => {
     setClientSidePlaceNextAfter(
       Math.floor(props.roomState.match.placedCards.length / 2) - 1
     );
   }, [props.roomState.match.concluded]);
+
+  async function handleDeckLike() {
+    if (deckLiked) {
+      return;
+    }
+
+    setDeckLiked(true);
+    await fetch(`/decks/${props.roomState.match.deck.shortId}/likes`, {
+      method: "POST",
+    });
+  }
 
   function handleKeyNavigation(e: KeyboardEvent) {
     if ((e.target as HTMLInputElement).nodeName === "INPUT") {
@@ -378,6 +396,21 @@ export function Match(props: {
           >
             Again
           </Button>
+          <label htmlFor="likeDeck" className="sr-only">
+            Like this deck
+          </label>
+          <button
+            id="likeDeck"
+            className="flex gap-2 text-sm items-center my-2 umami--click--like-deck"
+            onClick={handleDeckLike}
+          >
+            <img
+              src={deckLiked ? deckLikedIcon : deckToLikeIcon}
+              width={15}
+              height={15}
+            />
+            {deckLiked ? "Thanks!" : "Like this deck"}
+          </button>
           <a
             className={`umami--click--deck-source-deck-${slug(
               match.deck.shortId

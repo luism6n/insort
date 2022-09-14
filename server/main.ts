@@ -3,8 +3,9 @@ const http = require("http");
 import bodyParser from "body-parser";
 import express, { Request as ExpressReq } from "express";
 import { Server as SocketServer } from "socket.io";
-import { Deck, Match, RoomState } from "../types/types";
-import { decks } from "./decks";
+import { Card, Deck, Match, RoomState } from "../types/types";
+import { Client } from "pg";
+import { UniqueConstraintError } from "sequelize";
 
 function admin(state: RoomState) {
   return state.playerIds[0];
@@ -18,6 +19,18 @@ const port = process.env.PORT || "3000";
 
 const gameModes = ["Individual", "Teams", "Coop"];
 
+function createPgClient() {
+  return new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl:
+      process.env.ENVIRONMENT === "development"
+        ? false
+        : {
+            rejectUnauthorized: false,
+          },
+  });
+}
+
 let app = express();
 
 const clientSideRoutes = ["/r/:roomId", "/cards-demo", "/build-deck"];
@@ -28,13 +41,101 @@ for (let route of clientSideRoutes) {
   });
 }
 
-app.post("/decks", bodyParser.json(), (req: ExpressReq, res: any) => {
-  console.log(req.body);
-  res.sendStatus(200);
+function validateDeck(deck: Deck): string | null {
+  if (deck.cards.length < 2) {
+    return "Deck must have at least 2 cards";
+  }
+
+  return null;
+}
+
+app.post("/decks", bodyParser.json(), async (req: ExpressReq, res: any) => {
+  const deck = req.body;
+  let db = createPgClient();
+
+  let status = 200;
+  let message = "";
+
+  let errorMessage = validateDeck(deck);
+  if (errorMessage) {
+    status = 400;
+    message = errorMessage;
+  } else {
+    db.connect();
+    await db.query("BEGIN");
+    try {
+      const deckId = await insertDeck(db, deck);
+
+      for (let card of deck.cards) {
+        await insertCard(db, deckId, card);
+      }
+      await db.query("COMMIT");
+    } catch (e) {
+      if (e instanceof UniqueConstraintError) {
+        status = 409;
+        message = "Deck already exists!";
+      } else {
+        message = "Server error";
+        status = 500;
+      }
+
+      console.error(e);
+      await db.query("ROLLBACK");
+    } finally {
+      db.end();
+    }
+  }
+
+  res.status(status).send({ message: message });
 });
+
+app.post(
+  "/decks/:deckId/likes",
+  bodyParser.json(),
+  (req: ExpressReq, res: any) => {
+    res.sendStatus(200);
+  }
+);
 
 let server = http.createServer(app);
 let io = new SocketServer(server);
+
+async function insertCard(db: any, deckId: string, card: Card) {
+  await db.query(
+    `
+        INSERT INTO cards (deck_id, text, value, value_type)
+        VALUES ($1, $2, $3, $4);
+      `,
+    [
+      deckId,
+      card.text,
+      card.value,
+      Number.isInteger(card.value) ? "int" : "float",
+    ]
+  );
+}
+
+async function insertDeck(db: any, deck: Deck): Promise<any> {
+  return (
+    await db.query(
+      `
+      INSERT INTO decks (name, short_id, unit, source, smaller_means, bigger_means, num_format_options, creator_email, creator_credit)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;
+    `,
+      [
+        deck.name,
+        deck.shortId,
+        deck.unit,
+        deck.source,
+        deck.smallerMeans,
+        deck.biggerMeans,
+        JSON.stringify(deck.numFormatOptions),
+        deck.creatorEmail,
+        deck.creatorCredit,
+      ]
+    )
+  ).rows[0].id;
+}
 
 function randomChoice<T>(arr: T[]): T | null {
   if (arr.length === 0) {
@@ -44,12 +145,75 @@ function randomChoice<T>(arr: T[]): T | null {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function newRoomState() {
+async function getDeckNamesAndShortIds() {
+  let db = createPgClient();
+  db.connect();
+  try {
+    return (await db.query("SELECT name, short_id FROM decks")).rows;
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+async function getDeckByShortId(shortId: string): Promise<Deck> {
+  let db = createPgClient();
+  db.connect();
+  let row;
+  let rows;
+  try {
+    rows = (
+      await db.query("SELECT * FROM decks WHERE short_id = $1", [shortId])
+    ).rows;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  row = rows[0];
+
+  console.log({ rows, shortId });
+  let deck: Deck = {
+    name: row.name,
+    shortId: row.short_id,
+    unit: row.unit,
+    source: row.source,
+    smallerMeans: row.smaller_means,
+    biggerMeans: row.bigger_means,
+    numFormatOptions: row.num_format_options,
+    creatorEmail: row.creator_email,
+    creatorCredit: row.creator_credit,
+    cards: [],
+  };
+
+  for (let dbCard of (
+    await db.query("SELECT * FROM cards WHERE deck_id = $1", [row.id])
+  ).rows) {
+    let card = {
+      text: dbCard.text,
+      value:
+        dbCard.value_type === "int"
+          ? parseInt(dbCard.value)
+          : parseFloat(dbCard.value),
+    };
+    deck.cards.push(card);
+  }
+
+  return deck;
+}
+
+async function newRoomState() {
+  let dbDecks = await getDeckNamesAndShortIds();
+
   const state: RoomState = {
     match: null,
     playerIds: [],
-    deckShortIds: decks.map((d) => d.shortId),
-    deckNames: decks.map((d) => d.name),
+    deckShortIds: dbDecks.map((d) => d.short_id),
+    deckNames: dbDecks.map((d) => d.name),
     gameModeOptions: gameModes,
     scores: {},
     playerNames: {},
@@ -67,12 +231,16 @@ function nextPlayer(roomState: RoomState) {
   return roomState.playerIds[nextPlayerIndex];
 }
 
-function newMatch(
+async function newMatch(
   oldState: RoomState | null,
-  selectedDeck: number,
+  selectedDeckShortId: string,
   selectedGameMode: number
-): RoomState {
-  const deck = decks[selectedDeck];
+): Promise<RoomState> {
+  const deck = await getDeckByShortId(selectedDeckShortId);
+
+  if (!deck) {
+    return null;
+  }
 
   let firstCard = Math.floor(deck.cards.length / 2);
   let allCards = [...Array(deck.cards.length).keys()];
@@ -107,9 +275,11 @@ function newMatch(
     }
   }
 
+  let dbDecks = await getDeckNamesAndShortIds();
+
   const state = {
-    deckShortIds: decks.map((d) => d.shortId),
-    deckNames: decks.map((d) => d.name),
+    deckShortIds: dbDecks.map((d) => d.short_id),
+    deckNames: dbDecks.map((d) => d.name),
     gameModeOptions: gameModes,
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},
@@ -190,13 +360,13 @@ io.on(
     join: (channel: string) => void;
     id: string;
   }) => {
-    socket.on("join", (data: { roomId: string; playerName: string }) => {
+    socket.on("join", async (data: { roomId: string; playerName: string }) => {
       console.log(`got join, socketId=${socket.id}`);
       socketToRoom.set(socket.id, data.roomId);
 
       let state = rooms.get(data.roomId);
       if (!state) {
-        state = newRoomState();
+        state = await newRoomState();
         state.currentPlayerId = socket.id;
       }
 
@@ -367,7 +537,7 @@ io.on(
     socket.on("placeCard", () => {
       let roomId = socketToRoom.get(socket.id);
       if (!roomId) {
-        console.warn(`${socket.id} called "" in non-existing room`);
+        console.warn(`${socket.id} called "placeCard" in non-existing room`);
         return;
       }
       let state = rooms.get(roomId);
@@ -470,7 +640,7 @@ io.on(
 
     socket.on(
       "newGame",
-      (data: { selectedDeck: number; selectedGameMode: number }) => {
+      async (data: { selectedDeck: string; selectedGameMode: number }) => {
         console.log(`got newGame, data=${JSON.stringify(data)}`);
         let roomId = socketToRoom.get(socket.id);
         if (!roomId) {
@@ -494,7 +664,18 @@ io.on(
           return;
         }
 
-        state = newMatch(state, data.selectedDeck, data.selectedGameMode);
+        state = await newMatch(state, data.selectedDeck, data.selectedGameMode);
+
+        if (!state) {
+          console.error(
+            `can't generate new match: room=${roomId}, socket=${socket.id}`
+          );
+          socket.emit(
+            "warning",
+            "Sorry, server error, cannot start new match. Please create another room."
+          );
+          return;
+        }
 
         updateState(roomId, state);
       }
@@ -503,7 +684,7 @@ io.on(
     socket.on("disconnect", () => {
       let roomId = socketToRoom.get(socket.id);
       if (!roomId) {
-        console.warn(`${socket.id} called "" in non-existing room`);
+        console.warn(`${socket.id} called "disconnect" in non-existing room`);
         return;
       }
 

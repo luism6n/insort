@@ -5,3 +5,4 @@ public/*.ttf
 build/
 .DS_Store
 *~
+.env.dev

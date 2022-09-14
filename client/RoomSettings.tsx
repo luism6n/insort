@@ -3,8 +3,9 @@ import { Title, Select, Button } from "./designSystem";
 
 interface RoomSettingsProps {
   deckOptions: string[];
-  selectedDeck: number;
-  setSelectedDeck: React.Dispatch<React.SetStateAction<number>>;
+  deckShortIds: string[];
+  selectedDeck: string;
+  setSelectedDeck: React.Dispatch<React.SetStateAction<string>>;
   gameModeOptions: string[];
   selectedGameMode: number;
   setSelectedGameMode: React.Dispatch<React.SetStateAction<number>>;
@@ -18,6 +19,7 @@ export function RoomSettings(props: RoomSettingsProps) {
         selected={props.selectedDeck}
         setSelected={props.setSelectedDeck}
         options={props.deckOptions}
+        values={props.deckShortIds}
       ></Select>
       <Title>Game Mode</Title>
       <Select
