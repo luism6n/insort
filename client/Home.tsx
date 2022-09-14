@@ -5,9 +5,9 @@ import { colors } from "./colors";
 
 export function Home() {
   return (
-    <div className="h-full w-full max-w-xl flex flex-col justify-center items-center">
+    <div className="h-full w-full max-w-xl flex flex-col items-center">
       <p
-        className="max-w-sm mb-10 text-center p-4 bg-white border-4"
+        className="max-w-sm mb-10 text-center mt-4 p-4 bg-white border-4"
         style={{ borderColor: colors.purple }}
       >
         Welcome to <span className="italic">Insort</span>! A quiz-like card game
