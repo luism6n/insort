@@ -3,9 +3,14 @@ const http = require("http");
 import bodyParser from "body-parser";
 import express, { Request as ExpressReq } from "express";
 import { Server as SocketServer } from "socket.io";
-import { Card, Deck, Match, RoomState } from "../types/types";
-import { Client } from "pg";
-import { UniqueConstraintError } from "sequelize";
+import { Deck, Match, RoomState } from "../types/types";
+import {
+  insertDeck,
+  incrementDeckLikeCount,
+  retrieveDeckNamesAndShortIds,
+  retrieveDeckByShortId,
+  DBConstraintError,
+} from "./db";
 
 function admin(state: RoomState) {
   return state.playerIds[0];
@@ -18,18 +23,6 @@ const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || "3000";
 
 const gameModes = ["Individual", "Teams", "Coop"];
-
-function createPgClient() {
-  return new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl:
-      process.env.ENVIRONMENT === "development"
-        ? false
-        : {
-            rejectUnauthorized: false,
-          },
-  });
-}
 
 let app = express();
 
@@ -51,7 +44,6 @@ function validateDeck(deck: Deck): string | null {
 
 app.post("/decks", bodyParser.json(), async (req: ExpressReq, res: any) => {
   const deck = req.body;
-  let db = createPgClient();
 
   let status = 200;
   let message = "";
@@ -61,28 +53,15 @@ app.post("/decks", bodyParser.json(), async (req: ExpressReq, res: any) => {
     status = 400;
     message = errorMessage;
   } else {
-    db.connect();
-    await db.query("BEGIN");
     try {
-      const deckId = await insertDeck(db, deck);
-
-      for (let card of deck.cards) {
-        await insertCard(db, deckId, card);
-      }
-      await db.query("COMMIT");
+      insertDeck(deck);
     } catch (e) {
-      if (e instanceof UniqueConstraintError) {
-        status = 409;
-        message = "Deck already exists!";
+      if (e instanceof DBConstraintError) {
+        status = 400;
       } else {
-        message = "Server error";
         status = 500;
       }
-
-      console.error(e);
-      await db.query("ROLLBACK");
-    } finally {
-      db.end();
+      message = e.message;
     }
   }
 
@@ -93,49 +72,13 @@ app.post(
   "/decks/:deckId/likes",
   bodyParser.json(),
   (req: ExpressReq, res: any) => {
+    incrementDeckLikeCount(req.params.deckId);
     res.sendStatus(200);
   }
 );
 
 let server = http.createServer(app);
 let io = new SocketServer(server);
-
-async function insertCard(db: any, deckId: string, card: Card) {
-  await db.query(
-    `
-        INSERT INTO cards (deck_id, text, value, value_type)
-        VALUES ($1, $2, $3, $4);
-      `,
-    [
-      deckId,
-      card.text,
-      card.value,
-      Number.isInteger(card.value) ? "int" : "float",
-    ]
-  );
-}
-
-async function insertDeck(db: any, deck: Deck): Promise<any> {
-  return (
-    await db.query(
-      `
-      INSERT INTO decks (name, short_id, unit, source, smaller_means, bigger_means, num_format_options, creator_email, creator_credit)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;
-    `,
-      [
-        deck.name,
-        deck.shortId,
-        deck.unit,
-        deck.source,
-        deck.smallerMeans,
-        deck.biggerMeans,
-        JSON.stringify(deck.numFormatOptions),
-        deck.creatorEmail,
-        deck.creatorCredit,
-      ]
-    )
-  ).rows[0].id;
-}
 
 function randomChoice<T>(arr: T[]): T | null {
   if (arr.length === 0) {
@@ -145,76 +88,8 @@ function randomChoice<T>(arr: T[]): T | null {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-async function getDeckNamesAndShortIds() {
-  let db = createPgClient();
-  db.connect();
-  try {
-    return (
-      await db.query(
-        "SELECT name, short_id FROM decks WHERE approved_at IS NOT NULL"
-      )
-    ).rows;
-  } catch (e) {
-    console.error(e);
-    return [];
-  }
-}
-
-async function getDeckByShortId(shortId: string): Promise<Deck> {
-  let db = createPgClient();
-  db.connect();
-  let row;
-  let rows;
-  try {
-    rows = (
-      await db.query(
-        "SELECT * FROM decks WHERE short_id = $1 AND approved_at IS NOT NULL",
-        [shortId]
-      )
-    ).rows;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  row = rows[0];
-
-  console.log({ rows, shortId });
-  let deck: Deck = {
-    name: row.name,
-    shortId: row.short_id,
-    unit: row.unit,
-    source: row.source,
-    smallerMeans: row.smaller_means,
-    biggerMeans: row.bigger_means,
-    numFormatOptions: row.num_format_options,
-    creatorEmail: row.creator_email,
-    creatorCredit: row.creator_credit,
-    cards: [],
-  };
-
-  for (let dbCard of (
-    await db.query("SELECT * FROM cards WHERE deck_id = $1", [row.id])
-  ).rows) {
-    let card = {
-      text: dbCard.text,
-      value:
-        dbCard.value_type === "int"
-          ? parseInt(dbCard.value)
-          : parseFloat(dbCard.value),
-    };
-    deck.cards.push(card);
-  }
-
-  return deck;
-}
-
 async function newRoomState() {
-  let dbDecks = await getDeckNamesAndShortIds();
+  let dbDecks = await retrieveDeckNamesAndShortIds();
 
   const state: RoomState = {
     match: null,
@@ -243,7 +118,7 @@ async function newMatch(
   selectedDeckShortId: string,
   selectedGameMode: number
 ): Promise<RoomState> {
-  const deck = await getDeckByShortId(selectedDeckShortId);
+  const deck = await retrieveDeckByShortId(selectedDeckShortId);
 
   if (!deck) {
     return null;
@@ -282,7 +157,7 @@ async function newMatch(
     }
   }
 
-  let dbDecks = await getDeckNamesAndShortIds();
+  let dbDecks = await retrieveDeckNamesAndShortIds();
 
   const state = {
     deckShortIds: dbDecks.map((d) => d.short_id),

@@ -7,8 +7,8 @@
     "build": "webpack",
     "watch-client": "webpack --watch",
     "start-server": "nodemon --watch 'server/' --exec 'ts-node server/main.ts' -e ts",
-    "start-server-prod": "npm run migrate && nodemon --watch 'server/' --exec 'ts-node server/main.ts' -e ts",
-    "migrate": "pushd server/db && sequelize db:migrate && popd"
+    "migrate": "cd server/db && sequelize db:migrate && cd ../..",
+    "start-server-prod": "npm run migrate && npm start-server"
   },
   "keywords": [],
   "author": "",
