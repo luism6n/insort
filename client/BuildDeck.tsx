@@ -25,11 +25,7 @@ export default function BuildDeck() {
 
   const { toast, setToast } = useToast();
 
-  async function handleSubmit(e?: React.FormEvent) {
-    if (e) {
-      e.preventDefault();
-    }
-
+  async function handleSubmit() {
     console.log(deck);
 
     try {
@@ -42,7 +38,11 @@ export default function BuildDeck() {
       });
 
       if (res.status === 200) {
-        setToast({ ...toast, message: "Deck saved!", type: "notification" });
+        setToast({
+          ...toast,
+          message: "Deck submitted for review!",
+          type: "notification",
+        });
         setDeck({
           name: "",
           // https://alex7kom.github.io/nano-nanoid-cc/?alphabet=_-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&size=10&speed=1&speedUnit=hour
@@ -106,10 +106,7 @@ export default function BuildDeck() {
 
   return (
     <div className="w-full max-w-xl overflow-y-scroll p-4">
-      <form
-        className="flex flex-col items-start justify-center gap-1"
-        onSubmit={handleSubmit}
-      >
+      <form className="flex flex-col items-start justify-center gap-1">
         <Input
           required
           label="Deck name"
@@ -247,7 +244,11 @@ export default function BuildDeck() {
         </p>
 
         <div className="flex w-full justify-center">
-          <Button trackEventCls="umami--click--submit-deck" type="submit">
+          <Button
+            onClick={handleSubmit}
+            trackEventCls="umami--click--submit-deck"
+            type="submit"
+          >
             Submit deck
           </Button>
         </div>
