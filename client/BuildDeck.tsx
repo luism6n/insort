@@ -3,7 +3,7 @@ import React, { FormEvent, useState } from "react";
 import { Card, Deck } from "../types/types";
 import { Card as CardElement } from "./Card";
 import { colors } from "./colors";
-import { Input, Button, Toast } from "./designSystem";
+import { Input, Button, Toast, Title } from "./designSystem";
 import { useToast } from "./useToast";
 
 export default function BuildDeck() {
@@ -113,7 +113,8 @@ export default function BuildDeck() {
   let sampleCard = cardWithLongestName(deck.cards);
 
   return (
-    <div className="w-full max-w-xl overflow-y-scroll p-4">
+    <div className="w-full max-w-xl overflow-y-scroll px-4 my-2">
+      <Title>Suggest a deck to us!</Title>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col items-start justify-center gap-1"

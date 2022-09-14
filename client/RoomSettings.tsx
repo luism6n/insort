@@ -2,6 +2,9 @@ import React from "react";
 import { Title, Select, Button } from "./designSystem";
 
 interface RoomSettingsProps {
+  playerId: string;
+  admin: string;
+  adminName: string;
   deckOptions: string[];
   deckShortIds: string[];
   selectedDeck: string;
@@ -27,6 +30,16 @@ export function RoomSettings(props: RoomSettingsProps) {
         setSelected={props.setSelectedGameMode}
         options={props.gameModeOptions}
       ></Select>
+      <div className="flex justify-center w-full text-sm">
+        {props.playerId === props.admin ? (
+          <p>Choose your match settings</p>
+        ) : (
+          <p className="text-center">
+            {props.adminName} is choosing... <br /> You can only browse the
+            options
+          </p>
+        )}
+      </div>
     </div>
   );
 }

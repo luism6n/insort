@@ -54,6 +54,9 @@ export function Room() {
       <Fragment>
         <div className="w-1/2">
           <RoomSettings
+            playerId={playerId}
+            admin={admin(roomState)}
+            adminName={roomState.playerNames[admin(roomState)]}
             deckShortIds={roomState.deckShortIds}
             deckOptions={roomState.deckNames}
             selectedDeck={selectedDeck}
