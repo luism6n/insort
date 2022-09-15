@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import React, { Fragment, RefObject, useEffect, useRef, useState } from "react";
 import { RoomState } from "../types/types";
 import { Button } from "./designSystem";
 import { getDivDimensions, getRefYDistance } from "./htmlMeasuring";
@@ -325,14 +325,23 @@ export function Match(props: {
                   </div>
                 )}
                 {!props.roomState.match.concluded && (
-                  <div>
-                    <p>cards left:</p>
-                    <p>
-                      {props.roomState.match.deck.cards.length -
-                        props.roomState.match.placedCards.length}{" "}
-                      out of {props.roomState.match.deck.cards.length}
-                    </p>
-                  </div>
+                  <Fragment>
+                    <div>
+                      <p>deck source:</p>
+                      <p>
+                        {new URL(props.roomState.match.deck.source).hostname}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p>cards left:</p>
+                      <p>
+                        {props.roomState.match.deck.cards.length -
+                          props.roomState.match.placedCards.length}{" "}
+                        out of {props.roomState.match.deck.cards.length}
+                      </p>
+                    </div>
+                  </Fragment>
                 )}
               </div>
             </div>
@@ -415,10 +424,10 @@ export function Match(props: {
             className={`umami--click--deck-source-deck-${slug(
               match.deck.shortId
             )} text-sm underline hover:text-red-800`}
-            href={props.roomState.match.deck.source}
+            href={match.deck.source}
             target="_blank"
           >
-            Deck source (external link)
+            Deck source ({new URL(match.deck.source).hostname})
           </a>
         </div>
       )}
