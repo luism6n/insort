@@ -36,6 +36,27 @@ export function Scores(props: {
     teamScores = null;
   }
 
+  function totalScore() {
+    let total = 0;
+    for (let id of props.roomState.playerIds) {
+      total += props.roomState.match.scores[id];
+    }
+    return total;
+  }
+
+  let coopScores;
+  if (props.roomState.match?.gameMode === "Coop") {
+    coopScores = (
+      <Fragment>
+        <div className="flex justify-center w-full">
+          <p>Score: {totalScore()}</p>
+        </div>
+      </Fragment>
+    );
+  } else {
+    coopScores = null;
+  }
+
   let maxOverallScoreId: string | null = null;
   let maxOverallScore = 0;
   for (let id of props.roomState.playerIds) {
@@ -63,6 +84,7 @@ export function Scores(props: {
   return (
     <div className="pb-2 w-full overflow-y-scroll">
       {teamScores}
+      {coopScores}
       <table className="w-full border-collapse">
         <thead>
           <tr>
