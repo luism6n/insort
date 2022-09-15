@@ -31,7 +31,7 @@ export function Home() {
             className="text-sm hover:text-red-800 umami--click--build-deck"
             to="/build-deck"
           >
-            Have you played before? Suggest a deck...
+            Do you have an idea for a deck? Submit your own...
           </Link>
         </p>
       </div>

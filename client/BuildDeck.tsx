@@ -114,7 +114,7 @@ export default function BuildDeck() {
 
   return (
     <div className="w-full max-w-xl overflow-y-scroll px-4 my-2">
-      <Title>Suggest a deck to us!</Title>
+      <Title>Submit a deck!</Title>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col items-start justify-center gap-1"
@@ -250,7 +250,7 @@ export default function BuildDeck() {
         </div>
 
         <p className="text-sm">
-          Notice: Your deck may be subject to changes by the moderator before
+          Notice: Your deck may be subject to changes by moderators before
           becoming public. It'll be checked for sources, typos and formatting to
           make it feel similar to other decks. Your email will never be public.
         </p>
