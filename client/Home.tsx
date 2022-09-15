@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { nanoid } from "nanoid";
 import { colors } from "./colors";
+import { Button } from "./designSystem";
 
 export function Home() {
   return (
@@ -21,7 +22,7 @@ export function Home() {
             className="hover:text-red-800 umami--click--create-room"
             href={`/r/${nanoid()}`}
           >
-            Create Room
+            <Button>Create Room</Button>
           </a>
         </p>
         <p>
