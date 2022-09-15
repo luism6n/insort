@@ -39,6 +39,10 @@ function validateDeck(deck: Deck): string | null {
     return "Deck must have at least 2 cards";
   }
 
+  if (deck.cards.length > 100) {
+    return "Deck must have at most 100 cards";
+  }
+
   return null;
 }
 
