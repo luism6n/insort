@@ -21,7 +21,11 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
           setValue={setNameInput}
         />
         <p className="text-sm text-center">
-          Send the link to this room to your friends to play together!
+          Send the{" "}
+          <a className="underline" href={window.location.href} target="_blank">
+            link to this room
+          </a>{" "}
+          to your friends to play together!
         </p>
         <Button trackEventCls="umami--click--join-room" type="submit">
           Join
