@@ -40,7 +40,10 @@ function RoomTrayHeader(props: {
         />
       </div>
       <p>
-        {props.title === "chat" ? chatSpan : "scores"} (see{" "}
+        <button className="underline" onClick={() => props.setOpenTray(true)}>
+          {props.title === "chat" ? chatSpan : "scores"}
+        </button>{" "}
+        (see{" "}
         <button className="underline" onClick={props.toggleContent}>
           {props.title === "chat" ? "scores" : chatSpan}
         </button>
@@ -103,9 +106,10 @@ export function RoomTray(props: {
             gameMode={props.roomState.match?.gameMode}
             setOpenTray={setOpenTray}
             title={mode}
-            toggleContent={() =>
-              setMode((m) => (m === "chat" ? "scores" : "chat"))
-            }
+            toggleContent={() => {
+              setOpenTray(true);
+              setMode((m) => (m === "chat" ? "scores" : "chat"));
+            }}
             newMessages={newMessages}
           />
           <div className="flex w-full" style={{ height: 200 }}>
