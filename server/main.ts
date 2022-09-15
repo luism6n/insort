@@ -361,7 +361,11 @@ io.on(
         return;
       }
 
-      if (state.currentPlayerId !== socket.id) {
+      console.log(state);
+      if (
+        state.currentPlayerId !== socket.id &&
+        state.match.gameMode !== "Coop"
+      ) {
         socket.emit("warning", "Oops, not your turn yet.");
         return;
       }
@@ -402,7 +406,10 @@ io.on(
         return;
       }
 
-      if (state.currentPlayerId !== socket.id) {
+      if (
+        state.currentPlayerId !== socket.id &&
+        state.match.gameMode !== "Coop"
+      ) {
         socket.emit("warning", "Oops, not your turn yet.");
         return;
       }
@@ -444,7 +451,7 @@ io.on(
 
       if (
         state.currentPlayerId !== socket.id &&
-        !(state.match.gameMode === "Coop")
+        state.match.gameMode !== "Coop"
       ) {
         socket.emit("warning", "Oops, not your turn yet.");
         return;
