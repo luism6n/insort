@@ -34,7 +34,7 @@ export function Card({
     <motion.div
       style={{ ...style, zIndex, height: 180, width: 140 }}
       animate={{ left: x, top: y }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.5 }}
       initial={{ left: comesFrom.x, top: comesFrom.y }}
       ref={innerRef}
       className={
