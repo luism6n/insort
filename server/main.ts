@@ -475,10 +475,8 @@ io.on(
         (cards[placedCards[p]]?.value || Infinity) >= cards[n].value &&
         cards[n].value >= (cards[placedCards[p + 1]]?.value || -Infinity)
       ) {
-        if (!(state.match.gameMode === "Coop")) {
-          state.scores[socket.id] += 1;
-          state.match.scores[socket.id] += 1;
-        }
+        state.scores[socket.id] += 1;
+        state.match.scores[socket.id] += 1;
         io.to(roomId).emit("notification", "Correct!");
       } else {
         io.to(roomId).emit("warning", "Wrong!");
