@@ -4,6 +4,7 @@ import { Card, Deck } from "../types/types";
 import { Card as CardElement } from "./Card";
 import { colors } from "./colors";
 import { Input, Button, Toast, Title } from "./designSystem";
+import { Overlay } from "./Overlay";
 import { useToast } from "./useToast";
 
 export default function BuildDeck() {
@@ -262,36 +263,26 @@ export default function BuildDeck() {
         </div>
       </form>
 
-      {showConfirmSubmit && (
-        <div
-          onClick={() => setShowConfirmSubmit(false)}
-          className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center"
-        >
-          <div
-            style={{ borderColor: colors.purple }}
-            className="border border-4 p-4 bg-white flex flex-col"
-          >
-            <p className="text-lg mb-4">Are you sure you want to submit?</p>
-            <p>Deck name: {deck.name}</p>
-            <p>Unit: {deck.unit}</p>
-            <p>Smaller means: {deck.smallerMeans}</p>
-            <p>Bigger means: {deck.biggerMeans}</p>
-            <p>Source: {deck.source}</p>
-            <p>Cards: {deck.cards.length}</p>
-            <p>Creator credit: {deck.creatorCredit}</p>
-            <p>Creator email: {deck.creatorEmail}</p>
+      <Overlay open={showConfirmSubmit} setOpen={setShowConfirmSubmit}>
+        <p className="text-lg mb-4">Are you sure you want to submit?</p>
+        <p>Deck name: {deck.name}</p>
+        <p>Unit: {deck.unit}</p>
+        <p>Smaller means: {deck.smallerMeans}</p>
+        <p>Bigger means: {deck.biggerMeans}</p>
+        <p>Source: {deck.source}</p>
+        <p>Cards: {deck.cards.length}</p>
+        <p>Creator credit: {deck.creatorCredit}</p>
+        <p>Creator email: {deck.creatorEmail}</p>
 
-            <div className="flex w-full justify-center mt-4">
-              <Button
-                onClick={handleConfirmSubmit}
-                trackEventCls="umami--click--confirm-submit-deck"
-              >
-                Confirm submission
-              </Button>
-            </div>
-          </div>
+        <div className="flex w-full justify-center mt-4">
+          <Button
+            onClick={handleConfirmSubmit}
+            trackEventCls="umami--click--confirm-submit-deck"
+          >
+            Confirm submission
+          </Button>
         </div>
-      )}
+      </Overlay>
 
       {toast?.message.length > 0 && (
         <Toast message={toast.message} type={toast.type} />

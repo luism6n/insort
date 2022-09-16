@@ -2,6 +2,7 @@ import React, { useState } from "react";
 // @ts-ignore
 import logoUrl from "../assets/logo_background_only.png";
 import { colors } from "./colors";
+import { Overlay } from "./Overlay";
 
 export function Header({}) {
   const [openCredits, setOpenCredits] = useState(false);
@@ -38,43 +39,32 @@ export function Header({}) {
         </button>
       </div>
 
-      {openCredits && (
-        <div
-          className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center"
-          style={{ zIndex: 1000 }}
-          onClick={() => setOpenCredits(false)}
-        >
-          <div
-            className="flex flex-col items-center justify-center max-w-xl border-4 bg-white p-6 gap-6"
-            style={{ borderColor: colors.purple }}
+      <Overlay open={openCredits} setOpen={setOpenCredits}>
+        <h1 className="bold text-lg text-center">Credits</h1>
+        <p>
+          Coding: Luís Möllmann (
+          <a
+            target="_blank"
+            href="https://github.com/luism6n"
+            className="underline"
           >
-            <h1 className="bold text-lg text-center">Credits</h1>
-            <p>
-              Coding: Luís Möllmann (
-              <a
-                target="_blank"
-                href="https://github.com/luism6n"
-                className="underline"
-              >
-                github.com/luism6n
-              </a>
-              )
-            </p>
+            github.com/luism6n
+          </a>
+          )
+        </p>
 
-            <p>
-              Design: Natália Chies (
-              <a
-                target="_blank"
-                href="https://github.com/ntlchs"
-                className="underline"
-              >
-                github.com/ntlchs
-              </a>
-              )
-            </p>
-          </div>
-        </div>
-      )}
+        <p>
+          Art & Design: Natália Chies (
+          <a
+            target="_blank"
+            href="https://github.com/ntlchs"
+            className="underline"
+          >
+            github.com/ntlchs
+          </a>
+          )
+        </p>
+      </Overlay>
     </header>
   );
 }
