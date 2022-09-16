@@ -18,7 +18,7 @@ export function admin(state: RoomState) {
 export function Room() {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
-  const [selectedDeck, setSelectedDeck] = useState("");
+  const [selectedDeck, setSelectedDeck] = useState("foo");
   const [selectedGameMode, setSelectedGameMode] = useState(0);
   const [chatMessages, setChatMessages] = useState<
     { text: string; senderId: string }[]
@@ -39,11 +39,9 @@ export function Room() {
     playerId,
   } = useSocket(roomId, setRoomState, setToast, setChatMessages);
 
-  useEffect(() => {
-    setSelectedDeck(roomState?.deckShortIds[0] || "");
-  }, [roomState?.deckShortIds]);
-
   let content = null;
+
+  console.log({ selectedDeck });
 
   if (socketLoading) {
     content = <p>Loading...</p>;
@@ -57,8 +55,6 @@ export function Room() {
             playerId={playerId}
             admin={admin(roomState)}
             adminName={roomState.playerNames[admin(roomState)]}
-            deckShortIds={roomState.deckShortIds}
-            deckOptions={roomState.deckNames}
             selectedDeck={selectedDeck}
             setSelectedDeck={setSelectedDeck}
             gameModeOptions={roomState.gameModeOptions}
@@ -125,9 +121,7 @@ export function Room() {
           changeTeams={changeTeams}
         />
       )}
-      {toast.message !== "" && (
-        <Toast message={toast.message} type={toast.type} />
-      )}
+      {toast}
     </div>
   );
 }

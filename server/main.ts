@@ -81,6 +81,20 @@ app.post(
   }
 );
 
+// get decks endpoint
+app.get("/decks", async (req: ExpressReq, res: any) => {
+  let deckNamesAndShortIds;
+  try {
+    deckNamesAndShortIds = await retrieveDeckNamesAndShortIds();
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Server error, please try again later." });
+    return;
+  }
+
+  res.send(deckNamesAndShortIds);
+});
+
 let server = http.createServer(app);
 let io = new SocketServer(server);
 
@@ -93,13 +107,9 @@ function randomChoice<T>(arr: T[]): T | null {
 }
 
 async function newRoomState() {
-  let dbDecks = await retrieveDeckNamesAndShortIds();
-
   const state: RoomState = {
     match: null,
     playerIds: [],
-    deckShortIds: dbDecks.map((d) => d.short_id),
-    deckNames: dbDecks.map((d) => d.name),
     gameModeOptions: gameModes,
     scores: {},
     playerNames: {},
@@ -164,7 +174,7 @@ async function newMatch(
   let dbDecks = await retrieveDeckNamesAndShortIds();
 
   const state = {
-    deckShortIds: dbDecks.map((d) => d.short_id),
+    deckShortIds: dbDecks.map((d) => d.shortId),
     deckNames: dbDecks.map((d) => d.name),
     gameModeOptions: gameModes,
     playerIds: oldState ? oldState.playerIds : [],

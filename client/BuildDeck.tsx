@@ -42,7 +42,6 @@ export default function BuildDeck() {
 
       if (res.status === 200) {
         setToast({
-          ...toast,
           message: "Deck submitted for review!",
           type: "notification",
         });
@@ -64,13 +63,11 @@ export default function BuildDeck() {
         });
       } else if (res.status === 409) {
         setToast({
-          ...toast,
           message: (await res.json()).message,
           type: "notification",
         });
       } else {
         setToast({
-          ...toast,
           message: (await res.json()).message,
           type: "warning",
         });
@@ -78,7 +75,6 @@ export default function BuildDeck() {
     } catch (e) {
       console.error(e);
       setToast({
-        ...toast,
         message: "Error connecting to server",
         type: "warning",
       });
@@ -284,9 +280,7 @@ export default function BuildDeck() {
         </div>
       </Overlay>
 
-      {toast?.message.length > 0 && (
-        <Toast message={toast.message} type={toast.type} />
-      )}
+      {toast}
     </div>
   );
 }

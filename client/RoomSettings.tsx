@@ -1,3 +1,4 @@
+import { DeckSelection } from "./DeckSelection";
 import React from "react";
 import { Title, Select, Button } from "./designSystem";
 
@@ -5,8 +6,6 @@ interface RoomSettingsProps {
   playerId: string;
   admin: string;
   adminName: string;
-  deckOptions: string[];
-  deckShortIds: string[];
   selectedDeck: string;
   setSelectedDeck: React.Dispatch<React.SetStateAction<string>>;
   gameModeOptions: string[];
@@ -18,12 +17,10 @@ export function RoomSettings(props: RoomSettingsProps) {
   return (
     <div className="flex flex-col justify-center h-full">
       <Title>Deck</Title>
-      <Select
-        selected={props.selectedDeck}
-        setSelected={props.setSelectedDeck}
-        options={props.deckOptions}
-        values={props.deckShortIds}
-      ></Select>
+      <DeckSelection
+        selectedDeck={props.selectedDeck}
+        setSelectedDeck={props.setSelectedDeck}
+      />
       <Title>Game Mode</Title>
       <Select
         selected={props.selectedGameMode}

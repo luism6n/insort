@@ -6,13 +6,7 @@ import { RoomState } from "../types/types";
 export function useSocket(
   roomId: string,
   setRoomState: React.Dispatch<React.SetStateAction<RoomState | null>>,
-  setMessage: React.Dispatch<
-    React.SetStateAction<{
-      message: string;
-      timeoutId: ReturnType<typeof setTimeout>;
-      type: string;
-    }>
-  >,
+  setToast: (t: { message: string; type: string }) => void,
   setChatMessages: React.Dispatch<
     React.SetStateAction<{ text: string; senderId: string }[]>
   >
@@ -39,11 +33,11 @@ export function useSocket(
       });
 
       socket.on("warning", (message: string) => {
-        setMessage({ message: message, timeoutId: null, type: "warning" });
+        setToast({ message: message, type: "warning" });
       });
 
       socket.on("notification", (message: string) => {
-        setMessage({ message: message, timeoutId: null, type: "notification" });
+        setToast({ message: message, type: "notification" });
       });
     }
   }, [socket]);

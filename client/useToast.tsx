@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Toast } from "./designSystem";
 
 export function useToast() {
   const [toast, setToast] = useState<{
@@ -27,5 +28,11 @@ export function useToast() {
     };
   }, [toast]);
 
-  return { toast, setToast };
+  return {
+    toast: toast.message !== "" && (
+      <Toast message={toast.message} type={toast.type} />
+    ),
+    setToast: (t: { message: string; type: string }) =>
+      setToast({ ...toast, message: t.message, type: t.type }),
+  };
 }

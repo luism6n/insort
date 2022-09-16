@@ -74,19 +74,23 @@ export async function insertDeckWithoutCards(
 export async function retrieveDeckNamesAndShortIds() {
   let db = createClient();
   db.connect();
+  let result;
   try {
-    return (
-      await db.query(
-        "SELECT name, short_id FROM decks" +
-          (process.env.ENVIRONMENT === "development"
-            ? ""
-            : " WHERE approved_at IS NOT NULL")
-      )
-    ).rows;
+    result = await db.query(
+      "SELECT name, short_id FROM decks" +
+        (process.env.ENVIRONMENT === "development"
+          ? ""
+          : " WHERE approved_at IS NOT NULL")
+    );
   } catch (e) {
     console.error(e);
     return [];
   }
+
+  return result.rows.map((r) => ({
+    name: r.name,
+    shortId: r.short_id,
+  }));
 }
 
 export async function retrieveDeckByShortId(shortId: string): Promise<Deck> {

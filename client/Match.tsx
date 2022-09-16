@@ -19,6 +19,7 @@ import { Scores } from "./Scores";
 import slug from "slug";
 import { motion } from "framer-motion";
 import { admin } from "./Room";
+import { safeExtractHostnameFromURL } from "./utils";
 
 export function Match(props: {
   roomId: string;
@@ -328,9 +329,7 @@ export function Match(props: {
                   <Fragment>
                     <div>
                       <p>deck source:</p>
-                      <p>
-                        {new URL(props.roomState.match.deck.source).hostname}
-                      </p>
+                      <p>{safeExtractHostnameFromURL(match.deck.source)}</p>
                     </div>
 
                     <div>
@@ -427,7 +426,7 @@ export function Match(props: {
             href={match.deck.source}
             target="_blank"
           >
-            Deck source ({new URL(match.deck.source).hostname})
+            Deck source ({safeExtractHostnameFromURL(match.deck.source)})
           </a>
         </div>
       )}

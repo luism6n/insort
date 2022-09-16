@@ -81,9 +81,15 @@ export function Select(props: {
     values = props.values;
   }
 
+  console.log({
+    selected: props.selected,
+    values: props.values,
+    options: props.options,
+  });
+
   return (
     <select
-      className="m-1"
+      className="w-full m-1"
       value={props.selected}
       onChange={(e) => props.setSelected(e.target.value)}
     >

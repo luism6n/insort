@@ -32,8 +32,6 @@ export interface Match {
 
 export interface RoomState {
   match: null | Match;
-  deckShortIds: string[];
-  deckNames: string[];
   gameModeOptions: string[];
   playerIds: string[];
   scores: { [playerId: string]: number };
