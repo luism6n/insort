@@ -16,7 +16,7 @@ export function Overlay(props: {
         >
           <div
             style={{ borderColor: colors.purple }}
-            className="border border-4 p-4 bg-white flex flex-col"
+            className="chopped-corner-div border border-4 p-4 bg-white flex flex-col"
           >
             {props.children}
           </div>

@@ -3,44 +3,75 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: 'Uni';
-    src: url('../assets/uni_05_53.ttf');
+  font-family: "Uni";
+  src: url("../assets/uni_05_53.ttf");
 }
 
 body {
-    font-family: 'Uni';
-    font-size: 1rem;
-    height: 100vh;
+  font-family: "Uni";
+  font-size: 1rem;
+  height: 100vh;
 }
 
 .card {
-    background-image: url('../assets/card_green.png');
+  background-image: url("../assets/card_green.png");
 }
 
 .next-card {
-    background-image: url('../assets/card_orange.png');
+  background-image: url("../assets/card_orange.png");
 }
 
 .btn {
-    background-image: url('../assets/text_bar_1.png');
+  background-image: url("../assets/text_bar_1.png");
 }
 
 .back-btn {
-    background-image: url('../assets/back.png');
+  background-image: url("../assets/back.png");
 }
 
 .send-btn {
-    background-image: url('../assets/send.png');
+  background-image: url("../assets/send.png");
 }
 
 .left-btn {
-    background-image: url('../assets/arrow_left.png');
+  background-image: url("../assets/arrow_left.png");
 }
 
 .right-btn {
-    background-image: url('../assets/arrow_right.png');
+  background-image: url("../assets/arrow_right.png");
 }
 
 .place-btn {
-    background-image: url('../assets/place_button_bg.png');
+  background-image: url("../assets/place_button_bg.png");
+}
+
+.chopped-corner-div {
+  position: relative;
+}
+
+.chopped-corner-div::after,
+.chopped-corner-div::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  /* to click through anytime */
+  border: solid 4px;
+}
+
+.chopped-corner-div::after {
+  left: 3px;
+  right: 3px;
+  top: 0;
+  bottom: 0;
+  border-left: none;
+  border-right: none;
+}
+
+.chopped-corner-div::before {
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+  border-top: none;
+  border-bottom: none;
 }
