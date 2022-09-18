@@ -87,7 +87,7 @@ export function Select(props: {
 
   return (
     <select
-      className="w-full m-1"
+      className="w-full max-w-sm m-1"
       value={props.selected}
       onChange={(e) => props.setSelected(e.target.value)}
     >

@@ -311,14 +311,20 @@ export function Match(props: {
 
         {!props.roomState.match.concluded && (
           <div className="flex flex-col items-center w-full">
-            <div className="flex justify-between w-full text-sm max-w-xl h-0 overflow-visible">
-              <div className="flex flex-col gap-2 p-2">
+            <div className="flex justify-between w-full text-sm text-center  max-w-xl h-0 overflow-visible">
+              <div
+                className="flex flex-col gap-2 p-2"
+                style={{ width: `calc(50% - ${cardDimensions[0]}px/2)` }}
+              >
                 <div>
                   <p>admin:</p>
                   <p>{props.roomState.playerNames[admin(props.roomState)]}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 p-2">
+              <div
+                className="flex flex-col gap-2 p-2"
+                style={{ width: `calc(50% - ${cardDimensions[0]}px/2)` }}
+              >
                 {props.roomState.match.deck.creatorCredit?.length > 0 && (
                   <div>
                     <p>deck creator:</p>

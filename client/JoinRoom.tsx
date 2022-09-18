@@ -10,16 +10,18 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
   }
 
   return (
-    <div className="flex flex-col w-1/2">
+    <div className="flex flex-col items-center">
       <Title>Join Room</Title>
       <form onSubmit={handleJoin} className="flex flex-col gap-2 items-center">
-        <Input
-          required
-          label="Choose a name to join this room"
-          placeholder="Enter username"
-          value={nameInput}
-          setValue={setNameInput}
-        />
+        <div className="flex-col items-start">
+          <Input
+            required
+            label="Choose a name to join this room"
+            placeholder="Enter username"
+            value={nameInput}
+            setValue={setNameInput}
+          />
+        </div>
         <p className="text-sm text-center">
           Send the{" "}
           <a className="underline" href={window.location.href} target="_blank">

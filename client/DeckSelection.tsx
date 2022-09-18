@@ -64,12 +64,12 @@ export function DeckSelection(props: {
   }
 
   return (
-    <div>
-      <div className="max-h-40 overflow-y-scroll">
+    <Fragment>
+      <div className="max-h-40 w-full max-w-sm overflow-y-scroll">
         <table className="w-full">
           <thead>
             <tr
-              className="sticky top-0 border-b-1 pr-4"
+              className="sticky top-0 pr-4"
               style={{
                 borderColor: colors.purple,
                 backgroundColor: colors.blue,
@@ -104,7 +104,7 @@ export function DeckSelection(props: {
         </table>
       </div>
       {toast}
-    </div>
+    </Fragment>
   );
 
   //   return (

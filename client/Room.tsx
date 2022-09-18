@@ -49,27 +49,16 @@ export function Room() {
     content = <JoinRoom join={join} />;
   } else if (roomState.match === null) {
     content = (
-      <Fragment>
-        <RoomSettings
-          playerId={playerId}
-          admin={admin(roomState)}
-          adminName={roomState.playerNames[admin(roomState)]}
-          selectedDeck={selectedDeck}
-          setSelectedDeck={setSelectedDeck}
-          selectedGameMode={selectedGameMode}
-          setSelectedGameMode={setSelectedGameMode}
-        />
-        <div className="flex">
-          <Button
-            trackEventCls={`umami--click--play-deck-${slug(
-              selectedDeck
-            )}-mode-${slug(selectedGameMode)}`}
-            onClick={() => newGame(selectedDeck, selectedGameMode)}
-          >
-            Play
-          </Button>
-        </div>
-      </Fragment>
+      <RoomSettings
+        playerId={playerId}
+        admin={admin(roomState)}
+        adminName={roomState.playerNames[admin(roomState)]}
+        selectedDeck={selectedDeck}
+        setSelectedDeck={setSelectedDeck}
+        selectedGameMode={selectedGameMode}
+        setSelectedGameMode={setSelectedGameMode}
+        newGame={newGame}
+      />
     );
   } else {
     content = (
@@ -106,10 +95,10 @@ export function Room() {
 
   return (
     <div
-      className="w-full h-full max-h-screen"
+      className="w-full h-full p-x-2"
       style={{ backgroundColor: backgroundColor }}
     >
-      <div className="flex flex-1 flex-col justify-start items-center h-full w-full max-w-xl m-auto">
+      <div className="flex flex-1 flex-col justify-start items-center h-full max-w-xl p-2 m-auto">
         {content}
       </div>
       {roomState && (

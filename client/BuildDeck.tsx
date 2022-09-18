@@ -260,15 +260,17 @@ export default function BuildDeck() {
       </form>
 
       <Overlay open={showConfirmSubmit} setOpen={setShowConfirmSubmit}>
-        <p className="text-lg mb-4">Are you sure you want to submit?</p>
-        <p>Deck name: {deck.name}</p>
-        <p>Unit: {deck.unit}</p>
-        <p>Smaller means: {deck.smallerMeans}</p>
-        <p>Bigger means: {deck.biggerMeans}</p>
-        <p>Source: {deck.source}</p>
-        <p>Cards: {deck.cards.length}</p>
-        <p>Creator credit: {deck.creatorCredit}</p>
-        <p>Creator email: {deck.creatorEmail}</p>
+        <p className="text-lg mb-4">Deck overview</p>
+        <div className="text-left w-full">
+          <p>Deck name: {deck.name}</p>
+          <p>Unit: {deck.unit}</p>
+          <p>Smaller means: {deck.smallerMeans}</p>
+          <p>Bigger means: {deck.biggerMeans}</p>
+          <p>Source: {deck.source}</p>
+          <p>Cards: {deck.cards.length}</p>
+          <p>Creator credit: {deck.creatorCredit}</p>
+          <p>Creator email: {deck.creatorEmail}</p>
+        </div>
 
         <div className="flex w-full justify-center mt-4">
           <Button
