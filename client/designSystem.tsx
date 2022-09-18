@@ -81,6 +81,10 @@ export function Select(props: {
     values = props.values;
   }
 
+  if (!props.selected) {
+    props.setSelected(values[0]);
+  }
+
   return (
     <select
       className="w-full m-1"

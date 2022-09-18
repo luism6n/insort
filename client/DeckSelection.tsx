@@ -64,8 +64,8 @@ export function DeckSelection(props: {
   }
 
   return (
-    <div className="w-full">
-      <div className="w-full max-h-40 overflow-y-scroll">
+    <div>
+      <div className="max-h-40 overflow-y-scroll">
         <table className="w-full">
           <thead>
             <tr
