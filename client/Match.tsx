@@ -303,8 +303,8 @@ export function Match(props: {
             </div>
 
             <div className="w-full px-4 flex text-sm justify-between">
-              <p className="flex-1 text-left">{`← ${match.deck.biggerMeans}`}</p>
-              <p className="flex-1 ml-auto text-right">{`${match.deck.smallerMeans} →`}</p>
+              <p className="flex-1 text-left">{`← ${match.deck.smallerMeans}`}</p>
+              <p className="flex-1 ml-auto text-right">{`${match.deck.biggerMeans} →`}</p>
             </div>
           </div>
         </section>

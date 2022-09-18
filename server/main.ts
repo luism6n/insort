@@ -147,7 +147,7 @@ async function newMatch(
   }
 
   let sorted = allCards.sort(
-    (i, j) => deck.cards[j].value - deck.cards[i].value
+    (i, j) => deck.cards[i].value - deck.cards[j].value
   );
   let pos = 0;
   let correctFinalPositions = new Map();
@@ -486,8 +486,8 @@ io.on(
       let placedCards = state.match.placedCards;
       console.log(cards[placedCards[p]], cards[n], cards[placedCards[p + 1]]);
       if (
-        (cards[placedCards[p]]?.value || Infinity) >= cards[n].value &&
-        cards[n].value >= (cards[placedCards[p + 1]]?.value || -Infinity)
+        (cards[placedCards[p]]?.value || -Infinity) <= cards[n].value &&
+        cards[n].value <= (cards[placedCards[p + 1]]?.value || Infinity)
       ) {
         state.scores[socket.id] += 1;
         state.match.scores[socket.id] += 1;
