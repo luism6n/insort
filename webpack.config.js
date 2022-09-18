@@ -13,7 +13,7 @@ module.exports = [
     module: {
       rules: [
         {
-          test: /\.tsx$/,
+          test: /\.(tsx|ts)$/,
           exclude: /node_modules/,
           loader: "ts-loader",
           options: {

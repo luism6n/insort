@@ -3,6 +3,7 @@ const http = require("http");
 import bodyParser from "body-parser";
 import express, { Request as ExpressReq } from "express";
 import { Server as SocketServer } from "socket.io";
+import { GameMode } from "./../types/enums";
 import { Deck, Match, RoomState } from "../types/types";
 import {
   insertDeck,
@@ -110,7 +111,6 @@ async function newRoomState() {
   const state: RoomState = {
     match: null,
     playerIds: [],
-    gameModeOptions: gameModes,
     scores: {},
     playerNames: {},
     currentPlayerId: null,
@@ -130,7 +130,7 @@ function nextPlayer(roomState: RoomState) {
 async function newMatch(
   oldState: RoomState | null,
   selectedDeckShortId: string,
-  selectedGameMode: number
+  selectedGameMode: string
 ): Promise<RoomState> {
   const deck = await retrieveDeckByShortId(selectedDeckShortId);
 
@@ -182,7 +182,7 @@ async function newMatch(
     playerNames: oldState ? oldState.playerNames : {},
     currentPlayerId: oldState ? oldState.currentPlayerId : null,
     match: {
-      gameMode: gameModes[selectedGameMode],
+      gameMode: selectedGameMode,
       teams: teams,
       scores: matchScores,
       deck,
@@ -541,7 +541,7 @@ io.on(
 
     socket.on(
       "newGame",
-      async (data: { selectedDeck: string; selectedGameMode: number }) => {
+      async (data: { selectedDeck: string; selectedGameMode: string }) => {
         console.log(`got newGame, data=${JSON.stringify(data)}`);
         let roomId = socketToRoom.get(socket.id);
         if (!roomId) {

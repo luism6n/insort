@@ -76,16 +76,10 @@ export function Select(props: {
 }) {
   let values: (number | string)[];
   if (!props.values) {
-    values = Array.from(Array(props.options.length).keys());
+    values = Array.from(props.options);
   } else {
     values = props.values;
   }
-
-  console.log({
-    selected: props.selected,
-    values: props.values,
-    options: props.options,
-  });
 
   return (
     <select

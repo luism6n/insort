@@ -57,7 +57,7 @@ export function useSocket(
     socket!.emit("placeCard");
   }
 
-  function newGame(selectedDeck: string, selectedGameMode: number) {
+  function newGame(selectedDeck: string, selectedGameMode: string) {
     console.log("emitting newGame", { selectedDeck, selectedGameMode });
     socket!.emit("newGame", { selectedDeck, selectedGameMode });
   }

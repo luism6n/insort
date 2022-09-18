@@ -32,7 +32,6 @@ export interface Match {
 
 export interface RoomState {
   match: null | Match;
-  gameModeOptions: string[];
   playerIds: string[];
   scores: { [playerId: string]: number };
   playerNames: { [playerId: string]: string };

@@ -1,6 +1,7 @@
 import { DeckSelection } from "./DeckSelection";
 import React from "react";
 import { Title, Select, Button } from "./designSystem";
+import { GameMode } from "../types/enums";
 
 interface RoomSettingsProps {
   playerId: string;
@@ -8,9 +9,8 @@ interface RoomSettingsProps {
   adminName: string;
   selectedDeck: string;
   setSelectedDeck: React.Dispatch<React.SetStateAction<string>>;
-  gameModeOptions: string[];
-  selectedGameMode: number;
-  setSelectedGameMode: React.Dispatch<React.SetStateAction<number>>;
+  selectedGameMode: string;
+  setSelectedGameMode: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function RoomSettings(props: RoomSettingsProps) {
@@ -25,7 +25,7 @@ export function RoomSettings(props: RoomSettingsProps) {
       <Select
         selected={props.selectedGameMode}
         setSelected={props.setSelectedGameMode}
-        options={props.gameModeOptions}
+        options={Object.values(GameMode)}
       ></Select>
       <div className="flex justify-center w-full text-sm">
         {props.playerId === props.admin ? (

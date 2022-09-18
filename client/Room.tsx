@@ -19,7 +19,7 @@ export function Room() {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [selectedDeck, setSelectedDeck] = useState("foo");
-  const [selectedGameMode, setSelectedGameMode] = useState(0);
+  const [selectedGameMode, setSelectedGameMode] = useState("");
   const [chatMessages, setChatMessages] = useState<
     { text: string; senderId: string }[]
   >([]);
@@ -57,7 +57,6 @@ export function Room() {
             adminName={roomState.playerNames[admin(roomState)]}
             selectedDeck={selectedDeck}
             setSelectedDeck={setSelectedDeck}
-            gameModeOptions={roomState.gameModeOptions}
             selectedGameMode={selectedGameMode}
             setSelectedGameMode={setSelectedGameMode}
           />
@@ -66,7 +65,7 @@ export function Room() {
           <Button
             trackEventCls={`umami--click--play-deck-${slug(
               selectedDeck
-            )}-mode-${slug(roomState.gameModeOptions[selectedGameMode])}`}
+            )}-mode-${slug(selectedGameMode)}`}
             onClick={() => newGame(selectedDeck, selectedGameMode)}
           >
             Play
