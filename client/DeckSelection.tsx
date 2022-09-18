@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { DeckOptionsJSON } from "../types/types";
+import { colors } from "./colors";
 import { Select, Toast } from "./designSystem";
 import { useToast } from "./useToast";
 export function DeckSelection(props: {
@@ -67,10 +68,16 @@ export function DeckSelection(props: {
       <div className="w-full max-h-40 overflow-y-scroll">
         <table className="w-full">
           <thead>
-            <tr>
+            <tr
+              className="sticky top-0 border-b-1 pr-4"
+              style={{
+                borderColor: colors.purple,
+                backgroundColor: colors.blue,
+              }}
+            >
               <th></th>
               <th className="text-left">Name</th>
-              <th>Likes</th>
+              <th className="pr-4">Likes</th>
             </tr>
           </thead>
           <tbody>
@@ -90,7 +97,7 @@ export function DeckSelection(props: {
                     />
                   </td>
                   <td>{opt.name}</td>
-                  <td className="text-center">{opt.likes}</td>
+                  <td className="pr-4 text-center">{opt.likes}</td>
                 </tr>
               ))}
           </tbody>
