@@ -37,3 +37,10 @@ export interface RoomState {
   playerNames: { [playerId: string]: string };
   currentPlayerId: string | null;
 }
+
+export interface DeckOptionsJSON {
+  name: string;
+  shortId: string;
+  likes: number;
+  createdAt: Date;
+}

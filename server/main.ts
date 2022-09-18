@@ -8,7 +8,7 @@ import { Deck, Match, RoomState } from "../types/types";
 import {
   insertDeck,
   incrementDeckLikeCount,
-  retrieveDeckNamesAndShortIds,
+  retreiveDeckOptions,
   retrieveDeckByShortId,
   DBUniqueConstraintError,
 } from "./db";
@@ -84,16 +84,16 @@ app.post(
 
 // get decks endpoint
 app.get("/decks", async (req: ExpressReq, res: any) => {
-  let deckNamesAndShortIds;
+  let deckOptions;
   try {
-    deckNamesAndShortIds = await retrieveDeckNamesAndShortIds();
+    deckOptions = await retreiveDeckOptions();
   } catch (e) {
     console.error(e);
     res.status(500).send({ message: "Server error, please try again later." });
     return;
   }
 
-  res.send(deckNamesAndShortIds);
+  res.send(deckOptions);
 });
 
 let server = http.createServer(app);
@@ -171,7 +171,7 @@ async function newMatch(
     }
   }
 
-  let dbDecks = await retrieveDeckNamesAndShortIds();
+  let dbDecks = await retreiveDeckOptions();
 
   const state = {
     deckShortIds: dbDecks.map((d) => d.shortId),

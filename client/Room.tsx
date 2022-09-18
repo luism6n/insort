@@ -50,17 +50,15 @@ export function Room() {
   } else if (roomState.match === null) {
     content = (
       <Fragment>
-        <div className="w-1/2">
-          <RoomSettings
-            playerId={playerId}
-            admin={admin(roomState)}
-            adminName={roomState.playerNames[admin(roomState)]}
-            selectedDeck={selectedDeck}
-            setSelectedDeck={setSelectedDeck}
-            selectedGameMode={selectedGameMode}
-            setSelectedGameMode={setSelectedGameMode}
-          />
-        </div>
+        <RoomSettings
+          playerId={playerId}
+          admin={admin(roomState)}
+          adminName={roomState.playerNames[admin(roomState)]}
+          selectedDeck={selectedDeck}
+          setSelectedDeck={setSelectedDeck}
+          selectedGameMode={selectedGameMode}
+          setSelectedGameMode={setSelectedGameMode}
+        />
         <div className="flex">
           <Button
             trackEventCls={`umami--click--play-deck-${slug(
@@ -107,7 +105,10 @@ export function Room() {
   }
 
   return (
-    <div className="w-full h-full" style={{ backgroundColor: backgroundColor }}>
+    <div
+      className="w-full h-full max-h-screen"
+      style={{ backgroundColor: backgroundColor }}
+    >
       <div className="flex flex-1 flex-col justify-start items-center h-full w-full max-w-xl m-auto">
         {content}
       </div>

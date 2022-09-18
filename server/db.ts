@@ -1,6 +1,6 @@
 import { Client } from "pg";
 import { UniqueConstraintError } from "sequelize";
-import { Card, Deck } from "../types/types";
+import { Card, Deck, DeckOptionsJSON } from "../types/types";
 
 export class DBServerError extends Error {
   constructor(msg: string) {
@@ -71,13 +71,13 @@ export async function insertDeckWithoutCards(
   ).rows[0].id;
 }
 
-export async function retrieveDeckNamesAndShortIds() {
+export async function retreiveDeckOptions(): Promise<DeckOptionsJSON[]> {
   let db = createClient();
   db.connect();
   let result;
   try {
     result = await db.query(
-      "SELECT name, short_id FROM decks" +
+      "SELECT name, short_id, num_likes, approved_at FROM decks" +
         (process.env.ENVIRONMENT === "development"
           ? ""
           : " WHERE approved_at IS NOT NULL")
@@ -90,6 +90,8 @@ export async function retrieveDeckNamesAndShortIds() {
   return result.rows.map((r) => ({
     name: r.name,
     shortId: r.short_id,
+    likes: r.num_likes,
+    createdAt: r.approved_at,
   }));
 }
 

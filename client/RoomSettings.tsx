@@ -15,7 +15,7 @@ interface RoomSettingsProps {
 
 export function RoomSettings(props: RoomSettingsProps) {
   return (
-    <div className="flex flex-col justify-center h-full">
+    <div className="flex flex-col justify-center">
       <Title>Deck</Title>
       <DeckSelection
         selectedDeck={props.selectedDeck}
