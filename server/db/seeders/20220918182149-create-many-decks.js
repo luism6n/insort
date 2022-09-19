@@ -34,7 +34,7 @@ module.exports = {
       );
       const deckId = rows[0][0].id;
 
-      for (let j = 0; j < 2; j++) {
+      for (let j = 0; j < 20; j++) {
         const card = {
           deck_id: deckId,
           text: faker.word.noun(),

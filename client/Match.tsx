@@ -1,5 +1,5 @@
 import React, { Fragment, RefObject, useEffect, useRef, useState } from "react";
-import { RoomState } from "../types/types";
+import { Match, RoomState } from "../types/types";
 import { Button } from "./designSystem";
 import { getDivDimensions, getRefYDistance } from "./htmlMeasuring";
 import { Card } from "./Card";
@@ -49,8 +49,6 @@ export function Match(props: {
       setClientSidePlaceNextAfter(props.roomState?.match?.placeNextAfter);
     }
   }, [props.roomState.match.placeNextAfter]);
-
-  console.log(props.roomState);
 
   useEffect(() => {
     setClientSidePlaceNextAfter(
@@ -244,63 +242,27 @@ export function Match(props: {
             width: "100vw",
           }}
         >
+          {/* This card is here so I can have a stable element to measure card size */}
+          <Card
+            innerRef={(r) => {
+              setVirtualReferenceCard(r);
+            }}
+            x={-100000}
+            comesFrom={{ x: -100000, y: -100000 }}
+            content={"Virtual card"}
+            value={0}
+            unit=""
+          />
           <div className="flex w-full flex-col justify-between items-center max-w-xl">
-            <div
-              style={{
-                position: "relative",
-                height: cardDimensions[1] + paddingY,
-                width: 0,
-              }}
-            >
-              {/* This card is here so I can have a stable element to measure card size */}
-              <Card
-                innerRef={(r) => {
-                  setVirtualReferenceCard(r);
-                }}
-                x={-100000}
-                comesFrom={{ x: -100000, y: -100000 }}
-                content={"Virtual card"}
-                value={0}
-                unit=""
-              />
-              {clientSidePlacedCards.map((indexInDeck: number, i) => {
-                let card = props.roomState.match.deck.cards[indexInDeck];
-                let x =
-                  (i - clientSidePlaceNextAfter - 1) *
-                    (cardDimensions[0] + paddingX) +
-                  paddingX / 2 -
-                  (match.suspense ? cardDimensions[0] / 2 + paddingX / 2 : 0);
-                let y = 0 + paddingY / 4;
-                return (
-                  <Card
-                    key={indexInDeck}
-                    unit={props.roomState.match.deck.unit}
-                    x={x}
-                    y={y}
-                    value={
-                      match.suspense && indexInDeck === match.nextCard
-                        ? "??"
-                        : Intl.NumberFormat(
-                            "en-US",
-                            match.deck.numFormatOptions
-                              ? match.deck.numFormatOptions
-                              : {}
-                          ).format(card.value)
-                    }
-                    content={`#${i + 1}${
-                      indexInDeck === match.nextCard && !match.concluded
-                        ? "?"
-                        : ""
-                    } ${card.text}`}
-                    zIndex={2}
-                    comesFrom={{
-                      x: -cardDimensions[0] / 2,
-                      y: initialY,
-                    }}
-                  />
-                );
-              })}
-            </div>
+            {newFunction(
+              cardDimensions,
+              paddingY,
+              clientSidePlacedCards,
+              clientSidePlaceNextAfter,
+              paddingX,
+              match,
+              initialY
+            )}
 
             <div className="w-full px-4 flex text-sm justify-between">
               <p className="flex-1 text-left">{`← ${match.deck.smallerMeans}`}</p>
@@ -472,6 +434,83 @@ export function Match(props: {
         </div>
         {currentPlayerIndicator}
       </div>
+    </div>
+  );
+}
+function newFunction(
+  cardDimensions: [number, number],
+  paddingY: number,
+  clientSidePlacedCards: number[],
+  clientSidePlaceNextAfter: number,
+  paddingX: number,
+  match: Match,
+  initialY: number
+) {
+  const [dragStart, setDragStart] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+
+  console.log({ dragStart, dragOffset });
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        height: cardDimensions[1] + paddingY,
+        width: 0,
+      }}
+      draggable="true"
+      onDrag={(e) => {
+        e.preventDefault();
+        console.log("drag");
+        if (dragStart - e.clientX !== dragOffset) {
+          setDragOffset(dragStart - e.clientX);
+        }
+      }}
+      onDragStart={(e) => {
+        console.log("drag start");
+        e.dataTransfer.setDragImage(new Image(), 0, 0);
+        setDragStart(e.clientX);
+      }}
+      onDragEnd={(e) => {
+        e.preventDefault();
+        console.log("drag end");
+      }}
+    >
+      {clientSidePlacedCards.map((indexInDeck: number, i) => {
+        let card = match.deck.cards[indexInDeck];
+        let x =
+          (i - clientSidePlaceNextAfter - 1) * (cardDimensions[0] + paddingX) +
+          paddingX / 2 -
+          (match.suspense ? cardDimensions[0] / 2 + paddingX / 2 : 0) -
+          dragOffset;
+        let y = 0 + paddingY / 4;
+        return (
+          <Card
+            key={indexInDeck}
+            unit={match.deck.unit}
+            x={x}
+            y={y}
+            value={
+              match.suspense && indexInDeck === match.nextCard
+                ? "??"
+                : Intl.NumberFormat(
+                    "en-US",
+                    match.deck.numFormatOptions
+                      ? match.deck.numFormatOptions
+                      : {}
+                  ).format(card.value)
+            }
+            content={`#${i + 1}${
+              indexInDeck === match.nextCard && !match.concluded ? "?" : ""
+            } ${card.text}`}
+            zIndex={2}
+            comesFrom={{
+              x: -cardDimensions[0] / 2,
+              y: initialY,
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
