@@ -97,7 +97,12 @@ app.get("/decks", async (req: ExpressReq, res: any) => {
 });
 
 let server = http.createServer(app);
-let io = new SocketServer(server);
+let io = new SocketServer(server, { allowEIO3: true });
+
+if (process.env.ENVIRONMENT === "development") {
+  let status = require("express-status-monitor");
+  app.use(status({ websocket: io }));
+}
 
 function randomChoice<T>(arr: T[]): T | null {
   if (arr.length === 0) {
