@@ -27,13 +27,13 @@ function SendFeedback(props: {
   return (
     <Overlay bgColor={colors.red} open={props.open} setOpen={props.setOpen}>
       <div className="flex flex-col items-center p-2 gap-2 w-full">
-        <Title>Send us your feedback</Title>
+        <Title>Send your feedback</Title>
         <form
           className="flex flex-col items-center gap-2 w-full"
           onSubmit={sendFeedback}
         >
-          <label className="sr-only" htmlFor="feedbackMessage">
-            Feedback message
+          <label htmlFor="feedbackMessage">
+            Critics, compliments, shout outs...
           </label>
           <textarea
             id="feedbackMessage"
@@ -45,7 +45,12 @@ function SendFeedback(props: {
               height: "150px",
             }}
           ></textarea>
-          <Input label="Email (optional)" value={email} setValue={setEmail} />
+          <Input
+            label="Contact for reply (optional)"
+            placeholder="email, Twitter, Instagram, ..."
+            value={email}
+            setValue={setEmail}
+          />
 
           <Button type="submit">Send</Button>
         </form>
