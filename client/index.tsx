@@ -1,6 +1,6 @@
 import { Header } from "./Header";
 import ReactDOM from "react-dom/client";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./styles.css";
 import { Home } from "./Home";
@@ -9,7 +9,16 @@ import { CardsDemo } from "./CardsDemo";
 import { colors } from "./colors";
 import BuildDeck from "./BuildDeck";
 
+function makeBodyFit() {
+  document.body.style.height = window.innerHeight + "px";
+}
+
 function App() {
+  useLayoutEffect(() => {
+    window.addEventListener("resize", makeBodyFit);
+    makeBodyFit();
+  }, []);
+
   return (
     <div
       style={{ backgroundColor: colors.blue, color: colors.purple }}
