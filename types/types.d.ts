@@ -44,3 +44,8 @@ export interface DeckOptionsJSON {
   likes: number;
   createdAt: Date;
 }
+
+export interface FeedbackJSON {
+  message: string;
+  email: string;
+}

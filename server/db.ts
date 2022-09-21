@@ -1,6 +1,6 @@
 import { Client } from "pg";
 import { UniqueConstraintError } from "sequelize";
-import { Card, Deck, DeckOptionsJSON } from "../types/types";
+import { Card, Deck, DeckOptionsJSON, FeedbackJSON } from "../types/types";
 
 export class DBServerError extends Error {
   constructor(msg: string) {
@@ -181,5 +181,15 @@ export async function incrementDeckLikeCount(shortId: string) {
     "UPDATE decks SET num_likes = num_likes + 1 WHERE short_id = $1",
     [shortId]
   );
+  db.end();
+}
+
+export async function insertFeedback(feedback: FeedbackJSON) {
+  let db = createClient();
+  db.connect();
+  await db.query("INSERT INTO feedbacks (email, message) VALUES ($1, $2)", [
+    feedback.email,
+    feedback.message,
+  ]);
   db.end();
 }

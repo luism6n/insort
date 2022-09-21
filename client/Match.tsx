@@ -20,6 +20,7 @@ import slug from "slug";
 import { motion } from "framer-motion";
 import { admin } from "./Room";
 import { safeExtractHostnameFromURL } from "./utils";
+import SendFeedback from "./SendFeedback";
 
 export function Match(props: {
   roomId: string;
@@ -43,6 +44,7 @@ export function Match(props: {
   const [currentPlayerNameRef, setCurrentPlayerNameRef] =
     useState<HTMLDivElement | null>(null);
   const [deckLiked, setDeckLiked] = useState(false);
+  const [openFeedbackOverlay, setOpenFeedbackOverlay] = useState(false);
 
   useEffect(() => {
     if (!props.roomState.match.concluded) {
@@ -320,6 +322,18 @@ export function Match(props: {
                   <p>admin:</p>
                   <p>{props.roomState.playerNames[admin(props.roomState)]}</p>
                 </div>
+                <div>
+                  <label className="sr-only" htmlFor="sendFeedback">
+                    send feedback
+                  </label>
+                  <button
+                    className="underline"
+                    onClick={() => setOpenFeedbackOverlay(true)}
+                    id="sendFeedback"
+                  >
+                    send feedback
+                  </button>
+                </div>
               </div>
               <div
                 className="flex flex-col gap-2 p-2"
@@ -472,6 +486,10 @@ export function Match(props: {
         </div>
         {currentPlayerIndicator}
       </div>
+      <SendFeedback
+        open={openFeedbackOverlay}
+        setOpen={setOpenFeedbackOverlay}
+      />
     </div>
   );
 }
