@@ -79,6 +79,8 @@ export default function BuildDeck() {
         type: "warning",
       });
     }
+
+    setShowConfirmSubmit(false);
   }
 
   function handleSubmit(e: FormEvent) {
