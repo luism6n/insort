@@ -3,6 +3,9 @@ import { DeckOptionsJSON } from "../types/types";
 import { colors } from "./colors";
 import { Select, Toast } from "./designSystem";
 import { useToast } from "./useToast";
+// @ts-ignore
+import heartIcon from "../assets/heart_light.png";
+
 export function DeckSelection(props: {
   selectedDeck: string;
   setSelectedDeck: React.Dispatch<React.SetStateAction<string>>;
@@ -77,7 +80,10 @@ export function DeckSelection(props: {
             >
               <th></th>
               <th className="text-left">Name</th>
-              <th className="pr-4">Likes</th>
+              <th className="flex items-baseline pr-4">
+                <img className="mr-2 h-4" src={heartIcon} alt="heart icon" />
+                Likes{" "}
+              </th>
             </tr>
           </thead>
           <tbody>
