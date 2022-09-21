@@ -117,7 +117,7 @@ export function Toast(props: { message: string; type: string }) {
       className={`${colors} p-2 text-center absolute border-4`}
       role="alert"
       style={{
-        top: "50vh",
+        top: "25vh",
         left: "50%",
         transform: "translate(-50%, -50%)",
         zIndex: 10,
