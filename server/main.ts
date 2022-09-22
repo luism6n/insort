@@ -655,6 +655,6 @@ io.on(
 
 app.use(express.static(publicPath));
 
-server.listen(port, "0.0.0.0", () => {
+server.listen(port, () => {
   console.log(`server is up on http://localhost:${port}`);
 });
