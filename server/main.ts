@@ -623,6 +623,12 @@ io.on(
           Object.entries(state.scores).filter(([id, _]) => id !== socket.id)
         );
 
+        state.playerNames = Object.fromEntries(
+          Object.entries(state.playerNames).filter(
+            ([id, _]) => id !== socket.id
+          )
+        );
+
         if (state.match?.gameMode === "Teams") {
           state.match.teams = Object.fromEntries(
             Object.entries(state.match.teams).filter(
