@@ -128,7 +128,10 @@ export function Scores(props: {
                           src={trophyIcon}
                         />
                       )}
-                      <p>{props.roomState.match.scores[id]}</p>
+                      <p>
+                        {props.roomState.match.scores[id]}/
+                        {props.roomState.match.placedCards.length}
+                      </p>
                     </td>
                   ) : null}
                   <td className="text-center relative">
