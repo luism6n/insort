@@ -39,14 +39,34 @@ export function Room() {
     playerId,
   } = useSocket(roomId, setRoomState, setToast, setChatMessages);
 
+  useEffect(() => {
+    if (socketLoading) {
+      return;
+    }
+
+    const lastRoomId = window.localStorage.getItem("roomId");
+    if (!lastRoomId) {
+      return;
+    } else if (lastRoomId === roomId) {
+      const playerName = window.localStorage.getItem("playerName");
+      join(playerName);
+    }
+  }, [socketLoading]);
+
   let content = null;
 
   console.log({ selectedDeck });
 
+  function saveNameAndRoomAndJoin(playerName: string) {
+    window.localStorage.setItem("playerName", playerName);
+    window.localStorage.setItem("roomId", roomId);
+    join(playerName);
+  }
+
   if (socketLoading) {
     content = <p>Loading...</p>;
   } else if (!roomState) {
-    content = <JoinRoom join={join} />;
+    content = <JoinRoom join={saveNameAndRoomAndJoin} />;
   } else if (roomState.match === null) {
     content = (
       <RoomSettings
