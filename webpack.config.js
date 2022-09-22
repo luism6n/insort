@@ -1,5 +1,4 @@
 const path = require("path");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = [
   {
@@ -35,16 +34,11 @@ module.exports = [
         },
       ],
     },
-    mode: process.env.ENVIRONMENT ? process.env.ENVIRONMENT : "production",
-    optimization: {
-      usedExports: true,
-    },
-    devtool: "source-map",
+    mode: "development",
     devServer: {
       static: {
         directory: path.join(__dirname, "./dist"),
       },
     },
-    plugins: [new BundleAnalyzerPlugin()],
   },
 ];
