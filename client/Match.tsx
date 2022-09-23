@@ -411,6 +411,21 @@ export function Match(props: {
           className="flex flex-col items-center w-full"
           style={{ minHeight: 30 - 15 + cardDimensions[1] }}
         >
+          <label htmlFor="likeDeck" className="sr-only">
+            Like this deck
+          </label>
+          <button
+            id="likeDeck"
+            className="flex gap-2 text-sm items-center my-2 umami--click--like-deck"
+            onClick={deckLiked ? null : handleDeckLike}
+          >
+            <img
+              src={deckLiked ? deckLikedIcon : deckToLikeIcon}
+              width={15}
+              height={15}
+            />
+            {deckLiked ? "Thanks!" : "Like this deck"}
+          </button>
           <Scores
             playerId={props.playerId}
             roomState={props.roomState}
@@ -424,21 +439,6 @@ export function Match(props: {
           >
             Again
           </Button>
-          <label htmlFor="likeDeck" className="sr-only">
-            Like this deck
-          </label>
-          <button
-            id="likeDeck"
-            className="flex gap-2 text-sm items-center my-2 umami--click--like-deck"
-            onClick={handleDeckLike}
-          >
-            <img
-              src={deckLiked ? deckLikedIcon : deckToLikeIcon}
-              width={15}
-              height={15}
-            />
-            {deckLiked ? "Thanks!" : "Like this deck"}
-          </button>
           <a
             className={`umami--click--deck-source-deck-${slug(
               match.deck.shortId
