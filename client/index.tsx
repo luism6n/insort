@@ -21,7 +21,7 @@ function App() {
 
   return (
     <div
-      style={{ backgroundColor: colors.blue, color: colors.purple }}
+      style={{ backgroundColor: colors.lightPurple, color: colors.purple }}
       className="flex flex-col items-center h-full w-screen overflow-hidden"
     >
       <Header />

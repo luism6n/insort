@@ -74,8 +74,7 @@ export function DeckSelection(props: {
             <tr
               className="sticky top-0 pr-4"
               style={{
-                borderColor: colors.purple,
-                backgroundColor: colors.blue,
+                backgroundColor: colors.lightPurple,
               }}
             >
               <th></th>

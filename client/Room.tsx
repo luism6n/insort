@@ -109,7 +109,7 @@ export function Room() {
     if (roomState.match.teams[playerId] === "red") {
       backgroundColor = colors.red;
     } else {
-      backgroundColor = colors.blue;
+      backgroundColor = colors.green;
     }
   }
 
