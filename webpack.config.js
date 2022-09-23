@@ -34,7 +34,8 @@ module.exports = [
         },
       ],
     },
-    mode: "development",
+    mode:
+      process.env.ENVIRONMENT === "development" ? "development" : "production",
     devServer: {
       static: {
         directory: path.join(__dirname, "./dist"),

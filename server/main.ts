@@ -1,5 +1,6 @@
 const path = require("path");
 const http = require("http");
+const compression = require("compression");
 import bodyParser from "body-parser";
 import express, { Request as ExpressReq } from "express";
 import { Server as SocketServer } from "socket.io";
@@ -30,6 +31,8 @@ const port = process.env.PORT || "3000";
 const gameModes = ["Individual", "Teams", "Coop"];
 
 let app = express();
+
+app.use(compression());
 
 const clientSideRoutes = ["/r/:roomId", "/cards-demo", "/build-deck"];
 
