@@ -12,6 +12,8 @@ import {
   retrieveDeckByShortId,
   DBUniqueConstraintError,
   insertFeedback,
+  getLastCardPlacementStats,
+  updateCardPlacementStats,
 } from "./db";
 
 function admin(state: RoomState) {
@@ -156,8 +158,8 @@ async function newMatch(
     return null;
   }
 
-  let firstCard = Math.floor(deck.cards.length / 2);
   let allCards = [...Array(deck.cards.length).keys()];
+  let firstCard = randomChoice(allCards);
   let remainingCards = allCards.filter((i) => i !== firstCard);
   let nextCard = randomChoice(remainingCards);
   if (nextCard === null) {
@@ -189,12 +191,7 @@ async function newMatch(
     }
   }
 
-  let dbDecks = await retrieveDeckOptions();
-
-  const state = {
-    deckShortIds: dbDecks.map((d) => d.shortId),
-    deckNames: dbDecks.map((d) => d.name),
-    gameModeOptions: gameModes,
+  return {
     playerIds: oldState ? oldState.playerIds : [],
     scores: oldState ? oldState.scores : {},
     playerNames: oldState ? oldState.playerNames : {},
@@ -212,9 +209,7 @@ async function newMatch(
       concluded: false,
       suspense: false,
     },
-  } as RoomState;
-
-  return state;
+  };
 }
 
 function updateState(roomId: string, state: RoomState) {
@@ -264,6 +259,59 @@ function teamWithLeastPlayers(state: RoomState) {
   } else {
     return randomChoice(["red", "blue"]);
   }
+}
+
+function scoringState(match: Match) {
+  let cards = match.deck.cards;
+  let p = match.placeNextAfter;
+  let n = match.nextCard;
+  let placedCards = match.placedCards;
+
+  return (
+    (cards[placedCards[p]]?.value || -Infinity) <= cards[n].value &&
+    cards[n].value <= (cards[placedCards[p + 1]]?.value || Infinity)
+  );
+}
+
+async function collectStatisticsOnCardPlacement(state: RoomState) {
+  console.log("collectStatisticsOnCardPlacement");
+  let match = state.match;
+
+  let {
+    deck: { cards },
+    nextCard,
+    placedCards,
+    placeNextAfter,
+  } = match;
+
+  let inferredPlayerGuessValue;
+  if (scoringState(match)) {
+    inferredPlayerGuessValue = cards[nextCard].value;
+  } else {
+    let p = placeNextAfter;
+    let valueToTheLeft = cards[placedCards[p]]?.value ?? null;
+    let valueToTheRight = cards[placedCards[p + 1]]?.value ?? null;
+
+    if (!valueToTheLeft) {
+      valueToTheLeft = valueToTheRight;
+    } else if (!valueToTheRight) {
+      valueToTheRight = valueToTheLeft;
+    }
+
+    inferredPlayerGuessValue = (valueToTheLeft + valueToTheRight) / 2;
+  }
+
+  let placedCardId = cards[nextCard].id;
+
+  let stats = await getLastCardPlacementStats(placedCardId);
+  stats.numSamples = stats.numSamples + 1;
+  stats.avg = stats.avg
+    ? (stats.avg * (stats.numSamples - 1)) / stats.numSamples +
+      inferredPlayerGuessValue / stats.numSamples
+    : inferredPlayerGuessValue;
+
+  console.log("stats", stats);
+  await updateCardPlacementStats(stats);
 }
 
 io.on(
@@ -497,20 +545,16 @@ io.on(
         state.match.suspense = false;
       }
 
-      let corrected = correctPlace(state.match);
-      let cards = state.match.deck.cards;
-      let p = state.match.placeNextAfter;
-      let n = state.match.nextCard;
-      let placedCards = state.match.placedCards;
-      console.log(cards[placedCards[p]], cards[n], cards[placedCards[p + 1]]);
-      if (
-        (cards[placedCards[p]]?.value || -Infinity) <= cards[n].value &&
-        cards[n].value <= (cards[placedCards[p + 1]]?.value || Infinity)
-      ) {
+      collectStatisticsOnCardPlacement(state);
+
+      let corrected;
+      if (scoringState(state.match)) {
+        corrected = state.match.placeNextAfter;
         state.scores[socket.id] += 1;
         state.match.scores[socket.id] += 1;
         io.to(roomId).emit("notification", "Correct!");
       } else {
+        corrected = correctPlace(state.match);
         io.to(roomId).emit("warning", "Wrong!");
       }
 

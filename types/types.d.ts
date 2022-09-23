@@ -12,6 +12,7 @@ export interface Deck {
 }
 
 export interface Card {
+  id: number;
   text: string;
   value: number;
 }
@@ -48,4 +49,10 @@ export interface DeckOptionsJSON {
 export interface FeedbackJSON {
   message: string;
   email: string;
+}
+
+export interface CardPlacementStats {
+  cardId: number;
+  avg: number;
+  numSamples: number;
 }

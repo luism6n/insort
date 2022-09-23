@@ -1,3 +1,4 @@
+import { CardPlacementStats } from "./../types/types.d";
 import { Client } from "pg";
 import { UniqueConstraintError } from "sequelize";
 import { Card, Deck, DeckOptionsJSON, FeedbackJSON } from "../types/types";
@@ -139,6 +140,7 @@ export async function retrieveDeckByShortId(shortId: string): Promise<Deck> {
     await db.query("SELECT * FROM cards WHERE deck_id = $1", [row.id])
   ).rows) {
     let card = {
+      id: dbCard.id,
       text: dbCard.text,
       value:
         dbCard.value_type === "int"
@@ -191,5 +193,49 @@ export async function insertFeedback(feedback: FeedbackJSON) {
     feedback.email,
     feedback.message,
   ]);
+  db.end();
+}
+
+export async function getLastCardPlacementStats(
+  cardId: number
+): Promise<CardPlacementStats> {
+  let db = createClient();
+  db.connect();
+  let result = await db.query(
+    "SELECT * FROM card_placement_stats WHERE card_id = $1",
+    [cardId]
+  );
+
+  if (result.rows.length === 0) {
+    await db.query(
+      "INSERT INTO card_placement_stats (card_id, num_samples, avg) VALUES ($1, 0, 0)",
+      [cardId]
+    );
+  }
+
+  db.end();
+
+  if (result.rows.length === 0) {
+    return {
+      cardId,
+      numSamples: 0,
+      avg: null,
+    };
+  }
+
+  return {
+    cardId: result.rows[0].card_id,
+    numSamples: result.rows[0].num_samples,
+    avg: result.rows[0].avg,
+  };
+}
+
+export async function updateCardPlacementStats(stats: CardPlacementStats) {
+  let db = createClient();
+  db.connect();
+  await db.query(
+    "UPDATE card_placement_stats SET num_samples = $1, avg = $2 WHERE card_id = $3",
+    [stats.numSamples, stats.avg, stats.cardId]
+  );
   db.end();
 }

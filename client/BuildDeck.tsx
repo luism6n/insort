@@ -17,8 +17,8 @@ export default function BuildDeck() {
     smallerMeans: "",
     biggerMeans: "",
     cards: [
-      { text: "", value: 0 },
-      { text: "", value: 0 },
+      { id: null, text: "", value: 0 },
+      { id: null, text: "", value: 0 },
     ],
     numFormatOptions: {},
     creatorCredit: "",
@@ -54,8 +54,8 @@ export default function BuildDeck() {
           smallerMeans: "",
           biggerMeans: "",
           cards: [
-            { text: "", value: 0 },
-            { text: "", value: 0 },
+            { id: null, text: "", value: 0 },
+            { id: null, text: "", value: 0 },
           ],
           numFormatOptions: {},
           creatorCredit: "",
@@ -90,7 +90,10 @@ export default function BuildDeck() {
   }
 
   function handleAddCard() {
-    setDeck({ ...deck, cards: [...deck.cards, { text: "", value: 0 }] });
+    setDeck({
+      ...deck,
+      cards: [...deck.cards, { id: null, text: "", value: 0 }],
+    });
   }
 
   function handleRemoveCard() {
