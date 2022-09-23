@@ -5,6 +5,7 @@
 @font-face {
     font-family: 'Uni';
     src: url('../assets/uni_05_53.ttf');
+    font-display: swap;
 }
 
 body {
