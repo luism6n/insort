@@ -239,3 +239,30 @@ export async function updateCardPlacementStats(stats: CardPlacementStats) {
   );
   db.end();
 }
+
+export async function retrieveDeckGuesses(
+  shortId: string
+): Promise<CardPlacementStats[]> {
+  let db = createClient();
+  db.connect();
+
+  let deck = await retrieveDeckByShortId(shortId);
+
+  // get guesses for each card in one query
+  let guesses = (
+    await db.query(
+      "SELECT * FROM card_placement_stats WHERE card_id IN (" +
+        deck.cards.map((_, i) => "$" + (i + 1)).join(", ") +
+        ") ORDER BY avg ASC",
+      deck.cards.map((c) => c.id)
+    )
+  ).rows;
+
+  db.end();
+
+  return guesses.map((g) => ({
+    cardId: g.card_id,
+    numSamples: g.num_samples,
+    avg: g.avg,
+  }));
+}

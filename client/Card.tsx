@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 export function Card({
   content,
   value,
+  averageGuess,
+  numFormatOptions,
   unit,
   x,
   y,
@@ -13,12 +15,14 @@ export function Card({
   clsNames = "",
 }: {
   content: number | string;
-  value: number | string;
+  value?: number;
   unit: string;
   x?: number;
   y?: number;
+  averageGuess?: number;
   comesFrom?: { x: number; y: number };
   innerRef?: Ref<HTMLDivElement> | null;
+  numFormatOptions?: Intl.NumberFormatOptions;
   zIndex?: number;
   clsNames?: string;
 }) {
@@ -29,6 +33,10 @@ export function Card({
       position: "absolute",
     };
   }
+
+  const format = new Intl.NumberFormat("en-US", numFormatOptions).format;
+
+  console.log({ averageGuess });
 
   return (
     <motion.div
@@ -43,8 +51,13 @@ export function Card({
       }
     >
       <p>{content}</p>
-      <p className="font-bold  mt-auto">
-        {value} {unit}
+      <p className={`font-bold  mt-auto`}>
+        {averageGuess !== undefined ? ` ${format(averageGuess)}` : ""}
+        <br />
+        <span className={averageGuess === undefined ? "" : "line-through"}>
+          {value !== undefined ? format(value) : "??"}
+        </span>{" "}
+        {unit}
       </p>
     </motion.div>
   );

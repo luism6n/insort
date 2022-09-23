@@ -14,6 +14,7 @@ import {
   insertFeedback,
   getLastCardPlacementStats,
   updateCardPlacementStats,
+  retrieveDeckGuesses,
 } from "./db";
 
 function admin(state: RoomState) {
@@ -85,7 +86,12 @@ app.post(
   }
 );
 
-// get decks endpoint
+app.get("/decks/:deckId/guesses", async (req: ExpressReq, res: any) => {
+  let deckId = req.params.deckId;
+  let guesses = await retrieveDeckGuesses(deckId);
+  res.send(guesses);
+});
+
 app.get("/decks", async (req: ExpressReq, res: any) => {
   let deckOptions;
   try {

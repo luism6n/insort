@@ -1,5 +1,5 @@
 import React, { Fragment, RefObject, useEffect, useRef, useState } from "react";
-import { RoomState } from "../types/types";
+import { CardPlacementStats, RoomState } from "../types/types";
 import { Button } from "./designSystem";
 import { getDivDimensions, getRefYDistance } from "./htmlMeasuring";
 import { Card } from "./Card";
@@ -45,6 +45,9 @@ export function Match(props: {
     useState<HTMLDivElement | null>(null);
   const [deckLiked, setDeckLiked] = useState(false);
   const [openFeedbackOverlay, setOpenFeedbackOverlay] = useState(false);
+  const [showGuessOrder, setShowGuessOrder] = useState(false);
+  const [guessedCardOrder, setGuessedCardOrder] =
+    useState<CardPlacementStats[]>(null);
 
   useEffect(() => {
     if (!props.roomState.match.concluded) {
@@ -219,14 +222,35 @@ export function Match(props: {
   }
 
   let clientSidePlacedCards = Array.from(match.placedCards);
+  let guessedValues: number[] = null;
   if (match.suspense && !match.concluded) {
     clientSidePlacedCards.splice(match.placeNextAfter + 1, 0, match.nextCard);
+  } else if (showGuessOrder) {
+    // this is expensive, but it's ok, card list is small
+    clientSidePlacedCards = guessedCardOrder.map((stat) => {
+      return match.deck.cards.findIndex((c) => c.id === stat.cardId);
+    });
+
+    guessedValues = guessedCardOrder.map((stat) => stat.avg);
   }
 
   let isLastCardToBePlaced =
     clientSidePlacedCards.length === match.deck.cards.length - 1 &&
     match.suspense &&
     !match.concluded;
+
+  async function handleToggleGuessOrder() {
+    // fetch stats from /decks/deckIdShortId/guesses if guessCardOrder is null
+    // otherwise, just toggle
+    if (guessedCardOrder === null) {
+      let res = await fetch(`/decks/${match.deck.shortId}/guesses`);
+      let data = await res.json();
+      setGuessedCardOrder(data);
+    }
+
+    console.log({ showGuessOrder });
+    setShowGuessOrder(!showGuessOrder);
+  }
 
   return (
     <div
@@ -279,16 +303,15 @@ export function Match(props: {
                     unit={props.roomState.match.deck.unit}
                     x={x}
                     y={y}
+                    numFormatOptions={
+                      props.roomState.match.deck.numFormatOptions
+                    }
                     value={
                       match.suspense && indexInDeck === match.nextCard
-                        ? "??"
-                        : Intl.NumberFormat(
-                            "en-US",
-                            match.deck.numFormatOptions
-                              ? match.deck.numFormatOptions
-                              : {}
-                          ).format(card.value)
+                        ? undefined
+                        : card.value
                     }
+                    averageGuess={guessedValues ? guessedValues[i] : undefined}
                     content={`#${i + 1}${
                       indexInDeck === match.nextCard && !match.concluded
                         ? "?"
@@ -388,8 +411,8 @@ export function Match(props: {
                   comesFrom={nextComesFrom}
                   x={-cardDimensions[0] / 2}
                   y={0}
+                  numFormatOptions={props.roomState.match.deck.numFormatOptions}
                   unit={props.roomState.match.deck.unit}
-                  value={"??"}
                   zIndex={1}
                 />
               </div>
@@ -411,21 +434,33 @@ export function Match(props: {
           className="flex flex-col items-center w-full"
           style={{ minHeight: 30 - 15 + cardDimensions[1] }}
         >
-          <label htmlFor="likeDeck" className="sr-only">
-            Like this deck
-          </label>
-          <button
-            id="likeDeck"
-            className="flex gap-2 text-sm items-center my-2 umami--click--like-deck"
-            onClick={deckLiked ? null : handleDeckLike}
-          >
-            <img
-              src={deckLiked ? deckLikedIcon : deckToLikeIcon}
-              width={15}
-              height={15}
-            />
-            {deckLiked ? "Thanks!" : "Like this deck"}
-          </button>
+          <div>
+            <button
+              className={`underline flex gap-2 text-sm items-center my-2 umami--click--show-guess-stats-${props.roomState.match.deck.shortId}`}
+              onClick={handleToggleGuessOrder}
+            >
+              {showGuessOrder
+                ? "Show correct order"
+                : "Show order people guess on average"}
+            </button>
+          </div>
+          <div>
+            <label htmlFor="likeDeck" className="sr-only">
+              Like this deck
+            </label>
+            <button
+              id="likeDeck"
+              className="flex gap-2 text-sm items-center my-2 umami--click--like-deck"
+              onClick={deckLiked ? null : handleDeckLike}
+            >
+              <img
+                src={deckLiked ? deckLikedIcon : deckToLikeIcon}
+                width={15}
+                height={15}
+              />
+              {deckLiked ? "Thanks!" : "Like this deck"}
+            </button>
+          </div>
           <Scores
             playerId={props.playerId}
             roomState={props.roomState}
