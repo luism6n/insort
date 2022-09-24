@@ -32,11 +32,11 @@ export function Button({
       extraClasses += " send-btn";
       break;
     case "left":
-      extraStyle = { width: 60, height: 60 };
+      extraStyle = { width: 64, height: 64 };
       extraClasses += " left-btn";
       break;
     case "right":
-      extraStyle = { width: 60, height: 60 };
+      extraStyle = { width: 64, height: 64 };
       extraClasses += " right-btn";
       break;
     case "place":
