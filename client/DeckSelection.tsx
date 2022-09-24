@@ -80,8 +80,7 @@ export function DeckSelection(props: {
               <th></th>
               <th className="text-left">Name</th>
               <th className="flex items-baseline pr-4">
-                <img className="mr-2 h-4" src={heartIcon} alt="heart icon" />
-                Likes{" "}
+                <img className="mr-2 h-4" src={heartIcon} alt="likes" />
               </th>
             </tr>
           </thead>
