@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import expandIcon from "../assets/expand_up.png";
 // @ts-ignore
 import collapseIcon from "../assets/expand_down.png";
+import SendFeedback from "./SendFeedback";
 
 function RoomTrayHeader(props: {
   changeTeams: () => void;
@@ -19,6 +20,8 @@ function RoomTrayHeader(props: {
   toggleContent: () => void;
   newMessages: boolean;
 }) {
+  const [openFeedbackOverlay, setOpenFeedbackOverlay] = useState(false);
+
   const chatSpan = props.newMessages ? (
     <motion.span
       transition={{ duration: 0.5, repeat: Infinity }}
@@ -32,32 +35,36 @@ function RoomTrayHeader(props: {
   );
 
   return (
-    <div className="flex justify-between items-center" style={{ height: 30 }}>
-      <div onClick={() => props.setOpenTray(!props.openTray)}>
-        <img
-          src={props.openTray ? collapseIcon : expandIcon}
-          alt="Expand settings tray"
-        />
+    <Fragment>
+      <div className="flex justify-between items-center" style={{ height: 30 }}>
+        <div onClick={() => props.setOpenTray(!props.openTray)}>
+          <img
+            src={props.openTray ? collapseIcon : expandIcon}
+            alt="Expand settings tray"
+          />
+        </div>
+        <p>
+          <button className="underline" onClick={() => props.setOpenTray(true)}>
+            {props.title === "chat" ? chatSpan : "scores"}
+          </button>{" "}
+          (see{" "}
+          <button className="underline" onClick={props.toggleContent}>
+            {props.title === "chat" ? "scores" : chatSpan}
+          </button>
+          )
+        </p>
+        <button
+          className="underline"
+          onClick={() => setOpenFeedbackOverlay(true)}
+        >
+          Feedback
+        </button>
       </div>
-      <p>
-        <button className="underline" onClick={() => props.setOpenTray(true)}>
-          {props.title === "chat" ? chatSpan : "scores"}
-        </button>{" "}
-        (see{" "}
-        <button className="underline" onClick={props.toggleContent}>
-          {props.title === "chat" ? "scores" : chatSpan}
-        </button>
-        )
-      </p>
-      {props.gameMode === "Teams" ? (
-        <button className="underline" onClick={props.changeTeams}>
-          Switch Team
-        </button>
-      ) : (
-        // div is here for flex to justify-between
-        <div />
-      )}
-    </div>
+      <SendFeedback
+        open={openFeedbackOverlay}
+        setOpen={setOpenFeedbackOverlay}
+      />
+    </Fragment>
   );
 }
 

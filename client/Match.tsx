@@ -345,29 +345,17 @@ export function Match(props: {
                   <p>admin:</p>
                   <p>{props.roomState.playerNames[admin(props.roomState)]}</p>
                 </div>
-                <div>
-                  <label className="sr-only" htmlFor="sendFeedback">
-                    send feedback
-                  </label>
-                  <button
-                    className="underline"
-                    onClick={() => setOpenFeedbackOverlay(true)}
-                    id="sendFeedback"
-                  >
-                    send feedback
-                  </button>
-                </div>
-              </div>
-              <div
-                className="flex flex-col gap-2 p-2"
-                style={{ width: `calc(50% - ${cardDimensions[0]}px/2)` }}
-              >
                 {props.roomState.match.deck.creatorCredit?.length > 0 && (
                   <div>
                     <p>deck creator:</p>
                     <p>{props.roomState.match.deck.creatorCredit}</p>
                   </div>
                 )}
+              </div>
+              <div
+                className="flex flex-col gap-2 p-2"
+                style={{ width: `calc(50% - ${cardDimensions[0]}px/2)` }}
+              >
                 {!props.roomState.match.concluded && (
                   <Fragment>
                     <div>
