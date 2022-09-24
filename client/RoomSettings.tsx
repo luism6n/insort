@@ -29,7 +29,10 @@ function explainGameMode(gameMode: string): string {
 
 export function RoomSettings(props: RoomSettingsProps) {
   return (
-    <div className="flex flex-col items-center w-full">
+    <div
+      className="flex flex-col items-center w-full"
+      style={{ maxHeight: "calc(100% - 40px)" }}
+    >
       <Title>Choose Deck</Title>
       <DeckSelection
         selectedDeck={props.selectedDeck}

@@ -68,7 +68,7 @@ export function DeckSelection(props: {
 
   return (
     <Fragment>
-      <div className="max-h-40 w-full max-w-sm overflow-y-scroll">
+      <div className="max-h-80 w-full max-w-sm overflow-y-scroll">
         <table className="w-full">
           <thead>
             <tr

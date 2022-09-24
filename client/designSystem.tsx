@@ -57,7 +57,7 @@ export function Button({
         trackEventCls
       }
       style={{
-        height: 40,
+        minHeight: 40,
         width: 184,
         ...extraStyle,
         color: colors.purple,
