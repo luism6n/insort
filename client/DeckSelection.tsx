@@ -69,18 +69,18 @@ export function DeckSelection(props: {
   return (
     <Fragment>
       <div className="max-h-80 w-full max-w-sm overflow-y-scroll">
-        <table className="w-full">
+        <table className="w-full bg-white">
           <thead>
             <tr
-              className="sticky top-0 pr-4"
-              style={{
-                backgroundColor: colors.lightPurple,
-              }}
+              className="sticky top-0"
+              style={{ backgroundColor: colors.yellow }}
             >
               <th></th>
-              <th className="text-left">Name</th>
-              <th className="flex justify-center items-baseline pr-4">
-                <img className="h-4" src={heartIcon} alt="likes" />
+              <th className="p-1 text-left">Name</th>
+              <th className="p-1 pr-4">
+                <div className="flex justify-center items-baseline h-full">
+                  <img className="h-4" src={heartIcon} alt="likes" />
+                </div>
               </th>
             </tr>
           </thead>
@@ -89,7 +89,7 @@ export function DeckSelection(props: {
               .sort((a, b) => b.likes - a.likes)
               .map((opt) => (
                 <tr key={opt.shortId}>
-                  <td className="pr-2">
+                  <td className="p-1 pl-4">
                     <input
                       type="radio"
                       name="deck"
@@ -100,8 +100,8 @@ export function DeckSelection(props: {
                       }}
                     />
                   </td>
-                  <td>{opt.name}</td>
-                  <td className="pr-4 text-center">{opt.likes}</td>
+                  <td className="p-1">{opt.name}</td>
+                  <td className="p-1 pr-4 text-center">{opt.likes}</td>
                 </tr>
               ))}
           </tbody>
