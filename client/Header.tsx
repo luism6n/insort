@@ -30,7 +30,12 @@ export function Header({}) {
         >
           INSORT
         </a>
-        <img width={134} height={61} src={logoUrl} className="h-full m-auto" />
+        <img
+          width={134}
+          src={logoUrl}
+          style={{ height: "calc(100% - 8px)" }}
+          className="m-auto"
+        />
         <button
           onClick={() => setOpenCredits(true)}
           className="umami--click--credits flex-1 ml-auto text-end pr-2 underline"
