@@ -24,7 +24,7 @@ export function Button({
   let extraStyle = {};
   switch (unique) {
     case "back":
-      extraStyle = { width: 20, height: 28 };
+      extraStyle = { width: 20, height: 27, maxHeight: 27 };
       extraClasses += " back-btn";
       break;
     case "send":
@@ -43,6 +43,8 @@ export function Button({
       extraStyle = { width: 132, height: 64 };
       extraClasses += " place-btn";
       break;
+    default:
+      extraStyle = { minHeight: 40 };
   }
 
   return (
@@ -57,7 +59,6 @@ export function Button({
         trackEventCls
       }
       style={{
-        minHeight: 40,
         width: 184,
         ...extraStyle,
         color: colors.purple,
