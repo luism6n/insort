@@ -3,7 +3,11 @@ import React, { Fragment, ReactNode } from "react";
 import { colors, colors as systemColors } from "./colors";
 
 export function Title({ children }: { children: ReactNode }) {
-  return <h3 className="m-1 text-xl mb-2 text-blue-400">{children}</h3>;
+  return (
+    <h3 className="m-1 text-xl mb-2" style={{ color: colors.purple }}>
+      {children}
+    </h3>
+  );
 }
 export function Button({
   unique,
