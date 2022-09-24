@@ -16,8 +16,8 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
         <div className="flex-col items-start">
           <Input
             required
-            label="Choose a name to join this room"
-            placeholder="Enter username"
+            label="Choose a nickname for this match"
+            placeholder="Nickname"
             value={nameInput}
             setValue={setNameInput}
           />
