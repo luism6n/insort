@@ -89,7 +89,7 @@ export function DeckSelection(props: {
               .sort((a, b) => b.likes - a.likes)
               .map((opt) => (
                 <tr key={opt.shortId}>
-                  <td className="p-1 pl-4">
+                  <td className="p-1 pr-4 pl-4">
                     <input
                       type="radio"
                       name="deck"
