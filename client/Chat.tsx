@@ -13,11 +13,10 @@ export function Chat(props: {
   function submitChatMessage(e: React.FormEvent) {
     e.preventDefault();
 
-    ev("send chat message");
-
     if (chatInput) {
       setChatInput("");
       props.sendChatMessage(chatInput);
+      ev("send chat message");
     }
   }
 
