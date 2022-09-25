@@ -2,10 +2,10 @@ import { nanoid } from "nanoid";
 import React, { FormEvent, useState } from "react";
 import { Card, Deck } from "../types/types";
 import { Card as CardElement } from "./Card";
-import { colors } from "./colors";
 import { Input, Button, Toast, Title } from "./designSystem";
 import { Overlay } from "./Overlay";
 import { useToast } from "./useToast";
+import { ev } from "./analytics";
 
 export default function BuildDeck() {
   const [deck, setDeck] = useState<Deck>({
@@ -41,6 +41,8 @@ export default function BuildDeck() {
       });
 
       if (res.status === 200) {
+        ev("deck submit");
+
         setToast({
           message: "Deck submitted for review!",
           type: "notification",
@@ -62,17 +64,23 @@ export default function BuildDeck() {
           creatorEmail: "",
         });
       } else if (res.status === 409) {
+        ev("deck submit: 409");
+
         setToast({
           message: (await res.json()).message,
           type: "notification",
         });
       } else {
+        ev(`submit: ${res.status}`);
+
         setToast({
           message: (await res.json()).message,
           type: "warning",
         });
       }
     } catch (e) {
+      ev("deck submit: network error");
+
       console.error(e);
       setToast({
         message: "Error connecting to server",
@@ -86,6 +94,7 @@ export default function BuildDeck() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
+    ev("deck submit attempt");
     setShowConfirmSubmit(true);
   }
 
@@ -258,9 +267,7 @@ export default function BuildDeck() {
         </p>
 
         <div className="flex w-full justify-center">
-          <Button trackEventCls="umami--click--submit-deck" type="submit">
-            Submit deck
-          </Button>
+          <Button type="submit">Submit deck</Button>
         </div>
       </form>
 
@@ -278,12 +285,7 @@ export default function BuildDeck() {
         </div>
 
         <div className="flex w-full justify-center mt-4">
-          <Button
-            onClick={handleConfirmSubmit}
-            trackEventCls="umami--click--confirm-submit-deck"
-          >
-            Confirm submission
-          </Button>
+          <Button onClick={handleConfirmSubmit}>Confirm submission</Button>
         </div>
       </Overlay>
 

@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import { RoomState } from "../types/types";
+import { ev } from "./analytics";
 import { Button, Input } from "./designSystem";
 
 export function Chat(props: {
@@ -11,6 +12,8 @@ export function Chat(props: {
 
   function submitChatMessage(e: React.FormEvent) {
     e.preventDefault();
+
+    ev("chat message");
 
     if (chatInput) {
       setChatInput("");
@@ -38,11 +41,7 @@ export function Chat(props: {
         <form className="flex items-center" onSubmit={submitChatMessage}>
           <Input classes="flex-1" value={chatInput} setValue={setChatInput} />
 
-          <Button
-            trackEventCls="umami--click--send-chat-message"
-            unique="send"
-            type="submit"
-          >
+          <Button unique="send" type="submit">
             <span className="sr-only">Send message</span>
           </Button>
         </form>

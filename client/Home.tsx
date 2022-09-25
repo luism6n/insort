@@ -4,8 +4,16 @@ import { nanoid } from "nanoid";
 import { colors } from "./colors";
 import { Button } from "./designSystem";
 import Box from "./Box";
+import { ev } from "./analytics";
 
 export function Home() {
+  function handleCreateRoom(e: React.MouseEvent) {
+    e.preventDefault();
+
+    ev("room created");
+    window.location.href = `/r/${nanoid()}`;
+  }
+
   return (
     <div className="flex flex-col p-2 max-w-xl w-full items-center gap-6">
       <Box>
@@ -17,10 +25,7 @@ export function Home() {
       <p>
         {/* This has to be an anchor tag, not a Link,
           so that we actually hit the server */}
-        <a
-          className="hover:text-red-800 umami--click--create-room"
-          href={`/r/${nanoid()}`}
-        >
+        <a onClick={handleCreateRoom} href="#">
           <Button>Create Room</Button>
         </a>
       </p>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 // @ts-ignore
 import logoUrl from "../assets/logo_background_only.png";
+import { ev } from "./analytics";
 import { colors } from "./colors";
 import { Overlay } from "./Overlay";
 
@@ -37,8 +38,10 @@ export function Header({}) {
           className="m-auto"
         />
         <button
-          onClick={() => setOpenCredits(true)}
-          className="umami--click--credits flex-1 ml-auto text-end pr-2 underline"
+          onClick={() => {
+            ev("credits view");
+            setOpenCredits(true);
+          }}
         >
           Credits
         </button>
