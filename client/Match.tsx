@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import { admin } from "./Room";
 import { safeExtractHostnameFromURL } from "./utils";
 import SendFeedback from "./SendFeedback";
+import { ev } from "./analytics";
 
 export function Match(props: {
   roomId: string;
@@ -65,8 +66,11 @@ export function Match(props: {
 
   async function handleDeckLike() {
     if (deckLiked) {
+      ev("attempt to like already liked deck");
       return;
     }
+
+    ev("like deck");
 
     setDeckLiked(true);
     await fetch(`/decks/${props.roomState.match.deck.shortId}/likes`, {
@@ -88,6 +92,15 @@ export function Match(props: {
         props.placeCard();
       }
     }
+  }
+
+  function handleNewGame() {
+    ev(`play again, deck ${match.deck.shortId}, mode ${match.gameMode}`);
+    props.newGame();
+  }
+
+  function handleCheckDeckSource() {
+    ev(`check deck source, deck ${match.deck.shortId}`);
   }
 
   useEffect(() => {
@@ -218,6 +231,11 @@ export function Match(props: {
       x: -cardDimensions[0] / 2,
       y: 0,
     });
+
+    if (isLastCardToBePlaced) {
+      ev(`finish game, deck ${match.deck.shortId}`);
+    }
+
     props.placeCard();
   }
 
@@ -247,6 +265,8 @@ export function Match(props: {
       let data = await res.json();
       setGuessedCardOrder(data);
     }
+
+    ev(`toggle view order for deck ${match.deck.shortId}`);
 
     console.log({ showGuessOrder });
     setShowGuessOrder(!showGuessOrder);
@@ -424,7 +444,7 @@ export function Match(props: {
         >
           <div>
             <button
-              className={`underline flex gap-2 text-sm items-center my-2 umami--click--show-guess-stats-${props.roomState.match.deck.shortId}`}
+              className={`underline flex gap-2 text-sm items-center my-2`}
               onClick={handleToggleGuessOrder}
             >
               {showGuessOrder
@@ -438,7 +458,7 @@ export function Match(props: {
             </label>
             <button
               id="likeDeck"
-              className="flex gap-2 text-sm items-center my-2 umami--click--like-deck"
+              className="flex gap-2 text-sm items-center my-2"
               onClick={deckLiked ? null : handleDeckLike}
             >
               <img
@@ -454,18 +474,9 @@ export function Match(props: {
             roomState={props.roomState}
             numPlayersToShow={3}
           />
-          <Button
-            trackEventCls={`umami--click--play-again-deck-${slug(
-              match.deck.shortId
-            )}-mode-${slug(match.gameMode)}`}
-            onClick={() => props.newGame()}
-          >
-            Again
-          </Button>
+          <Button onClick={handleNewGame}>Again</Button>
           <a
-            className={`umami--click--deck-source-deck-${slug(
-              match.deck.shortId
-            )} text-sm underline hover:text-red-800`}
+            onClick={handleCheckDeckSource}
             href={match.deck.source}
             target="_blank"
           >
@@ -484,13 +495,6 @@ export function Match(props: {
             <span className="sr-only">Move card left</span>
           </Button>
           <Button
-            trackEventCls={
-              isLastCardToBePlaced
-                ? `umami--click--finished-game-${slug(
-                    match.deck.shortId
-                  )}-mode-${slug(match.gameMode)}`
-                : ""
-            }
             unique="place"
             disabled={props.roomState.match.concluded}
             onClick={placeCard}

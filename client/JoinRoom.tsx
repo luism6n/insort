@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ev } from "./analytics";
 import { Button, Input, Title } from "./designSystem";
 
 export function JoinRoom(props: { join: (playerName: string) => void }) {
@@ -6,6 +7,8 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
 
   function handleJoin(e: React.FormEvent) {
     e.preventDefault();
+
+    ev("join room");
     props.join(nameInput);
   }
 
@@ -29,9 +32,7 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
           </a>{" "}
           to your friends to play together!
         </p>
-        <Button trackEventCls="umami--click--join-room" type="submit">
-          Join
-        </Button>
+        <Button type="submit">Join</Button>
       </form>
     </div>
   );

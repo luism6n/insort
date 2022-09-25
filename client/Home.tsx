@@ -10,14 +10,14 @@ export function Home() {
   function handleCreateRoom(e: React.MouseEvent) {
     e.preventDefault();
 
-    ev("room created");
+    ev("create room");
     window.location.href = `/r/${nanoid()}`;
   }
 
-  function handleGoToSubmitDeck(e: React.MouseEvent) {
+  function handleGoToBuildDeck(e: React.MouseEvent) {
     e.preventDefault();
 
-    ev("submit deck view");
+    ev("go to build deck");
     window.location.href = "/build-deck";
   }
 
@@ -37,7 +37,7 @@ export function Home() {
         </a>
       </p>
       <p>
-        <a onClick={handleGoToSubmitDeck} href="#">
+        <a onClick={handleGoToBuildDeck} href="#">
           Submit your idea for a deck here!
         </a>
       </p>

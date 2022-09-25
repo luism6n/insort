@@ -40,7 +40,7 @@ export function Header({}) {
         <button
           className="flex-1 ml-auto text-end pr-2 underline"
           onClick={() => {
-            ev("credits view");
+            ev("view credits");
             setOpenCredits(true);
           }}
         >

@@ -13,7 +13,7 @@ export function Chat(props: {
   function submitChatMessage(e: React.FormEvent) {
     e.preventDefault();
 
-    ev("chat message");
+    ev("send chat message");
 
     if (chatInput) {
       setChatInput("");

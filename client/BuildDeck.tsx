@@ -41,7 +41,7 @@ export default function BuildDeck() {
       });
 
       if (res.status === 200) {
-        ev("deck submit");
+        ev("submit deck");
 
         setToast({
           message: "Deck submitted for review!",
@@ -64,14 +64,14 @@ export default function BuildDeck() {
           creatorEmail: "",
         });
       } else if (res.status === 409) {
-        ev("deck submit: 409");
+        ev("submit deck, error 409");
 
         setToast({
           message: (await res.json()).message,
           type: "notification",
         });
       } else {
-        ev(`submit: ${res.status}`);
+        ev(`submit deck, error ${res.status}`);
 
         setToast({
           message: (await res.json()).message,
@@ -79,7 +79,7 @@ export default function BuildDeck() {
         });
       }
     } catch (e) {
-      ev("deck submit: network error");
+      ev("submit deck, network error");
 
       console.error(e);
       setToast({
@@ -94,7 +94,7 @@ export default function BuildDeck() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    ev("deck submit attempt");
+    ev("attempt to submit deck");
     setShowConfirmSubmit(true);
   }
 

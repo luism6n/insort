@@ -3,7 +3,7 @@ import React from "react";
 import { Title, Select, Button } from "./designSystem";
 import { GameMode } from "../types/enums";
 import slug from "slug";
-import { admin } from "./Room";
+import { ev } from "./analytics";
 
 interface RoomSettingsProps {
   playerId: string;
@@ -60,12 +60,12 @@ export function RoomSettings(props: RoomSettingsProps) {
 
       <Button
         disabled={props.playerId !== props.admin}
-        trackEventCls={`umami--click--play-deck-${slug(
-          props.selectedDeck
-        )}-mode-${slug(props.selectedGameMode)}`}
-        onClick={() =>
-          props.newGame(props.selectedDeck, props.selectedGameMode)
-        }
+        onClick={() => {
+          ev(
+            `start game, deck ${props.selectedDeck}, mode ${props.selectedGameMode}`
+          );
+          props.newGame(props.selectedDeck, props.selectedGameMode);
+        }}
       >
         Play
       </Button>
