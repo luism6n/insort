@@ -44,7 +44,7 @@ export function RoomSettings(props: RoomSettingsProps) {
         setSelected={props.setSelectedGameMode}
         options={Object.values(GameMode)}
       ></Select>
-      <p className="text-sm">
+      <p className="text-sm text-center px-4">
         {props.selectedGameMode}: {explainGameMode(props.selectedGameMode)}
       </p>
       <div className="flex justify-center w-full text-sm mt-6">
