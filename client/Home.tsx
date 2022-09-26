@@ -14,6 +14,13 @@ export function Home() {
     window.location.href = `/r/${nanoid()}`;
   }
 
+  function handleGoToSubmitDeck(e: React.MouseEvent) {
+    e.preventDefault();
+
+    ev("submit deck view");
+    window.location.href = "/build-deck";
+  }
+
   return (
     <div className="flex flex-col p-2 max-w-xl w-full items-center gap-6">
       <Box>
@@ -30,12 +37,9 @@ export function Home() {
         </a>
       </p>
       <p>
-        <Link
-          className="text-sm text-center hover:text-red-800 umami--click--build-deck"
-          to="/build-deck"
-        >
+        <a onClick={handleGoToSubmitDeck} href="#">
           Submit your idea for a deck here!
-        </Link>
+        </a>
       </p>
     </div>
   );
