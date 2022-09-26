@@ -29,8 +29,6 @@ export default function BuildDeck() {
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
 
   async function handleConfirmSubmit() {
-    console.log(deck);
-
     try {
       let res = await fetch("/decks", {
         method: "POST",

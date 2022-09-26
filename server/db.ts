@@ -122,7 +122,6 @@ export async function retrieveDeckByShortId(shortId: string): Promise<Deck> {
 
   row = rows[0];
 
-  console.log({ rows, shortId });
   let deck: Deck = {
     name: row.name,
     shortId: row.short_id,

@@ -36,8 +36,6 @@ export function Card({
 
   const format = new Intl.NumberFormat("en-US", numFormatOptions).format;
 
-  console.log({ averageGuess });
-
   return (
     <motion.div
       style={{ ...style, zIndex, height: 180, width: 140 }}

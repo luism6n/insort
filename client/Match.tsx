@@ -56,8 +56,6 @@ export function Match(props: {
     }
   }, [props.roomState.match.placeNextAfter]);
 
-  console.log(props.roomState);
-
   useEffect(() => {
     setClientSidePlaceNextAfter(
       Math.floor(props.roomState.match.placedCards.length / 2) - 1
@@ -268,7 +266,6 @@ export function Match(props: {
 
     ev(`toggle view order for deck ${match.deck.shortId}`);
 
-    console.log({ showGuessOrder });
     setShowGuessOrder(!showGuessOrder);
   }
 

@@ -55,8 +55,6 @@ export function Room() {
 
   let content = null;
 
-  console.log({ selectedDeck });
-
   function saveNameAndRoomAndJoin(playerName: string) {
     window.localStorage.setItem("playerName", playerName);
     window.localStorage.setItem("roomId", roomId);

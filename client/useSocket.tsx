@@ -43,27 +43,22 @@ export function useSocket(
   }, [socket]);
 
   function cancelSuspense() {
-    console.log("emitting cancelSuspense");
     socket!.emit("cancelSuspense");
   }
 
   function sendChatMessage(text: string) {
-    console.log("emitting chatMessage:", text);
     socket!.emit("chatMessage", { text });
   }
 
   function placeCard() {
-    console.log(`emitting placeCard`);
     socket!.emit("placeCard");
   }
 
   function newGame(selectedDeck: string, selectedGameMode: string) {
-    console.log("emitting newGame", { selectedDeck, selectedGameMode });
     socket!.emit("newGame", { selectedDeck, selectedGameMode });
   }
 
   function changeRoomSettings() {
-    console.log("emitting changeRoomSettings");
     socket!.emit("changeRoomSettings");
   }
 
@@ -72,14 +67,12 @@ export function useSocket(
   }
 
   function changeNextCardPosition(inc: number) {
-    console.log(`emitting changeNextCardPosition`, { inc });
     socket!.emit(`changeNextCardPosition`, {
       increment: inc,
     });
   }
 
   function changeTeams() {
-    console.log(`emitting changeTeams`);
     socket!.emit(`changeTeams`);
   }
 

@@ -14,7 +14,6 @@ export function useToast() {
     }
 
     if (toast.timeoutId !== null) {
-      console.log("clearing timeout id", toast.timeoutId);
       clearTimeout(toast.timeoutId);
     }
 
@@ -23,7 +22,6 @@ export function useToast() {
     }, 3000);
 
     return () => {
-      console.log("clearing timeout id", timeoutId);
       clearTimeout(timeoutId);
     };
   }, [toast]);

@@ -4,7 +4,6 @@ const { faker } = require("@faker-js/faker");
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    console.log({ faker });
     // insert 100 decks, each with 2 cards, using faker
     const decks = [];
     const cards = [];
@@ -24,8 +23,6 @@ module.exports = {
         approved_at: null,
       };
 
-      console.log({ deck });
-
       // insert deck, get id for cards
       const rows = await queryInterface.sequelize.query(
         `INSERT INTO decks (name, source, short_id, unit, smaller_means, bigger_means, num_format_options, creator_email, creator_credit, num_likes, created_at)
@@ -41,8 +38,6 @@ module.exports = {
           value: faker.datatype.number(10),
           value_type: "float",
         };
-
-        console.log({ card });
 
         // insert cards
         await queryInterface.sequelize.query(

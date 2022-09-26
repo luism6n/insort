@@ -51,6 +51,18 @@ function validateDeck(deck: Deck): string | null {
     return "Deck must have at most 100 cards";
   }
 
+  for (let card of deck.cards) {
+    card.text = card.text.trim();
+
+    if (card.text.length > 100) {
+      return "Card text must be at most 100 characters";
+    }
+
+    if (card.text.length === 0) {
+      return "Card text must not be empty";
+    }
+  }
+
   return null;
 }
 
@@ -222,7 +234,6 @@ async function newMatch(
 }
 
 function updateState(roomId: string, state: RoomState) {
-  console.log("state update", state);
   rooms.set(roomId, state);
   if (state.match?.deck?.creatorEmail) {
     // Hide creator e-mail from clients
@@ -283,7 +294,6 @@ function scoringState(match: Match) {
 }
 
 async function collectStatisticsOnCardPlacement(state: RoomState) {
-  console.log("collectStatisticsOnCardPlacement");
   let match = state.match;
 
   let {
@@ -319,7 +329,6 @@ async function collectStatisticsOnCardPlacement(state: RoomState) {
       inferredPlayerGuessValue / stats.numSamples
     : inferredPlayerGuessValue;
 
-  console.log("stats", stats);
   await updateCardPlacementStats(stats);
 }
 
@@ -332,7 +341,11 @@ io.on(
     id: string;
   }) => {
     socket.on("join", async (data: { roomId: string; playerName: string }) => {
-      console.log(`got join, socketId=${socket.id}`);
+      if (data.playerName.trim().length === 0) {
+        socket.emit("warning", "Player name must not be empty");
+        return;
+      }
+
       socketToRoom.set(socket.id, data.roomId);
 
       let state = rooms.get(data.roomId);
@@ -367,7 +380,6 @@ io.on(
         "notification",
         `${data.playerName} joined the room`
       );
-      console.log(`user joined, socketId=${socket.id}, roomId=${data.roomId}`);
 
       updateState(data.roomId, state);
     });
@@ -390,8 +402,6 @@ io.on(
     });
 
     socket.on("changeTeams", () => {
-      console.log(`got changeTeams, socketId=${socket.id}`);
-
       let roomId = socketToRoom.get(socket.id);
       if (!roomId) {
         console.warn(`${socket.id} called "changeTeams" in non-existing room`);
@@ -421,8 +431,6 @@ io.on(
     });
 
     socket.on("changeNextCardPosition", (data: { increment: number }) => {
-      console.log(`got changeNextCardPosition, socketId=${socket.id}`);
-
       let roomId = socketToRoom.get(socket.id);
       if (!roomId) {
         console.warn(
@@ -450,7 +458,6 @@ io.on(
         return;
       }
 
-      console.log(state);
       if (
         state.currentPlayerId !== socket.id &&
         state.match.gameMode !== "Coop"
@@ -473,8 +480,6 @@ io.on(
     });
 
     socket.on("cancelSuspense", () => {
-      console.log(`got cancelSuspense, socketId=${socket.id}`);
-
       let roomId = socketToRoom.get(socket.id);
       if (!roomId) {
         console.warn(
@@ -613,7 +618,6 @@ io.on(
     socket.on(
       "newGame",
       async (data: { selectedDeck: string; selectedGameMode: string }) => {
-        console.log(`got newGame, data=${JSON.stringify(data)}`);
         let roomId = socketToRoom.get(socket.id);
         if (!roomId) {
           console.warn(`${socket.id} called "newGame" in non-existing room`);
@@ -705,10 +709,6 @@ io.on(
 
         updateState(roomId, state);
       }
-
-      console.log(
-        `user left, socketId=${socket.id}, roomId=${roomId}, numPlayers=${state.playerIds.length}`
-      );
     });
   }
 );
