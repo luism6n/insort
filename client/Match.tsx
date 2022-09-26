@@ -278,7 +278,7 @@ export function Match(props: {
       style={{ height: "calc(100% - 250px)" }}
     >
       <div className="flex flex-col items-center">
-        <div className="w-full flex justify-center text-sm mt-2">
+        <div className="w-full flex justify-center uppercase mt-2">
           <p>{match.deck.name}</p>
         </div>
         <section

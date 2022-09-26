@@ -85,7 +85,7 @@ export function Room() {
       <Fragment>
         <div
           className="flex h-0 relative"
-          style={{ top: -60, left: "calc(-50% + 20px + 1rem)" }}
+          style={{ top: -54, left: "calc(-50% + 5px + 1rem)" }}
         >
           <Button unique="back" onClick={changeRoomSettings}>
             <span className="sr-only">Back to room settings</span>
@@ -118,7 +118,7 @@ export function Room() {
       className="w-full h-full p-x-2"
       style={{ backgroundColor: backgroundColor }}
     >
-      <div className="flex flex-1 flex-col justify-start items-center h-full max-w-xl p-2 m-auto">
+      <div className="flex flex-1 flex-col justify-start items-center h-full max-w-xl px-2 m-auto">
         {content}
       </div>
       {roomState && (

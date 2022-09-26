@@ -18,7 +18,7 @@ export function Header({}) {
       className="flex justify-center w-full border-b-4"
     >
       <div className="flex justify-center items-center w-full max-w-xl ">
-        <div className="flex-1 mr-auto"></div>
+        <div className="flex-1 mr-auto pr-2"></div>
         <a
           className="relative w-0"
           style={{
