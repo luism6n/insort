@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import React, { Fragment, ReactNode } from "react";
+import React, { Fragment, ReactNode, useEffect } from "react";
 import { colors, colors as systemColors } from "./colors";
 
 export function Title({ children }: { children: ReactNode }) {
@@ -86,9 +86,11 @@ export function Select(props: {
     values = props.values;
   }
 
-  if (!props.selected) {
-    props.setSelected(values[0]);
-  }
+  useEffect(() => {
+    if (!props.selected) {
+      props.setSelected(values[0]);
+    }
+  }, [props.selected, values]);
 
   return (
     <select

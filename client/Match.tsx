@@ -62,6 +62,12 @@ export function Match(props: {
     );
   }, [props.roomState.match.concluded]);
 
+  useEffect(() => {
+    ev(
+      `place card ${props.roomState.match.placedCards.length}/${props.roomState.match.deck.cards.length}, deck ${props.roomState.match.deck.shortId}`
+    );
+  }, [props.roomState.match.placedCards.length]);
+
   async function handleDeckLike() {
     if (deckLiked) {
       ev("attempt to like already liked deck");

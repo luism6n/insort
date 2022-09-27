@@ -10,6 +10,7 @@ import { Button, Toast } from "./designSystem";
 import { colors } from "./colors";
 import slug from "slug";
 import { useToast } from "./useToast";
+import { ev } from "./analytics";
 
 export function admin(state: RoomState) {
   return state.playerIds[0];
@@ -85,7 +86,13 @@ export function Room() {
           className="flex h-0 relative"
           style={{ top: -54, left: "calc(-50% + 5px + 1rem)" }}
         >
-          <Button unique="back" onClick={changeRoomSettings}>
+          <Button
+            unique="back"
+            onClick={() => {
+              ev("go back to room settings");
+              changeRoomSettings();
+            }}
+          >
             <span className="sr-only">Back to room settings</span>
           </Button>
         </div>

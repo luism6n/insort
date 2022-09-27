@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Overlay } from "./Overlay";
-import { useEnabled } from "./analytics";
+import { ev, useEnabled } from "./analytics";
 import { Title } from "./designSystem";
 
 export function Privacy(props: {
@@ -8,6 +8,10 @@ export function Privacy(props: {
   setOpen: (open: boolean) => void;
 }) {
   const { enabled, setEnabled } = useEnabled();
+
+  useEffect(() => {
+    ev("view privacy notice");
+  }, []);
 
   return (
     <Overlay open={props.open} setOpen={props.setOpen}>
