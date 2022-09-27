@@ -329,11 +329,7 @@ export function Match(props: {
                         : card.value
                     }
                     averageGuess={guessedValues ? guessedValues[i] : undefined}
-                    content={`#${i + 1}${
-                      indexInDeck === match.nextCard && !match.concluded
-                        ? "?"
-                        : ""
-                    } ${card.text}`}
+                    content={card.text}
                     zIndex={2}
                     comesFrom={{
                       x: -cardDimensions[0] / 2,

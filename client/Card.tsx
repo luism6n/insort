@@ -44,19 +44,25 @@ export function Card({
       initial={{ left: comesFrom.x, top: comesFrom.y }}
       ref={innerRef}
       className={
-        "card py-5 flex-shrink-0 text-center text-align-center flex flex-col justify-between px-2 " +
+        "card py-6 flex-shrink-0 text-center text-align-center flex flex-col justify-between px-2 " +
         clsNames
       }
     >
       <p>{content}</p>
       <p className={`font-bold  mt-auto`}>
-        {averageGuess !== undefined ? ` ${format(averageGuess)}` : ""}
-        <br />
+        {averageGuess !== undefined ? (
+          <span>
+            {format(averageGuess)}
+            <br />
+          </span>
+        ) : (
+          ""
+        )}
         <span className={averageGuess === undefined ? "" : "line-through"}>
           {value !== undefined ? format(value) : "??"}
         </span>{" "}
-        {unit}
       </p>
+      <span className="text-sm">{unit}</span>
     </motion.div>
   );
 }
