@@ -44,7 +44,7 @@ export function Header({}) {
             setOpenCredits(true);
           }}
         >
-          Credits
+          credits
         </button>
       </div>
 

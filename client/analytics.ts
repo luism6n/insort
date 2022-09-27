@@ -1,6 +1,11 @@
+import { useState } from "react";
 export function ev(event: string) {
   if (!(<any>window).umami) {
     console.warn("umami not loaded");
+    return;
+  }
+
+  if (window.localStorage.getItem("analytics") === "false") {
     return;
   }
 
@@ -12,4 +17,18 @@ export function ev(event: string) {
     console.error("error communicating with umami");
     console.error(e);
   }
+}
+
+export function useEnabled() {
+  const [enabled, setEnabled] = useState(
+    window.localStorage.getItem("analytics") !== "false"
+  );
+
+  return {
+    enabled,
+    setEnabled: (enabled: boolean) => {
+      window.localStorage.setItem("analytics", enabled ? "true" : "false");
+      setEnabled(enabled);
+    },
+  };
 }

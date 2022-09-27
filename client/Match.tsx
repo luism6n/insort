@@ -344,9 +344,9 @@ export function Match(props: {
               })}
             </div>
 
-            <div className="w-full px-4 flex text-sm justify-between">
-              <p className="flex-1 text-left">{`← ${match.deck.smallerMeans}`}</p>
-              <p className="flex-1 ml-auto text-right">{`${match.deck.biggerMeans} →`}</p>
+            <div className="w-full px-4 flex text-sm mb-1">
+              <p className="flex-1 text-right mr-8">{` ← ${match.deck.smallerMeans}`}</p>
+              <p className="flex-1 text-left ml-8">{`${match.deck.biggerMeans} → `}</p>
             </div>
           </div>
         </section>
@@ -355,31 +355,20 @@ export function Match(props: {
           <div className="flex flex-col items-center w-full">
             <div className="flex justify-between w-full text-sm text-center  max-w-xl h-0 overflow-visible">
               <div
-                className="flex flex-col gap-2 p-2"
+                className="flex flex-col gap-4 p-2"
                 style={{ width: `calc(50% - ${cardDimensions[0]}px/2)` }}
               >
                 <div>
                   <p>admin:</p>
                   <p>{props.roomState.playerNames[admin(props.roomState)]}</p>
                 </div>
-                {props.roomState.match.deck.creatorCredit?.length > 0 && (
-                  <div>
-                    <p>deck creator:</p>
-                    <p>{props.roomState.match.deck.creatorCredit}</p>
-                  </div>
-                )}
               </div>
               <div
-                className="flex flex-col gap-2 p-2"
+                className="flex flex-col gap-4 p-2"
                 style={{ width: `calc(50% - ${cardDimensions[0]}px/2)` }}
               >
                 {!props.roomState.match.concluded && (
                   <Fragment>
-                    <div>
-                      <p>deck source:</p>
-                      <p>{safeExtractHostnameFromURL(match.deck.source)}</p>
-                    </div>
-
                     <div>
                       <p>cards left:</p>
                       <p>
@@ -388,6 +377,18 @@ export function Match(props: {
                         out of {props.roomState.match.deck.cards.length}
                       </p>
                     </div>
+
+                    <div>
+                      <p>deck source:</p>
+                      <p>{safeExtractHostnameFromURL(match.deck.source)}</p>
+                    </div>
+
+                    {props.roomState.match.deck.creatorCredit?.length > 0 && (
+                      <div>
+                        <p>deck by:</p>
+                        <p>{props.roomState.match.deck.creatorCredit}</p>
+                      </div>
+                    )}
                   </Fragment>
                 )}
               </div>

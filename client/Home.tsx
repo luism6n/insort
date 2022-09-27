@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { nanoid } from "nanoid";
 import { colors } from "./colors";
 import { Button } from "./designSystem";
 import Box from "./Box";
 import { ev } from "./analytics";
+import { Privacy } from "./Privacy";
 
 export function Home() {
+  const [openPrivacyNotice, setOpenPrivacyNotice] = useState(false);
+
   function handleCreateRoom(e: React.MouseEvent) {
     e.preventDefault();
 
@@ -41,6 +44,18 @@ export function Home() {
           Submit your idea for a deck here!
         </a>
       </p>
+
+      <button
+        onClick={() => setOpenPrivacyNotice(true)}
+        className="mt-8 underline text-sm"
+      >
+        privacy
+      </button>
+
+      <Privacy
+        open={openPrivacyNotice}
+        setOpen={setOpenPrivacyNotice}
+      ></Privacy>
     </div>
   );
 }

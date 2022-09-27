@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { ev } from "./analytics";
 import { Button, Input, Title } from "./designSystem";
+import { Privacy } from "./Privacy";
 
 export function JoinRoom(props: { join: (playerName: string) => void }) {
   const [nameInput, setNameInput] = useState("");
+  const [openPrivacyNotice, setOpenPrivacyNotice] = useState(false);
 
   function handleJoin(e: React.FormEvent) {
     e.preventDefault();
@@ -34,6 +36,18 @@ export function JoinRoom(props: { join: (playerName: string) => void }) {
         </p>
         <Button type="submit">Join</Button>
       </form>
+
+      <button
+        onClick={() => setOpenPrivacyNotice(true)}
+        className="mt-8 underline text-sm"
+      >
+        privacy
+      </button>
+
+      <Privacy
+        open={openPrivacyNotice}
+        setOpen={setOpenPrivacyNotice}
+      ></Privacy>
     </div>
   );
 }

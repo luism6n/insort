@@ -10,6 +10,7 @@ import expandIcon from "../assets/expand_up.png";
 // @ts-ignore
 import collapseIcon from "../assets/expand_down.png";
 import SendFeedback from "./SendFeedback";
+import { Privacy } from "./Privacy";
 
 function RoomTrayHeader(props: {
   changeTeams: () => void;
@@ -17,10 +18,11 @@ function RoomTrayHeader(props: {
   setOpenTray: React.Dispatch<React.SetStateAction<boolean>>;
   gameMode: string | null;
   title: string;
-  toggleContent: () => void;
+  toggleContent: (mode: string) => void;
   newMessages: boolean;
 }) {
   const [openFeedbackOverlay, setOpenFeedbackOverlay] = useState(false);
+  const [openPrivacyOverlay, setOpenPrivacyOverlay] = useState(false);
 
   const chatSpan = props.newMessages ? (
     <motion.span
@@ -36,34 +38,57 @@ function RoomTrayHeader(props: {
 
   return (
     <Fragment>
-      <div className="flex justify-between items-center" style={{ height: 30 }}>
-        <div onClick={() => props.setOpenTray(!props.openTray)}>
-          <img
-            src={props.openTray ? collapseIcon : expandIcon}
-            alt="Expand settings tray"
-          />
-        </div>
-        <p>
-          <button className="underline" onClick={() => props.setOpenTray(true)}>
-            {props.title === "chat" ? chatSpan : "scores"}
-          </button>{" "}
-          (see{" "}
-          <button className="underline" onClick={props.toggleContent}>
-            {props.title === "chat" ? "scores" : chatSpan}
-          </button>
-          )
-        </p>
+      {/* clickable overlay that dismisses the tray */}
+      {props.openTray && (
+        <div
+          onClick={() => props.setOpenTray(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "calc(100% - 240px)",
+            opacity: 0.5,
+            zIndex: 1,
+            backgroundColor: "black",
+          }}
+        ></div>
+      )}
+
+      <div
+        className="text-center grid grid-cols-4"
+        style={{ zIndex: 2, height: 30 }}
+      >
         <button
-          className="underline"
+          className="text-left text-sm underline"
+          onClick={() => setOpenPrivacyOverlay(true)}
+        >
+          privacy
+        </button>
+        <button
+          className="underline text-right pr-2"
+          onClick={() => props.toggleContent("scores")}
+        >
+          scores
+        </button>
+        <button
+          className="underline text-left pl-2"
+          onClick={() => props.toggleContent("chat")}
+        >
+          {chatSpan}
+        </button>
+        <button
+          className="text-right text-sm underline"
           onClick={() => setOpenFeedbackOverlay(true)}
         >
-          Feedback
+          feedback
         </button>
       </div>
       <SendFeedback
         open={openFeedbackOverlay}
         setOpen={setOpenFeedbackOverlay}
       />
+      <Privacy open={openPrivacyOverlay} setOpen={setOpenPrivacyOverlay} />
     </Fragment>
   );
 }
@@ -96,7 +121,7 @@ export function RoomTray(props: {
   return (
     <div className="relative w-full h-0">
       <div
-        className="flex justify-center w-full border-t-4 p-2"
+        className="flex justify-center w-full border-t-4 px-2"
         style={{
           position: "absolute",
           backgroundColor: colors.yellow,
@@ -106,16 +131,16 @@ export function RoomTray(props: {
           zIndex: 5,
         }}
       >
-        <div className="flex flex-col max-w-xl w-full px-2 bg-grey-200">
+        <div className="flex flex-col max-w-xl w-full bg-grey-200">
           <RoomTrayHeader
             changeTeams={props.changeTeams}
             openTray={openTray}
             gameMode={props.roomState.match?.gameMode}
             setOpenTray={setOpenTray}
             title={mode}
-            toggleContent={() => {
+            toggleContent={(m: "chat" | "scores") => {
               setOpenTray(true);
-              setMode((m) => (m === "chat" ? "scores" : "chat"));
+              setMode(m);
             }}
             newMessages={newMessages}
           />
