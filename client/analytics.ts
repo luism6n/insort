@@ -27,7 +27,9 @@ export function useEnabled() {
   return {
     enabled,
     setEnabled: (enabled: boolean) => {
+      ev("analytics " + (enabled ? "enabled" : "disabled"));
       window.localStorage.setItem("analytics", enabled ? "true" : "false");
+      ev("analytics " + (enabled ? "enabled" : "disabled"));
       setEnabled(enabled);
     },
   };

@@ -15,19 +15,29 @@ export function Privacy(props: {
 
   return (
     <Overlay open={props.open} setOpen={props.setOpen}>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col text-center justify-center gap-6">
         <Title>Note on Privacy</Title>
         <p>
-          We do not collect any personal data, but we do collect anonymous click
-          data to help improve Insort. Make sure your ad blocker is disabled if
-          you want to help us improve Insort.
+          We do not collect any personal data. We only collect anonymous
+          analytics to help guide deck creation and gameplay improvements. If
+          you wanna help, make sure your ad blocker is disabled. The source code
+          is auditable at{" "}
+          <a
+            target="_blank"
+            className="underline"
+            href="https://github.com/luism6n/insort"
+          >
+            github.com/luism6n/insort
+          </a>
+          .
         </p>
         <p>
           <button
             className="underline inline"
             onClick={() => setEnabled(!enabled)}
           >
-            Click here to opt {enabled ? "out of" : "into"} event tracking.
+            Click here to{" "}
+            {enabled ? "opt out of any tracking" : "help us anonymously"}.
           </button>
         </p>
       </div>
