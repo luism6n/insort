@@ -46,7 +46,7 @@ export function DeckSelection(props: {
       }
 
       setDeckOptions(
-        parsed.map((o) => ({
+        parsed.map((o: any) => ({
           ...o,
           createdAt: new Date(Date.parse(o.createdAt)),
         }))
