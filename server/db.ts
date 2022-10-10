@@ -92,7 +92,7 @@ export async function retreiveDeckOptions(): Promise<DeckOptionsJSON[]> {
     name: r.name,
     shortId: r.short_id,
     likes: r.num_likes,
-    createdAt: r.approved_at,
+    createdAt: new Date(Date.parse(r.approved_at)),
   }));
 }
 

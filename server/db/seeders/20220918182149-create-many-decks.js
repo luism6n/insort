@@ -19,14 +19,13 @@ module.exports = {
         creator_email: faker.internet.email(),
         creator_credit: faker.word.noun(),
         num_likes: faker.datatype.number(100),
-        created_at: faker.date.past().toISOString(),
-        approved_at: null,
+        approved_at: faker.date.past().toISOString(),
       };
 
       // insert deck, get id for cards
       const rows = await queryInterface.sequelize.query(
-        `INSERT INTO decks (name, source, short_id, unit, smaller_means, bigger_means, num_format_options, creator_email, creator_credit, num_likes, created_at)
-           VALUES ('${deck.name}', '${deck.source}', '${deck.short_id}', '${deck.unit}', '${deck.smaller_means}', '${deck.bigger_means}', '${deck.num_format_options}', '${deck.creator_email}', '${deck.creator_credit}', ${deck.num_likes}, '${deck.created_at}')
+        `INSERT INTO decks (name, source, short_id, unit, smaller_means, bigger_means, num_format_options, creator_email, creator_credit, num_likes, approved_at)
+           VALUES ('${deck.name}', '${deck.source}', '${deck.short_id}', '${deck.unit}', '${deck.smaller_means}', '${deck.bigger_means}', '${deck.num_format_options}', '${deck.creator_email}', '${deck.creator_credit}', ${deck.num_likes}, '${deck.approved_at}')
            RETURNING *;`
       );
       const deckId = rows[0][0].id;

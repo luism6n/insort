@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { DeckOptionsJSON } from "../types/types";
+import { Deck, DeckOptionsJSON } from "../types/types";
 import { colors } from "./colors";
 import { Select, Toast } from "./designSystem";
 import { useToast } from "./useToast";
@@ -14,6 +14,9 @@ export function DeckSelection(props: {
   const [deckOptions, setDeckOptions] = useState<DeckOptionsJSON[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [order, setOrder] = useState("most_liked");
+
+  console.log({ deckOptions });
 
   const { toast, setToast } = useToast();
 
@@ -42,7 +45,12 @@ export function DeckSelection(props: {
         return;
       }
 
-      setDeckOptions(parsed);
+      setDeckOptions(
+        parsed.map((o) => ({
+          ...o,
+          createdAt: new Date(Date.parse(o.createdAt)),
+        }))
+      );
 
       if (parsed.length > 0) {
         props.setSelectedDeck(parsed[0].shortId);
@@ -66,8 +74,33 @@ export function DeckSelection(props: {
     return <div>{error}</div>;
   }
 
+  function sortDecks(a: DeckOptionsJSON, b: DeckOptionsJSON) {
+    if (order === "most_liked") {
+      return b.likes - a.likes;
+    } else if (order === "most_recent") {
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    } else {
+      return b.name.localeCompare(a.name);
+    }
+  }
+
   return (
     <Fragment>
+      {/* select deck options sort order */}
+      <p className="mb-2">
+        Sort decks by{" "}
+        <select
+          value={order}
+          onChange={(e) => {
+            setOrder(e.target.value);
+          }}
+        >
+          <option value="most_liked">most liked</option>
+          <option value="most_recent">newer</option>
+          <option value="alphabetical">name</option>
+        </select>
+      </p>
+
       <div className="max-h-80 w-full max-w-sm overflow-y-scroll mb-4">
         <table className="w-full bg-white">
           <thead>
@@ -85,43 +118,27 @@ export function DeckSelection(props: {
             </tr>
           </thead>
           <tbody>
-            {deckOptions
-              .sort((a, b) => b.likes - a.likes)
-              .map((opt) => (
-                <tr key={opt.shortId}>
-                  <td className="p-1 pr-4 pl-4">
-                    <input
-                      type="radio"
-                      name="deck"
-                      value={opt.shortId}
-                      checked={props.selectedDeck === opt.shortId}
-                      onChange={(e) => {
-                        props.setSelectedDeck(e.target.value);
-                      }}
-                    />
-                  </td>
-                  <td className="p-1">{opt.name}</td>
-                  <td className="p-1 pr-4 text-center">{opt.likes}</td>
-                </tr>
-              ))}
+            {deckOptions.sort(sortDecks).map((opt) => (
+              <tr key={opt.shortId}>
+                <td className="p-1 pr-4 pl-4">
+                  <input
+                    type="radio"
+                    name="deck"
+                    value={opt.shortId}
+                    checked={props.selectedDeck === opt.shortId}
+                    onChange={(e) => {
+                      props.setSelectedDeck(e.target.value);
+                    }}
+                  />
+                </td>
+                <td className="p-1">{opt.name}</td>
+                <td className="p-1 pr-4 text-center">{opt.likes}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
       {toast}
     </Fragment>
   );
-
-  //   return (
-  //     <Fragment>
-  //       <div>
-  //         <Select
-  //           selected={props.selectedDeck}
-  //           setSelected={props.setSelectedDeck}
-  //           options={deckOptions}
-  //           values={deckShortIds}
-  //         />
-  //         {toast}
-  //       </div>
-  //     </Fragment>
-  //   );
 }
