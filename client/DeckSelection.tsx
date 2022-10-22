@@ -14,7 +14,7 @@ export function DeckSelection(props: {
   const [deckOptions, setDeckOptions] = useState<DeckOptionsJSON[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [order, setOrder] = useState("most_liked");
+  const [order, setOrder] = useState("more likes");
 
   console.log({ deckOptions });
 
@@ -75,12 +75,30 @@ export function DeckSelection(props: {
   }
 
   function sortDecks(a: DeckOptionsJSON, b: DeckOptionsJSON) {
-    if (order === "most_liked") {
+    if (order === "more likes") {
       return b.likes - a.likes;
-    } else if (order === "most_recent") {
+    } else if (order === "newer") {
       return b.createdAt.getTime() - a.createdAt.getTime();
+    } else if (order === "smaller") {
+      return a.size - b.size;
+    } else if (order === "bigger") {
+      return b.size - a.size;
     } else {
       return b.name.localeCompare(a.name);
+    }
+  }
+
+  function getOptValueForOrdering(opt: DeckOptionsJSON, order: string) {
+    if (order === "more likes") {
+      return opt.likes;
+    } else if (order === "newer") {
+      return opt.likes;
+    } else if (order === "smaller") {
+      return opt.size;
+    } else if (order === "bigger") {
+      return opt.size;
+    } else {
+      return opt.likes;
     }
   }
 
@@ -95,8 +113,10 @@ export function DeckSelection(props: {
             setOrder(e.target.value);
           }}
         >
-          <option value="most_liked">most liked</option>
-          <option value="most_recent">newer</option>
+          <option value="more likes">more likes</option>
+          <option value="smaller">smaller</option>
+          <option value="bigger">bigger</option>
+          <option value="newer">newer</option>
           <option value="alphabetical">name</option>
         </select>
       </p>
@@ -112,7 +132,13 @@ export function DeckSelection(props: {
               <th className="p-1 text-left">Name</th>
               <th className="p-1 pr-4">
                 <div className="flex justify-center items-baseline h-full">
-                  <img className="h-4" src={heartIcon} alt="likes" />
+                  {order === "more likes" ||
+                  order === "alphabetical" ||
+                  order === "newer" ? (
+                    <img className="h-4" src={heartIcon} alt="likes" />
+                  ) : (
+                    "size"
+                  )}
                 </div>
               </th>
             </tr>
@@ -132,7 +158,9 @@ export function DeckSelection(props: {
                   />
                 </td>
                 <td className="p-1">{opt.name}</td>
-                <td className="p-1 pr-4 text-center">{opt.likes}</td>
+                <td className="p-1 pr-4 text-center">
+                  {getOptValueForOrdering(opt, order)}
+                </td>
               </tr>
             ))}
           </tbody>

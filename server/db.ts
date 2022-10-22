@@ -78,20 +78,34 @@ export async function retreiveDeckOptions(): Promise<DeckOptionsJSON[]> {
   let result;
   try {
     result = await db.query(
-      "SELECT name, short_id, num_likes, approved_at FROM decks" +
+      "SELECT id, name, short_id, num_likes, approved_at FROM decks" +
         (process.env.ENVIRONMENT === "development"
           ? ""
           : " WHERE approved_at IS NOT NULL")
     );
   } catch (e) {
     console.error(e);
-    return [];
+    throw new DBServerError("Failed to retreive deck options");
+  }
+
+  try {
+    for (let r of result.rows) {
+      let cardCountResult = await db.query(
+        "SELECT COUNT(*) FROM cards WHERE deck_id = $1",
+        [r.id]
+      );
+      r.size = cardCountResult.rows[0].count;
+    }
+  } catch (e) {
+    console.error(e);
+    throw new DBServerError("Failed to retreive deck options");
   }
 
   return result.rows.map((r) => ({
     name: r.name,
     shortId: r.short_id,
     likes: r.num_likes,
+    size: r.size,
     createdAt: new Date(Date.parse(r.approved_at)),
   }));
 }

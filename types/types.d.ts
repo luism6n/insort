@@ -41,6 +41,7 @@ export interface RoomState {
 
 export interface DeckOptionsJSON {
   name: string;
+  size: number;
   shortId: string;
   likes: number;
   createdAt: Date;
