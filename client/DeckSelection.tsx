@@ -5,6 +5,7 @@ import { Select, Toast } from "./designSystem";
 import { useToast } from "./useToast";
 // @ts-ignore
 import heartIcon from "../assets/heart_light.png";
+import { ev } from "./analytics";
 
 export function DeckSelection(props: {
   selectedDeck: string;
@@ -89,16 +90,14 @@ export function DeckSelection(props: {
   }
 
   function getOptValueForOrdering(opt: DeckOptionsJSON, order: string) {
-    if (order === "more likes") {
+    if (
+      order === "more likes" ||
+      order === "newer" ||
+      order === "alphabetical"
+    ) {
       return opt.likes;
-    } else if (order === "newer") {
-      return opt.likes;
-    } else if (order === "smaller") {
-      return opt.size;
-    } else if (order === "bigger") {
-      return opt.size;
     } else {
-      return opt.likes;
+      return opt.size;
     }
   }
 
@@ -110,6 +109,7 @@ export function DeckSelection(props: {
         <select
           value={order}
           onChange={(e) => {
+            ev("sort deck by " + e.target.value);
             setOrder(e.target.value);
           }}
         >
