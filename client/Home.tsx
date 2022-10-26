@@ -41,7 +41,7 @@ export function Home() {
       </p>
       <p>
         <a onClick={handleGoToBuildDeck} href="#">
-          Submit your idea for a deck here!
+          Submit your deck!
         </a>
       </p>
 
