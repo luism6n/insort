@@ -382,7 +382,13 @@ export function Match(props: {
 
                     <div>
                       <p>deck source:</p>
-                      <p>{safeExtractHostnameFromURL(match.deck.source)}</p>
+                      <a
+                        className="underline"
+                        href={match.deck.source}
+                        target="_blank"
+                      >
+                        {safeExtractHostnameFromURL(match.deck.source)}
+                      </a>
                     </div>
 
                     {props.roomState.match.deck.creatorCredit?.length > 0 && (

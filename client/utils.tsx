@@ -8,3 +8,13 @@ export function safeExtractHostnameFromURL(text: string): string {
     return "<no url>";
   }
 }
+
+export function getUrlWithoutPath(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    urlObj.pathname = "";
+    return urlObj.toString();
+  } catch (e) {
+    return url;
+  }
+}
