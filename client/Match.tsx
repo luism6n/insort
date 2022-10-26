@@ -386,6 +386,7 @@ export function Match(props: {
                         className="underline"
                         href={match.deck.source}
                         target="_blank"
+                        onClick={() => ev("open deck source before finish")}
                       >
                         {safeExtractHostnameFromURL(match.deck.source)}
                       </a>
