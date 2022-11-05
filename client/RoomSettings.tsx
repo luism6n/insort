@@ -14,6 +14,7 @@ interface RoomSettingsProps {
   selectedGameMode: string;
   setSelectedGameMode: React.Dispatch<React.SetStateAction<string>>;
   newGame: (selectedDeck: string, selectedGameMode: string) => void;
+  numPlayers: number;
 }
 
 function explainGameMode(gameMode: string): string {
@@ -64,6 +65,8 @@ export function RoomSettings(props: RoomSettingsProps) {
           ev(
             `start game, deck ${props.selectedDeck}, mode ${props.selectedGameMode}`
           );
+
+          ev(`game started with ${props.numPlayers} players`);
           props.newGame(props.selectedDeck, props.selectedGameMode);
         }}
       >

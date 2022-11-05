@@ -59,6 +59,7 @@ export function Room() {
   function saveNameAndRoomAndJoin(playerName: string) {
     window.localStorage.setItem("playerName", playerName);
     window.localStorage.setItem("roomId", roomId);
+    console.log({ roomState });
     join(playerName);
   }
 
@@ -69,6 +70,7 @@ export function Room() {
   } else if (roomState.match === null) {
     content = (
       <RoomSettings
+        numPlayers={roomState.playerIds.length}
         playerId={playerId}
         admin={admin(roomState)}
         adminName={roomState.playerNames[admin(roomState)]}
