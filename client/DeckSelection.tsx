@@ -15,7 +15,7 @@ export function DeckSelection(props: {
   const [deckOptions, setDeckOptions] = useState<DeckOptionsJSON[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [order, setOrder] = useState("newer");
+  const [order, setOrder] = useState("more likes");
 
   console.log({ deckOptions });
 
