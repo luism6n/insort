@@ -22,12 +22,7 @@ export function Home(props: Props) {
   }
 
   return (
-    <div
-      className="flex flex-col p-2 max-w-xl w-full items-center"
-      style={{
-        maxHeight: "90%",
-      }}
-    >
+    <div className="flex flex-col p-2 max-w-xl w-full items-center">
       <p className="text-center">Welcome to Insort! Choose Deck to begin...</p>
       <DeckSelection
         selectedDeck={props.selectedDeck}

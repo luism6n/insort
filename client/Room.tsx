@@ -132,10 +132,7 @@ export function Room(props: Props) {
   }
 
   return (
-    <div
-      className="w-full h-full p-x-2"
-      style={{ backgroundColor: backgroundColor, maxHeight: "90%" }}
-    >
+    <div className="w-full h-full p-x-2">
       <div className="flex f  lex-1 flex-col justify-start items-center h-full max-w-xl px-2 m-auto">
         {content}
       </div>
