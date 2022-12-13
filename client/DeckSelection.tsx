@@ -54,7 +54,9 @@ export function DeckSelection(props: {
       );
 
       if (parsed.length > 0) {
-        props.setSelectedDeck(parsed[0].shortId);
+        if (props.selectedDeck === "") {
+          props.setSelectedDeck(parsed[0].shortId);
+        }
       } else {
         setToast({
           message: "No decks found. Create a deck to get started.",

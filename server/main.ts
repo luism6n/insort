@@ -28,8 +28,6 @@ const socketToRoom = new Map<string, string>();
 const publicPath = path.join(__dirname, "/../public");
 const port = process.env.PORT || "3000";
 
-const gameModes = ["Individual", "Teams", "Coop"];
-
 let app = express();
 
 app.use(compression());

@@ -5,7 +5,7 @@ import { GameMode } from "../types/enums";
 import slug from "slug";
 import { ev } from "./analytics";
 
-interface RoomSettingsProps {
+interface Props {
   playerId: string;
   admin: string;
   adminName: string;
@@ -28,7 +28,7 @@ function explainGameMode(gameMode: string): string {
   }
 }
 
-export function RoomSettings(props: RoomSettingsProps) {
+export function RoomSettings(props: Props) {
   return (
     <div
       className="flex flex-col items-center w-full"

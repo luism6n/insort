@@ -1,21 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { nanoid } from "nanoid";
-import { colors } from "./colors";
-import { Button } from "./designSystem";
-import Box from "./Box";
+import { Button, Title } from "./designSystem";
 import { ev } from "./analytics";
 import { Privacy } from "./Privacy";
+import { DeckSelection } from "./DeckSelection";
 
-export function Home() {
+interface Props {
+  selectedDeck: string;
+  setSelectedDeck: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export function Home(props: Props) {
   const [openPrivacyNotice, setOpenPrivacyNotice] = useState(false);
-
-  function handleCreateRoom(e: React.MouseEvent) {
-    e.preventDefault();
-
-    ev("create room");
-    window.location.href = `/r/${nanoid()}`;
-  }
 
   function handleGoToBuildDeck(e: React.MouseEvent) {
     e.preventDefault();
@@ -25,19 +22,21 @@ export function Home() {
   }
 
   return (
-    <div className="flex flex-col p-2 max-w-xl w-full items-center gap-6">
-      <Box>
-        <p className="text-center">
-          Welcome to <span className="italic">Insort</span>! A quiz-like card
-          game to have fun with friends while testing your knowlegde. :)
-        </p>
-      </Box>
+    <div
+      className="flex flex-col p-2 max-w-xl w-full items-center"
+      style={{
+        maxHeight: "90%",
+      }}
+    >
+      <p className="text-center">Welcome to Insort! Choose Deck to begin...</p>
+      <DeckSelection
+        selectedDeck={props.selectedDeck}
+        setSelectedDeck={props.setSelectedDeck}
+      />
       <p>
-        {/* This has to be an anchor tag, not a Link,
-          so that we actually hit the server */}
-        <a onClick={handleCreateRoom} href="#">
+        <Link to={`/r/${nanoid()}`}>
           <Button>Create Room</Button>
-        </a>
+        </Link>
       </p>
       <p>
         <a onClick={handleGoToBuildDeck} href="#">

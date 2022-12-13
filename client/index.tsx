@@ -19,6 +19,8 @@ function App() {
     makeBodyFit();
   }, []);
 
+  const [selectedDeck, setSelectedDeck] = React.useState("default");
+
   return (
     <div
       style={{ backgroundColor: colors.lightPurple, color: colors.purple }}
@@ -27,8 +29,24 @@ function App() {
       <Header />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/r/:roomId" element={<Room />} />
+          <Route
+            path="/"
+            element={
+              <Home
+                selectedDeck={selectedDeck}
+                setSelectedDeck={setSelectedDeck}
+              />
+            }
+          />
+          <Route
+            path="/r/:roomId"
+            element={
+              <Room
+                selectedDeck={selectedDeck}
+                setSelectedDeck={setSelectedDeck}
+              />
+            }
+          />
           <Route path="/cards-demo" element={<CardsDemo />} />
           <Route path="/build-deck" element={<BuildDeck />} />
         </Routes>

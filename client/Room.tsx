@@ -2,13 +2,12 @@ import { RoomTray } from "./RoomTray";
 import { Match } from "./Match";
 import { JoinRoom } from "./JoinRoom";
 import React, { Fragment, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { RoomState } from "../types/types";
 import { RoomSettings } from "./RoomSettings";
 import { useSocket } from "./useSocket";
-import { Button, Toast } from "./designSystem";
+import { Button } from "./designSystem";
 import { colors } from "./colors";
-import slug from "slug";
 import { useToast } from "./useToast";
 import { ev } from "./analytics";
 
@@ -16,14 +15,26 @@ export function admin(state: RoomState) {
   return state.playerIds[0];
 }
 
-export function Room() {
+interface Props {
+  selectedDeck: string;
+  setSelectedDeck: React.Dispatch<React.SetStateAction<string>>;
+}
+
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
+export function Room(props: Props) {
   let { roomId } = useParams();
   const [roomState, setRoomState] = useState<RoomState | null>(null);
-  const [selectedDeck, setSelectedDeck] = useState("foo");
   const [selectedGameMode, setSelectedGameMode] = useState("");
   const [chatMessages, setChatMessages] = useState<
     { text: string; senderId: string }[]
   >([]);
+
+  console.log(props.selectedDeck);
 
   const { toast, setToast } = useToast();
 
@@ -74,8 +85,8 @@ export function Room() {
         playerId={playerId}
         admin={admin(roomState)}
         adminName={roomState.playerNames[admin(roomState)]}
-        selectedDeck={selectedDeck}
-        setSelectedDeck={setSelectedDeck}
+        selectedDeck={props.selectedDeck}
+        setSelectedDeck={props.setSelectedDeck}
         selectedGameMode={selectedGameMode}
         setSelectedGameMode={setSelectedGameMode}
         newGame={newGame}
@@ -103,7 +114,7 @@ export function Room() {
           roomId={roomId}
           changeNextCardPosition={changeNextCardPosition}
           placeCard={placeCard}
-          newGame={() => newGame(selectedDeck, selectedGameMode)}
+          newGame={() => newGame(props.selectedDeck, selectedGameMode)}
           playerId={playerId}
           roomState={roomState}
         />
@@ -123,9 +134,9 @@ export function Room() {
   return (
     <div
       className="w-full h-full p-x-2"
-      style={{ backgroundColor: backgroundColor }}
+      style={{ backgroundColor: backgroundColor, maxHeight: "90%" }}
     >
-      <div className="flex flex-1 flex-col justify-start items-center h-full max-w-xl px-2 m-auto">
+      <div className="flex f  lex-1 flex-col justify-start items-center h-full max-w-xl px-2 m-auto">
         {content}
       </div>
       {roomState && (
